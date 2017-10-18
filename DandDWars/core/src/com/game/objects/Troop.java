@@ -1,60 +1,79 @@
-package com.game.objects;
+package com.mygdx.game.objects;
+
+import com.badlogic.gdx.Gdx;
+
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.Vector2;
 
 public class Troop{
 	int health;
-	int troopType;
 	int speed;
 	int damage;
 	int defense;
 	int team;
-	tuple attackRange;//dont know much about tuples
+	int attackRangeMin;
+	int attackRangeMax;
+
 	Vector2 position;
 	boolean faceRight;
 	Animation animation;
 	
-	public Troop (int type, int team, 
-				  int x, int y, 
-				  attackRMIN, int attackRMAX
-				  Animation a,
-				  boolean faceR) {
-		troopType = type			  
+	public Animation<TextureRegion> a;
+	
+	//Trying to use enum for expandibility of more types
+	public enum TROOP_TYPE {
+		KNIGHT,
+		ARCHER,
+		WIZARD
+	}
+	
+	TROOP_TYPE troopType;
+	
+	
+	
+	//This also needs to be touched up, I just got it to compile
+	public void init(int type, int team, int posx, int posy,
+					 int attackRMIN, int attackRMAX, boolean faceR){
+					  
+		
 		switch (troopType) {
-			case 1: {
+			case KNIGHT: 
 				//INFANTRY or SWORDSMEN
 				health = 10;
 				speed = 3;
 				damage = 5;
 				defense = 3;
 				break;
-			}
-			case 2: {
+			
+			case ARCHER: 
 				//BOWMEN or MECH
 				health = 5;
 				speed = 5;
 				damage = 7;
 				defense = 1;
 				break;
-			}
-			case 3: {
+			
+			case WIZARD: 
 				//MAGES or TANKS
 				health = 10;
 				speed = 2;
 				damage = 10;
 				defense = 7;
 				break;
-			}
-			case 4: {
+			
+			default: 
 				//???
 				break;
-			}
+			
 		}
 		//initialize other values
-		team = t;
-		faceRight = faceR;
-		animation = a;
-		position.x = x;
-		position.y = y;
-		attackRange = {attackRMIN, attackRYMAX}
+		////team = t;
+		////faceRight = faceR;
+		////animation = a;
+		////position.x = x;
+		////position.y = y;
+		////attackRange = {attackRMIN, attackRYMAX}
 		//however tuples are done^
 	}
 	
@@ -65,7 +84,7 @@ public class Troop{
 	 *with relation to the amount of speed the 
 	 *troop actually has and where they went.
 	 */
-	public void updatePos() {
+	public void updatePos(int posx, int posy) {
 	
 	}
 	/*updateHealth
