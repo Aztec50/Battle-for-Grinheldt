@@ -15,6 +15,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import com.mygdx.game.objects.Troop;
+
+
 
 public class DandDWars extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -29,6 +32,8 @@ public class DandDWars extends ApplicationAdapter {
 	
 	float screenw;
 	float screenh;
+	
+	Troop troop;
 	
 	
 	
@@ -48,6 +53,8 @@ public class DandDWars extends ApplicationAdapter {
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
         camera.update();
+		
+		troop = new Troop("wizard", 1, 0, 0);
 	}
 
 	@Override

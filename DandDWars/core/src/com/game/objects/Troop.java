@@ -28,13 +28,19 @@ public class Troop{
 		WIZARD
 	}
 	
-	TROOP_TYPE troopType;
+	public TROOP_TYPE troopType;
 	
+	
+	
+	public Troop (String type, int team, int posx, int posy) {
+		
+		setType(type);
+		init(team, posx, posy);
+	}
 	
 	
 	//This also needs to be touched up, I just got it to compile
-	public void init(int type, int team, int posx, int posy,
-					 int attackRMIN, int attackRMAX, boolean faceR){
+	public void init(int team, int posx, int posy){
 					  
 		
 		switch (troopType) {
@@ -75,6 +81,34 @@ public class Troop{
 		////position.y = y;
 		////attackRange = {attackRMIN, attackRYMAX}
 		//however tuples are done^
+	}
+	
+	//Takes a string and turns it into an enum
+	/* 
+	 * Java is a little silly and doesn allow strings
+	 * within a switch statement, so here we are
+	 */
+	public void setType(String type){
+		int typeNum = 0;
+		
+		     if(type == "Knight" || type == "knight") typeNum = 1;
+		else if(type == "Archer" || type == "archer") typeNum = 2;
+		else if(type == "Wizard" || type == "wizard") typeNum = 3;
+				
+		switch(typeNum){
+			case 1:
+				troopType = TROOP_TYPE.KNIGHT;
+			break;
+			case 2:
+				troopType = TROOP_TYPE.ARCHER;
+			break;
+			case 3:
+				troopType = TROOP_TYPE.WIZARD;
+			break;
+			default:
+			//Print out error message?
+
+		}
 	}
 	
 	/*updatePos
