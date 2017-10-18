@@ -15,19 +15,19 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import com.badlogic.gdx.math.Vector2;
+
 import com.mygdx.game.objects.Troop;
 
 
 
 public class DandDWars extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
 	
 	OrthographicCamera camera;
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
 	
+	SpriteBatch batch;
 	String currentMap;
 	
 	float screenw;
@@ -42,9 +42,9 @@ public class DandDWars extends ApplicationAdapter {
 		screenw = 640f; //screen resolution
         screenh = 640f;  //screen resolution
 		
+	
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		
+	
 		currentMap = "maps/GrassMap.tmx";
 	
         tiledMap = new TmxMapLoader().load(currentMap);
@@ -54,7 +54,7 @@ public class DandDWars extends ApplicationAdapter {
         camera.setToOrtho(false,screenw,screenh);
         camera.update();
 		
-		troop = new Troop("wizard", 1, 0, 0);
+		troop = new Troop("knight", 1, 0, 0);
 	}
 
 	@Override
@@ -62,19 +62,22 @@ public class DandDWars extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		batch.setProjectionMatrix(camera.combined);
 		camera.update();
-		batch.begin();
-		batch.end();
 		
 		tiledMapRenderer.setView(camera);
+		
+		
+		
 		tiledMapRenderer.render();
 		
+		batch.begin();
+		troop.render(batch);
+		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
 	}
 	
 	@Override

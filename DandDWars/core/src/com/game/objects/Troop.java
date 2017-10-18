@@ -2,6 +2,8 @@ package com.mygdx.game.objects;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
@@ -15,9 +17,13 @@ public class Troop{
 	int attackRangeMin;
 	int attackRangeMax;
 
+	//This is used for animations
+	public float stateTime;
+	
 	Vector2 position;
 	boolean faceRight;
 	Animation animation;
+	Texture texture;
 	
 	public Animation<TextureRegion> a;
 	
@@ -26,53 +32,44 @@ public class Troop{
 		KNIGHT,
 		ARCHER,
 		WIZARD
+		//Megatank xD
 	}
 	
 	public TROOP_TYPE troopType;
 	
 	
 	
-	public Troop (String type, int team, int posx, int posy) {
-		
+	public Troop (String type, int t, int posx, int posy) {
 		setType(type);
-		init(team, posx, posy);
+		init(t, posx, posy);
 	}
 	
 	
 	//This also needs to be touched up, I just got it to compile
-	public void init(int team, int posx, int posy){
+	public void init(int t, int posx, int posy){
 					  
-		
 		switch (troopType) {
 			case KNIGHT: 
 				//INFANTRY or SWORDSMEN
-				health = 10;
-				speed = 3;
-				damage = 5;
-				defense = 3;
+				createKnight();
 				break;
-			
 			case ARCHER: 
 				//BOWMEN or MECH
-				health = 5;
-				speed = 5;
-				damage = 7;
-				defense = 1;
+				createArcher();
 				break;
-			
 			case WIZARD: 
 				//MAGES or TANKS
-				health = 10;
-				speed = 2;
-				damage = 10;
-				defense = 7;
+				createWizard();
 				break;
-			
 			default: 
 				//???
 				break;
-			
 		}
+
+		position = new Vector2();
+		updatePos(posx,posy);
+
+		team = t;
 		//initialize other values
 		////team = t;
 		////faceRight = faceR;
@@ -111,6 +108,10 @@ public class Troop{
 		}
 	}
 	
+	public void setAnimation(TROOP_TYPE type){
+		
+	}
+	
 	/*updatePos
 	 * 
 	 *add or subtract from x and y the amount
@@ -119,16 +120,24 @@ public class Troop{
 	 *troop actually has and where they went.
 	 */
 	public void updatePos(int posx, int posy) {
-	
+		position.x = posx * 16;
+		position.y = posy * 16;
 	}
+	
+	// Returns the position, could be handy
+	public Vector2 getPos(){
+		return position;
+	}
+	
 	/*updateHealth
 	 * 
 	 * Remove the amount of damage that
 	 * is passed to the function 
 	 */
-	public void updateHealth(int d){
+	 
+	public void updateHealth(int incomingDamage){
 		//d is damage being delt to the troop
-		health -=d;
+		health -= incomingDamage;
 	}
 	
 	/*giveDamage
@@ -148,5 +157,55 @@ public class Troop{
 		} else {
 			return 0;
 		}
-	}	
+	}
+	
+	public void render (SpriteBatch batch){
+
+		// below statements will be used once we have animation
+		/*
+		 *TextureRegion reg = null;
+		 *reg = animation.getKeyFrame(stateTime,true);
+		 *batch.draw(reg.getTexture(), position.x, position.y);
+		 */
+		texture = new Texture("unit_tiles/KnightRed.png");
+		batch.draw(texture, position.x, position.y);
+		
+	}
+
+	
+	
+	/*-------------------------------------------------------------------*/
+	/*----------------------Troop Creation Functions---------------------*/
+	/*-------------------------------------------------------------------*/
+
+	public void createKnight(){
+		health = 10;
+		speed = 3;
+		damage = 5;
+		defense = 3;
+		attackRangeMin = 1;
+		attackRangeMax = 1;
+	}
+	
+	public void createArcher(){
+		health = 5;
+		speed = 5;
+		damage = 7;
+		defense = 1;
+		attackRangeMin = 2;
+		attackRangeMax = 6;
+	}
+	
+	public void createWizard(){
+		health = 10;
+		speed = 2;
+		damage = 10;
+		defense = 7;
+		attackRangeMin = 3;
+		attackRangeMax = 9;
+	}
+	
+	
+	
+	
 }
