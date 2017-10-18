@@ -7,6 +7,11 @@ import com.game.DandDWars;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		
+		config.title = "D&D Wars";
+		config.width = 640;
+		config.height = 640;
 		new LwjglApplication(new DandDWars(), config);
+		
 	}
 }
