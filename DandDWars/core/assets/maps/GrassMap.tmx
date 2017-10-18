@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="16" tileheight="16" nextobjectid="1">
+ <tileset firstgid="1" source="Tile_Grass.tsx"/>
+ <tileset firstgid="2" source="Tile_Grass.tsx"/>
+ <layer name="Tile Layer 1" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztwwEJAAAMBKHj+4dej6Hgqqmqqqqqqj56eyQMgQ==
+  </data>
+ </layer>
+</map>

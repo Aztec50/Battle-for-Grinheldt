@@ -1,61 +1,115 @@
-package com.game.objects;
+package com.mygdx.game.objects;
+
+import com.badlogic.gdx.Gdx;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation;
+
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class Troop{
 	int health;
-	int troopType;
 	int speed;
 	int damage;
 	int defense;
 	int team;
-	tuple attackRange;//dont know much about tuples
+	int attackRangeMin;
+	int attackRangeMax;
+	
+	public Rectangle bounds;
+
+	//This is used for animations
+	public float stateTime;
+	
 	Vector2 position;
 	boolean faceRight;
 	Animation animation;
+	Texture texture;
 	
-	public Troop (int type, int team, 
-				  int x, int y, 
-				  attackRMIN, int attackRMAX
-				  Animation a,
-				  boolean faceR) {
-		troopType = type			  
+	public Animation<TextureRegion> a;
+	
+	//Trying to use enum for expandibility of more types
+	public enum TROOP_TYPE {
+		KNIGHT,
+		ARCHER,
+		WIZARD
+		//Megatank xD
+	}
+	
+	public TROOP_TYPE troopType;
+	
+	
+	
+	public Troop (String type, int t, int posx, int posy) {
+		setType(type);
+		init(t, posx, posy);
+	}
+	
+	
+	//This also needs to be touched up, I just got it to compile
+	public void init(int t, int posx, int posy){
+		
+		//Initializes bounds, gets set with position later
+		bounds = new Rectangle(0,0, 16, 16);
+		
+		
 		switch (troopType) {
-			case 1: {
+			case KNIGHT: 
 				//INFANTRY or SWORDSMEN
-				health = 10;
-				speed = 3;
-				damage = 5;
-				defense = 3;
+				createKnight();
 				break;
-			}
-			case 2: {
+			case ARCHER: 
 				//BOWMEN or MECH
-				health = 5;
-				speed = 5;
-				damage = 7;
-				defense = 1;
+				createArcher();
 				break;
-			}
-			case 3: {
+			case WIZARD: 
 				//MAGES or TANKS
-				health = 10;
-				speed = 2;
-				damage = 10;
-				defense = 7;
+				createWizard();
 				break;
-			}
-			case 4: {
+			default: 
 				//???
 				break;
-			}
 		}
-		//initialize other values
+
+		position = new Vector2();
+		updatePos(posx,posy);
+
 		team = t;
-		faceRight = faceR;
-		animation = a;
-		position.x = x;
-		position.y = y;
-		attackRange = {attackRMIN, attackRYMAX}
-		//however tuples are done^
+	}
+	
+	//Takes a string and turns it into an enum
+	/* 
+	 * Java is a little silly and doesn allow strings
+	 * within a switch statement, so here we are
+	 */
+	public void setType(String type){
+		int typeNum = 0;
+		
+		     if(type == "Knight" || type == "knight") typeNum = 1;
+		else if(type == "Archer" || type == "archer") typeNum = 2;
+		else if(type == "Wizard" || type == "wizard") typeNum = 3;
+				
+		switch(typeNum){
+			case 1:
+				troopType = TROOP_TYPE.KNIGHT;
+			break;
+			case 2:
+				troopType = TROOP_TYPE.ARCHER;
+			break;
+			case 3:
+				troopType = TROOP_TYPE.WIZARD;
+			break;
+			default:
+			//Print out error message?
+
+		}
+	}
+	
+	public void setAnimation(TROOP_TYPE type){
+		
 	}
 	
 	/*updatePos
@@ -65,17 +119,27 @@ public class Troop{
 	 *with relation to the amount of speed the 
 	 *troop actually has and where they went.
 	 */
-	public void updatePos() {
-	
+	public void updatePos(int posx, int posy) {
+		position.x = posx * 16;
+		position.y = posy * 16;
+		bounds.x = posx * 16;
+		bounds.y = posy * 16;
 	}
+	
+	// Returns the position, could be handy
+	public Vector2 getPos(){
+		return position;
+	}
+	
 	/*updateHealth
 	 * 
 	 * Remove the amount of damage that
 	 * is passed to the function 
 	 */
-	public void updateHealth(int d){
+	 
+	public void updateHealth(int incomingDamage){
 		//d is damage being delt to the troop
-		health -=d;
+		health -= incomingDamage;
 	}
 	
 	/*giveDamage
@@ -95,5 +159,56 @@ public class Troop{
 		} else {
 			return 0;
 		}
-	}	
+	}
+	
+	public void render (SpriteBatch batch){
+
+		// below statements will be used once we have animation
+		/*
+		 *TextureRegion reg = null;
+		 *reg = animation.getKeyFrame(stateTime,true);
+		 *batch.draw(reg.getTexture(), position.x, position.y);
+		 */
+		 
+		batch.draw(texture, position.x, position.y);
+		
+	}
+
+	
+	
+	/*-------------------------------------------------------------------*/
+	/*----------------------Troop Creation Functions---------------------*/
+	/*-------------------------------------------------------------------*/
+
+	public void createKnight(){
+		texture = new Texture("unit_tiles/KnightRed.png");
+		health = 10;
+		speed = 3;
+		damage = 5;
+		defense = 3;
+		attackRangeMin = 1;
+		attackRangeMax = 1;
+	}
+	
+	public void createArcher(){
+		health = 5;
+		speed = 5;
+		damage = 7;
+		defense = 1;
+		attackRangeMin = 2;
+		attackRangeMax = 6;
+	}
+	
+	public void createWizard(){
+		health = 10;
+		speed = 2;
+		damage = 10;
+		defense = 7;
+		attackRangeMin = 3;
+		attackRangeMax = 9;
+	}
+	
+	
+	
+	
 }
