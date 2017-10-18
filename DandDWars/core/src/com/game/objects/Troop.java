@@ -120,16 +120,12 @@ public class Troop{
 	 *troop actually has and where they went.
 	 */
 	public void updatePos(int posx, int posy) {
-		if (position.x > 0 && position.x < 640) {
-			position.x = posx * 16;
-			bounds.x = posx * 16;
-			Gdx.app.log("x", Float.toString(position.x));
-		}
-		if (position.y > 0 && position.y < 640) {
-			position.y = posy * 16;
-			bounds.y = posy * 16;
-			Gdx.app.log("y", Float.toString(position.y));
-		}
+		position.x += posx * 16;
+		bounds.x += posx * 16;
+		Gdx.app.log("x", Float.toString(position.x));
+		position.y += posy * 16;
+		bounds.y += posy * 16;
+		Gdx.app.log("y", Float.toString(position.y));
 	}
 	
 	// Returns the position, could be handy
