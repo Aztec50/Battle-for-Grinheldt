@@ -107,16 +107,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			//This is just silly testing
 			case Input.Keys.W:
-				troop.updatePos((int)troop.getPos().x/16, (int)troop.getPos().y/16+1);
+				if (troop.getPos().y < screenh-16)
+				troop.updatePos(0, 1);
 			break;
 			case Input.Keys.S:
-				troop.updatePos((int)troop.getPos().x/16, (int)troop.getPos().y/16-1);
+				if (troop.getPos().y > 0)
+				troop.updatePos(0, -1);
 			break;
 			case Input.Keys.A:
-				troop.updatePos((int)troop.getPos().x/16-1, (int)troop.getPos().y/16);
+				if (troop.getPos().x > 0)
+				troop.updatePos(-1, 0);
 			break;
 			case Input.Keys.D:
-				troop.updatePos((int)troop.getPos().x/16+1, (int)troop.getPos().y/16);
+				if (troop.getPos().x < screenw-16)
+				troop.updatePos(1, 0);
 			break;
 		}
 		return false;
