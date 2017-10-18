@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
+
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Troop{
@@ -16,6 +18,8 @@ public class Troop{
 	int team;
 	int attackRangeMin;
 	int attackRangeMax;
+	
+	public Rectangle bounds;
 
 	//This is used for animations
 	public float stateTime;
@@ -47,7 +51,11 @@ public class Troop{
 	
 	//This also needs to be touched up, I just got it to compile
 	public void init(int t, int posx, int posy){
-					  
+		
+		//Initializes bounds, gets set with position later
+		bounds = new Rectangle(0,0, 16, 16);
+		
+		
 		switch (troopType) {
 			case KNIGHT: 
 				//INFANTRY or SWORDSMEN
@@ -70,14 +78,6 @@ public class Troop{
 		updatePos(posx,posy);
 
 		team = t;
-		//initialize other values
-		////team = t;
-		////faceRight = faceR;
-		////animation = a;
-		////position.x = x;
-		////position.y = y;
-		////attackRange = {attackRMIN, attackRYMAX}
-		//however tuples are done^
 	}
 	
 	//Takes a string and turns it into an enum
@@ -122,6 +122,8 @@ public class Troop{
 	public void updatePos(int posx, int posy) {
 		position.x = posx * 16;
 		position.y = posy * 16;
+		bounds.x = posx * 16;
+		bounds.y = posy * 16;
 	}
 	
 	// Returns the position, could be handy
@@ -167,7 +169,7 @@ public class Troop{
 		 *reg = animation.getKeyFrame(stateTime,true);
 		 *batch.draw(reg.getTexture(), position.x, position.y);
 		 */
-		texture = new Texture("unit_tiles/KnightRed.png");
+		 
 		batch.draw(texture, position.x, position.y);
 		
 	}
@@ -179,6 +181,7 @@ public class Troop{
 	/*-------------------------------------------------------------------*/
 
 	public void createKnight(){
+		texture = new Texture("unit_tiles/KnightRed.png");
 		health = 10;
 		speed = 3;
 		damage = 5;
