@@ -120,10 +120,16 @@ public class Troop{
 	 *troop actually has and where they went.
 	 */
 	public void updatePos(int posx, int posy) {
-		position.x = posx * 16;
-		position.y = posy * 16;
-		bounds.x = posx * 16;
-		bounds.y = posy * 16;
+		if (position.x > 0 && position.x < 640) {
+			position.x = posx * 16;
+			bounds.x = posx * 16;
+			Gdx.app.log("x", Float.toString(position.x));
+		}
+		if (position.y > 0 && position.y < 640) {
+			position.y = posy * 16;
+			bounds.y = posy * 16;
+			Gdx.app.log("y", Float.toString(position.y));
+		}
 	}
 	
 	// Returns the position, could be handy
@@ -198,7 +204,7 @@ public class Troop{
 		attackRangeMin = 2;
 		attackRangeMax = 6;
 	}
-	
+
 	public void createWizard(){
 		health = 10;
 		speed = 2;
@@ -207,8 +213,5 @@ public class Troop{
 		attackRangeMin = 3;
 		attackRangeMax = 9;
 	}
-	
-	
-	
 	
 }
