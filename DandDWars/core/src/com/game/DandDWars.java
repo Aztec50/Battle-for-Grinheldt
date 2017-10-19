@@ -35,7 +35,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	String currentMap;
 	
 	Troop troop;
-	
+	Troop troop2;
 	//Screen resolution variables
 	float screenw;
 	float screenh;
@@ -63,7 +63,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
         camera.setToOrtho(false,screenw,screenh);
         camera.update();
 		
-		troop = new Troop("knight", 1, 0, 0);
+		troop = new Troop("knight", "red", 0, 0);
+		troop2 = new Troop("knight", "blue", 1, 1);
 	}
 
 	@Override
@@ -80,6 +81,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		tiledMapRenderer.setView(camera);
 		
+		troop2.update(Gdx.graphics.getDeltaTime());
 		troop.update(Gdx.graphics.getDeltaTime());
 		
 		//More code goes here
@@ -88,6 +90,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		batch.begin();
 		troop.render(batch);
+		troop2.render(batch);
 		batch.end();
 	}
 	
