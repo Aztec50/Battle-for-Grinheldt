@@ -203,8 +203,8 @@ public class Troop{
 
 	public void createKnight(){
 		
-		animationAtlas = new TextureAtlas(Gdx.files.internal("unit_animations/KnightRedAnimation.atlas"));
-		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions("KnightRedIdle"), PlayMode.LOOP);
+		animationAtlas = new TextureAtlas(Gdx.files.internal("unit_animations/RedKnightAnimation.atlas"));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions("RedKnightIdle"), PlayMode.LOOP);
 
 		stateTime = 0;
 		
