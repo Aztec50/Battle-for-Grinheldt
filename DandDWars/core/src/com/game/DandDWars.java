@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
@@ -80,6 +79,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		camera.update();
 		
 		tiledMapRenderer.setView(camera);
+		
+		troop.update(Gdx.graphics.getDeltaTime());
 		
 		//More code goes here
 		
