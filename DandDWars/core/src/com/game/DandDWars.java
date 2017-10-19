@@ -136,6 +136,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// First attempts at clicking units
+		screenY = (int)screenh - screenY;//flips origin from top left to bottom left
 		if(troop.bounds.contains(screenX, screenY)){
 			Gdx.app.log("?", "Touched");
 		}
