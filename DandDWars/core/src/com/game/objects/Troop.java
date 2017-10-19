@@ -238,6 +238,7 @@ public class Troop{
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
 
+		
 		stateTime = 0;
 		
 		
