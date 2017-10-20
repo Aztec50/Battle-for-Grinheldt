@@ -64,7 +64,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
         camera.setToOrtho(false,screenw,screenh);
         camera.update();
 		
-		troop = new Troop("knight", 1, 0, 0);
+		troop = new Troop("knight", 1, 20, 20);
 	}
 
 	@Override
