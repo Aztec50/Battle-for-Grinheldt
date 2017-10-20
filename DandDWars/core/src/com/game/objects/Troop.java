@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Troop{
 	int health;
 	int speed;
+	int currentMovement;
 	int damage;
 	int defense;
 	int team;
@@ -75,6 +76,7 @@ public class Troop{
 		}
 
 		position = new Vector2();
+		currentMovement = speed;
 		updatePos(posx,posy);
 
 		team = t;
@@ -120,12 +122,17 @@ public class Troop{
 	 *troop actually has and where they went.
 	 */
 	public void updatePos(int posx, int posy) {
-		position.x += posx * 16;
-		bounds.x += posx * 16;
-		Gdx.app.log("x", Float.toString(position.x));
-		position.y += posy * 16;
-		bounds.y += posy * 16;
+		Gdx.app.log("movement left", Integer.toString(currentMovement));
+		if (currentMovement > 0) {
+			position.x += posx * 16;
+			bounds.x += posx * 16;
+			position.y += posy * 16;
+			bounds.y += posy * 16;
+			currentMovement--;
+		}	
 		Gdx.app.log("y", Float.toString(position.y));
+		Gdx.app.log("x", Float.toString(position.x));
+
 	}
 	
 	// Returns the position, could be handy
