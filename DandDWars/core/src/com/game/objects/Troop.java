@@ -5,7 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -13,10 +15,8 @@ import com.badlogic.gdx.math.Vector2;
 public class Troop{
 	int health;
 	int speed;
-	int currentMovement;
 	int damage;
 	int defense;
-	int team;
 	int attackRangeMin;
 	int attackRangeMax;
 	
@@ -27,10 +27,10 @@ public class Troop{
 	
 	Vector2 position;
 	boolean faceRight;
-	Animation animation;
 	Texture texture;
-	
-	public Animation<TextureRegion> a;
+
+	TextureAtlas animationAtlas;
+	public Animation<TextureRegion> animation;
 	
 	//Trying to use enum for expandibility of more types
 	public enum TROOP_TYPE {
@@ -39,23 +39,27 @@ public class Troop{
 		WIZARD
 		//Megatank xD
 	}
+	public enum TEAM{
+		RED,
+		BLUE
+	}
 	
 	public TROOP_TYPE troopType;
+	public TEAM team;
 	
 	
-	
-	public Troop (String type, int t, int posx, int posy) {
+	public Troop (String type, String t, int posx, int posy) {
 		setType(type);
-		init(t, posx, posy);
+		setTeam(t);
+		init(posx, posy);
 	}
 	
 	
 	//This also needs to be touched up, I just got it to compile
-	public void init(int t, int posx, int posy){
+	public void init(int posx, int posy){
 		
 		//Initializes bounds, gets set with position later
 		bounds = new Rectangle(0,0, 16, 16);
-		
 		
 		switch (troopType) {
 			case KNIGHT: 
@@ -76,10 +80,9 @@ public class Troop{
 		}
 
 		position = new Vector2();
-		currentMovement = speed;
 		updatePos(posx,posy);
 
-		team = t;
+		
 	}
 	
 	//Takes a string and turns it into an enum
@@ -109,6 +112,24 @@ public class Troop{
 
 		}
 	}
+	public void setTeam(String t){
+		int teamNum = 0;
+		
+			 if(t == "red" || t == "Red") teamNum = 1;
+		else if(t == "blue" || t == "Blue") teamNum = 2;
+		
+		switch(teamNum){
+			case 1:
+				team = TEAM.RED;
+			break;
+			case 2:
+				team = TEAM.BLUE;
+			break;
+			default:
+			//potential error message?
+		}
+		
+	}
 	
 	public void setAnimation(TROOP_TYPE type){
 		
@@ -122,17 +143,10 @@ public class Troop{
 	 *troop actually has and where they went.
 	 */
 	public void updatePos(int posx, int posy) {
-		Gdx.app.log("movement left", Integer.toString(currentMovement));
-		if (currentMovement > 0) {
-			position.x += posx * 16;
-			bounds.x += posx * 16;
-			position.y += posy * 16;
-			bounds.y += posy * 16;
-			currentMovement--;
-		}	
-		Gdx.app.log("y", Float.toString(position.y));
-		Gdx.app.log("x", Float.toString(position.x));
-
+		position.x += posx * 16;
+		position.y += posy * 16;
+		bounds.x += posx * 16;
+		bounds.y += posy * 16;
 	}
 	
 	// Returns the position, could be handy
@@ -170,16 +184,35 @@ public class Troop{
 		}
 	}
 	
+	public void setAnimation (Animation animation) {
+		this.animation = animation;
+		stateTime = 0;
+	}
+	
+	public void update (float deltaTime) {
+		stateTime += deltaTime;
+	}
+	
 	public void render (SpriteBatch batch){
 
-		// below statements will be used once we have animation
-		/*
-		 *TextureRegion reg = null;
-		 *reg = animation.getKeyFrame(stateTime,true);
-		 *batch.draw(reg.getTexture(), position.x, position.y);
+
+		TextureRegion reg = null;
+		reg = animation.getKeyFrame(stateTime,true);
+
+		/*  This draw function was a doozy to figure out, but as it is
+         *  it should draw and animate all of our units. In the case that
+         *  something needs to be changed, the prototype is provided. 
+		 *
+         *  draw(Texture texture, float x, float y, float width, float height,
+		 *       int srcX, int srcY,
+		 *		 int srcWidth, int srcHeight,
+		 *		 boolean flipX, boolean flipY);
 		 */
-		 
-		batch.draw(texture, position.x, position.y);
+		
+		batch.draw(reg.getTexture(), position.x, position.y, 16, 16,
+				   reg.getRegionX(), reg.getRegionY(),
+				   reg.getRegionWidth(), reg.getRegionHeight(),
+				   false, false);
 		
 	}
 
@@ -190,7 +223,25 @@ public class Troop{
 	/*-------------------------------------------------------------------*/
 
 	public void createKnight(){
-		texture = new Texture("unit_tiles/KnightRed.png");
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedKnightAnimation.atlas");
+			fileSourceAnimation = String.format("RedKnightIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueKnightAnimation.atlas");
+			fileSourceAnimation = String.format("BlueKnightIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
+		stateTime = 0;
+		
+		
 		health = 10;
 		speed = 3;
 		damage = 5;
@@ -207,7 +258,7 @@ public class Troop{
 		attackRangeMin = 2;
 		attackRangeMax = 6;
 	}
-
+	
 	public void createWizard(){
 		health = 10;
 		speed = 2;
@@ -216,5 +267,8 @@ public class Troop{
 		attackRangeMin = 3;
 		attackRangeMax = 9;
 	}
+	
+	
+	
 	
 }
