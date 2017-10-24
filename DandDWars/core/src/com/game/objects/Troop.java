@@ -143,10 +143,10 @@ public class Troop{
 	 *troop actually has and where they went.
 	 */
 	public void updatePos(int posx, int posy) {
-		position.x = posx * 16;
-		position.y = posy * 16;
-		bounds.x = posx * 16;
-		bounds.y = posy * 16;
+		position.x += posx * 16;
+		position.y += posy * 16;
+		bounds.x += posx * 16;
+		bounds.y += posy * 16;
 	}
 	
 	// Returns the position, could be handy
