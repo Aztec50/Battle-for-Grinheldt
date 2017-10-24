@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
@@ -36,7 +35,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	String currentMap;
 	
 	Troop troop;
-	
+	Troop troop2;
 	//Screen resolution variables
 	float screenw;
 	float screenh;
@@ -64,7 +63,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
         camera.setToOrtho(false,screenw,screenh);
         camera.update();
 		
-		troop = new Troop("knight", 1, 20, 20);
+		troop = new Troop("knight", "red", 0, 0);
+		troop2 = new Troop("knight", "blue", 1, 1);
 	}
 
 	@Override
@@ -81,12 +81,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		tiledMapRenderer.setView(camera);
 		
+		troop2.update(Gdx.graphics.getDeltaTime());
+		troop.update(Gdx.graphics.getDeltaTime());
+		
 		//More code goes here
 		
 		tiledMapRenderer.render();
 		
 		batch.begin();
 		troop.render(batch);
+		troop2.render(batch);
 		batch.end();
 	}
 	
@@ -108,19 +112,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			//This is just silly testing
 			case Input.Keys.W:
 				if (troop.getPos().y < screenh-16)
-				troop.updatePos(0, 1);
+					troop.updatePos(0, 1);
 			break;
 			case Input.Keys.S:
 				if (troop.getPos().y > 0)
-				troop.updatePos(0, -1);
+					troop.updatePos(0, -1);
 			break;
 			case Input.Keys.A:
 				if (troop.getPos().x > 0)
-				troop.updatePos(-1, 0);
+					troop.updatePos(-1, 0);
 			break;
 			case Input.Keys.D:
 				if (troop.getPos().x < screenw-16)
-				troop.updatePos(1, 0);
+					troop.updatePos(1, 0);
 			break;
 		}
 		return false;
@@ -139,7 +143,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// First attempts at clicking units
-		if(troop.bounds.contains(screenX, screenh - screenY)){
+		
+		//flips origin from top left to bottom left
+		screenY = (int)screenh - screenY;
+		
+		String clickLocation = "";
+		clickLocation = String.format("(%d, %d)", screenX, screenY);
+		Gdx.app.log("Click Location:", clickLocation);
+		
+		
+		if(troop.bounds.contains(screenX, screenY)){
 			Gdx.app.log("?", "Touched");
 		}
         return false;
