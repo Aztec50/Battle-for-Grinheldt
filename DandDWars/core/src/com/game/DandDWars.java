@@ -43,7 +43,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	String currentMap;
 	
-	
+	Texture troopScroll;
+	Texture landTroopScroll;
 	
 	Troop troop;
 	Troop troop2;
@@ -58,7 +59,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public void create () {
 		screenw = 640f; //screen resolution
-        screenh = 640f;  //screen resolution
+        	screenh = 640f;  //screen resolution
 		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
 		
 		Gdx.input.setInputProcessor(this);
@@ -70,12 +71,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 		currentMap = "maps/GrassMap.tmx";
 	
-        tiledMap = new TmxMapLoader().load(currentMap);
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        	tiledMap = new TmxMapLoader().load(currentMap);
+        	tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 		
 		camera = new OrthographicCamera();
-        camera.setToOrtho(false,screenw,screenh);
-        camera.update();
+        	camera.setToOrtho(false,screenw,screenh);
+        	camera.update();
+
+		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
+		landTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
 		
 		troop = new Troop("knight", "red", 0, 0);
 		troop2 = new Troop("knight", "blue", 1, 1);
@@ -105,42 +109,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		batch.begin();
 		troop.render(batch);
 		troop2.render(batch);
-		drawHUD(troop);
+		drawHUD(troop2);
 		batch.end();
 	}
 	
 	public void drawHUD(Troop currTroop) {
 		
-		//draw big rectangle
-		batch.end();
-		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.WHITE);
-		sr.rect(0, 0, 120, 120);
-		sr.end();
-		batch.begin();
+		//draw big scroll
+		batch.draw(troopScroll, screenw-192, 5, 192, 192);
+		
 		//draw troop name
 		switch(currTroop.troopType) {
 				case KNIGHT: {
-					font.draw(batch, "Knight", 40, 110);
-					
-
-		TextureRegion reg = null;
-		reg = troop.animation.getKeyFrame(troop.stateTime,true);
-
-		/*  This draw function was a doozy to figure out, but as it is
-         *  it should draw and animate all of our units. In the case that
-         *  something needs to be changed, the prototype is provided. 
-		 *
-         *  draw(Texture texture, float x, float y, float width, float height,
-		 *       int srcX, int srcY,
-		 *		 int srcWidth, int srcHeight,
-		 *		 boolean flipX, boolean flipY);
-		 */
-		
-		batch.draw(reg.getTexture(), 44, 60, 32, 32,
-				   reg.getRegionX(), reg.getRegionY(),
-				   reg.getRegionWidth(), reg.getRegionHeight(),
-				   false, false);
+					font.draw(batch, "Knight", screenw-115, 175);
 					break;
 				}
 				case ARCHER: {
@@ -153,8 +134,21 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 		}
 		//draw troop scaled up over current tile
+		batch.draw(landTroopScroll, screenw-115, 90, 48, 48);
+		
+
+		TextureRegion reg = null;
+		reg = currTroop.animation.getKeyFrame(troop.stateTime,true);
+		batch.draw(reg.getTexture(), screenw-115, 90, 48, 48,
+			   reg.getRegionX(), reg.getRegionY(),
+			   reg.getRegionWidth(), reg.getRegionHeight(),
+			   false, false);
+
 		//draw stats of said troop
-		//font.draw(batch, "PAUSED", width/2, height/2, width/2, 10, false);
+		font.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150, 80);
+		font.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95, 80);					
+		font.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150, 60);
+		font.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95, 60);
 	}
 	
 	@Override
