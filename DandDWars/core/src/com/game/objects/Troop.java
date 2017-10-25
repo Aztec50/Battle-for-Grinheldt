@@ -13,10 +13,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Troop{
-	int health;
-	int speed;
-	int damage;
-	int defense;
+	public int health;
+	public int speed;
+	public int damage;
+	public int defense;
 	int attackRangeMin;
 	int attackRangeMax;
 	
