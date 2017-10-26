@@ -69,7 +69,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font.setColor(Color.RED);
 		sr = new ShapeRenderer();
 	
-		currentMap = "maps/GrassMap.tmx";
+		currentMap = "maps/TestingMap.tmx";
 	
         	tiledMap = new TmxMapLoader().load(currentMap);
         	tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
