@@ -52,21 +52,25 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture mountainTroopScroll;
 	Cell currTroopCell;
 
+
+	boolean[][] troopOn;
+	boolean[][] troopTeam;
+	Array<Troop> RedTroops;
+	Array<Troop> BlueTroops;
+	Troop currTroop;
 	
-	Troop troop;
-	Troop troop2;
 	//Screen resolution variables
 	float screenw;
 	float screenh;
 	
-	//Determines how zoomed in you are
+	//Determines how zoomed in you are:
 	int zoomLevel;
 	
 	
 	@Override
 	public void create () {
 		screenw = 640f; //screen resolution
-        	screenh = 640f;  //screen resolution
+        screenh = 640f;  //screen resolution
 		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
 		
 		Gdx.input.setInputProcessor(this);
@@ -75,24 +79,44 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font = new BitmapFont();
 		font.setColor(Color.BLACK);
 		sr = new ShapeRenderer();
-	
+
+		RedTroops = new Array<Troop>();
+		BlueTroops = new Array<Troop>();
+
+
 		currentMap = "maps/TestingMap.tmx";
 	
-        	tiledMap = new TmxMapLoader().load(currentMap);
+        tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
-        	tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+		troopOn = new boolean[landscape.getWidth()][landscape.getHeight()];
+		troopTeam = new boolean[landscape.getWidth()][landscape.getHeight()];
+
+ 		for (int i = 0; i < landscape.getWidth(); i++) {
+			for(int j = 0; j < landscape.getHeight(); j++) {
+					troopOn[i][j] = landscape.getCell(i, j).getTile().getProperties().get("troopOn", Boolean.class);
+					troopTeam[i][j] = landscape.getCell(i, j).getTile().getProperties().get("troopTeam", Boolean.class);
+			}
+		}
 		
 		camera = new OrthographicCamera();
-        	camera.setToOrtho(false,screenw,screenh);
-        	camera.update();
+        camera.setToOrtho(false,screenw,screenh);
+        camera.update();
 
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
 		mountainTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_mountain.png"));
+
+		for (int i = 0; i < 4; i++) {
+		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
+			Troop troop2 = new Troop("knight", "blue", i+3, 12, troopOn, troopTeam);
+			RedTroops.add((Troop)troop);
+			BlueTroops.add((Troop)troop2);
+			currTroop = troop;
+		}
 		
-		troop = new Troop("knight", "red", 0, 0);
-		troop2 = new Troop("knight", "blue", 1, 1);
 	}
 
 	@Override
@@ -109,22 +133,32 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		tiledMapRenderer.setView(camera);
 		
-		troop2.update(Gdx.graphics.getDeltaTime());
-		troop.update(Gdx.graphics.getDeltaTime());
+		
+		
+		for (Troop t : RedTroops) {
+			t.update(Gdx.graphics.getDeltaTime());
+		}
+		for (Troop t2 : BlueTroops) {
+			t2.update(Gdx.graphics.getDeltaTime());
+		}
 		
 		//More code goes here
 		
 		tiledMapRenderer.render();
 		
 		batch.begin();
-		troop.render(batch);
-		troop2.render(batch);
-		drawHUD(troop);
+		for (Troop t : RedTroops) {
+			t.render(batch);
+		}
+		for (Troop t2 : BlueTroops) {
+			t2.render(batch);
+		}
+		drawHUD();
 		drawMinimap();
 		batch.end();
 	}
 	
-	public void drawHUD(Troop currTroop) {
+	public void drawHUD() {
 		//draw big scroll
 		batch.draw(troopScroll, screenw-192, 261, 192, 192);
 		
@@ -162,7 +196,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		}
 
 		TextureRegion reg = null;
-		reg = currTroop.animation.getKeyFrame(troop.stateTime,true);
+		reg = currTroop.animation.getKeyFrame(currTroop.stateTime,true);
 		batch.draw(reg.getTexture(), screenw-115, 346, 48, 48,
 			   reg.getRegionX(), reg.getRegionY(),
 			   reg.getRegionWidth(), reg.getRegionHeight(),
@@ -185,32 +219,37 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	    sr.begin(ShapeType.Filled);
 	    
 	    for (int i = 0; i < landscape.getWidth(); i++) {
-		for(int j = 0; j < landscape.getHeight(); j++) {
-		    switch(landscape.getCell(i, j).getTile().getProperties().get("moveCost", Integer.class)) {
-			case 1:
-			    sr.setColor(Color.OLIVE);
+			for(int j = 0; j < landscape.getHeight(); j++) {
+		    	switch(landscape.getCell(i, j).getTile().getProperties().get("moveCost", Integer.class)) {
+				case 1:
+			    	sr.setColor(Color.OLIVE);
 	    		    sr.rect((i*3)+offsetX, (j*3)+offsetY, 3, 3);
-			    break;
-			case 2:
-			    sr.setColor(Color.FOREST);
+			    	break;
+				case 2:
+			    	sr.setColor(Color.FOREST);
 	    		    sr.rect((i*3)+offsetX, (j*3)+offsetY, 3, 3);
-			    break;
-			case 3:
-			    sr.setColor(Color.PURPLE);
+			    	break;
+				case 3:
+			    	sr.setColor(Color.PURPLE);
 	    		    sr.rect((i*3)+offsetX, (j*3)+offsetY, 3, 3);
-			    break;
-			case -1:
-			    sr.setColor(Color.BLUE);
+			    	break;
+				case -1:
+			    	sr.setColor(Color.BLUE);
 	    		    sr.rect((i*3)+offsetX, (j*3)+offsetY, 3, 3);
-			    break;
-		    }
+			    	break;
+		    	}
 	        }
 	    }
 	    sr.setColor(Color.RED);
-	    sr.rect( ((((int)troop.getPos().x)/16)*3)+offsetX, ((((int)troop.getPos().y)/16)*3)+offsetY, 3, 3);
+		for (Troop t : RedTroops) {
+			sr.rect( ((((int)t.getPos().x)/16)*3)+offsetX, ((((int)t.getPos().y)/16)*3)+offsetY, 3, 3);
+		}
+		
 
 	    sr.setColor(Color.CYAN);
-	    sr.rect( ((((int)troop2.getPos().x)/16)*3)+offsetX, ((((int)troop2.getPos().y)/16)*3)+offsetY, 3, 3);
+		for (Troop t2 : BlueTroops) {
+	    	sr.rect( ((((int)t2.getPos().x)/16)*3)+offsetX, ((((int)t2.getPos().y)/16)*3)+offsetY, 3, 3);
+		}
 
 
 	    sr.end();
@@ -234,20 +273,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			//This is just silly testing
 			case Input.Keys.W:
-				if (troop.getPos().y < screenh-16)
-					troop.updatePos(0, 1);
+				if (currTroop.getPos().y < screenh-16)
+					currTroop.updatePos(0, 1, troopOn, troopTeam);
 			break;
 			case Input.Keys.S:
-				if (troop.getPos().y > 0)
-					troop.updatePos(0, -1);
+				if (currTroop.getPos().y > 0)
+					currTroop.updatePos(0, -1, troopOn, troopTeam);
 			break;
 			case Input.Keys.A:
-				if (troop.getPos().x > 0)
-					troop.updatePos(-1, 0);
+				if (currTroop.getPos().x > 0)
+					currTroop.updatePos(-1, 0, troopOn, troopTeam);
 			break;
 			case Input.Keys.D:
-				if (troop.getPos().x < screenw-16)
-					troop.updatePos(1, 0);
+				if (currTroop.getPos().x < screenw-16)
+					currTroop.updatePos(1, 0, troopOn, troopTeam);
 			break;
 		}
 		return false;
@@ -274,10 +313,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		clickLocation = String.format("(%d, %d)", screenX, screenY);
 		Gdx.app.log("Click Location:", clickLocation);
 		
-		
-		if(troop.bounds.contains(screenX, screenY)){
-			Gdx.app.log("?", "Touched");
+		for (Troop t : RedTroops) {
+			if(t.bounds.contains(screenX, screenY)){
+				Gdx.app.log("?", "Touched");
+				currTroop = t;
+			}
 		}
+		for (Troop t2 : BlueTroops) {
+			if(t2.bounds.contains(screenX, screenY)){
+				Gdx.app.log("?", "Touched");
+				currTroop = t2;
+			}
+		}
+
         return false;
     }
 
