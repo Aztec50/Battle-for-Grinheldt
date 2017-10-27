@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -37,7 +40,8 @@ public class Troop{
 		KNIGHT,
 		ARCHER,
 		WIZARD
-		//Megatank xD
+		//Megatank xD 
+		//:P https://images-na.ssl-images-amazon.com/images/M/MV5BYjdlYjM2NGItZTY0Mi00NmVjLWIwMTAtNTBiZTg4NTc3NGJjXkEyXkFqcGdeQXVyNjExODE1MDc@._V1_UY268_CR76,0,182,268_AL_.jpg
 	}
 	public enum TEAM{
 		RED,
@@ -48,10 +52,21 @@ public class Troop{
 	public TEAM team;
 	
 	
-	public Troop (String type, String t, int posx, int posy) {
+	public Troop (String type, String t, int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam) {
 		setType(type);
 		setTeam(t);
 		init(posx, posy);
+		troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+		
+		//in terms of troopTeam, RED = false   BLUE = true
+		switch(team) {
+			case RED: 
+				troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+				break;
+			case BLUE:
+				troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+				break;
+		}
 	}
 	
 	
@@ -80,9 +95,11 @@ public class Troop{
 		}
 
 		position = new Vector2();
-		updatePos(posx,posy);
-
-		
+		//updatePos(posx,posy, land);
+		position.x = posx*16;
+		position.y = posy*16;
+		bounds.x = posx * 16;
+		bounds.y = posy * 16;		
 	}
 	
 	//Takes a string and turns it into an enum
@@ -142,11 +159,26 @@ public class Troop{
 	 *with relation to the amount of speed the 
 	 *troop actually has and where they went.
 	 */
-	public void updatePos(int posx, int posy) {
-		position.x += posx * 16;
-		position.y += posy * 16;
-		bounds.x += posx * 16;
-		bounds.y += posy * 16;
+	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam) {
+		//no matter what it will not let the troop move...
+		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
+			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
+			position.x += posx * 16;
+			position.y += posy * 16;
+			bounds.x += posx * 16;
+			bounds.y += posy * 16;
+			troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+			
+			//in terms of troopTeam, RED = false   BLUE = true
+			switch(team) {
+				case RED: 
+					troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+					break;
+				case BLUE:
+					troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+					break;
+			}
+		}
 	}
 	
 	// Returns the position, could be handy
