@@ -45,6 +45,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	String currentMap;
 	
+	enum TURNGS {
+		PLAYER1UPKEEP,
+		PLAYER1TURN,
+		PLAYER2UPKEEP,
+		PLAYER2TURN
+	}
+	
+	TURNGS turnState;
+	
 	//textures for UI
 	Texture troopScroll;
 	Texture plainsTroopScroll;
@@ -71,7 +80,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	public void create () {
 		screenw = 640f; //screen resolution
         screenh = 640f;  //screen resolution
-		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
+		zoomLevel = 2; // 1 = 100%, 2 = 200%, 3 = 400% zoom
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -83,6 +92,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
 
+		turnState = TURNGS.PLAYER1UPKEEP;
 
 		currentMap = "maps/TestingMap.tmx";
 	
@@ -109,12 +119,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
 		mountainTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_mountain.png"));
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 16; i++) {
 		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
 			Troop troop2 = new Troop("knight", "blue", i+3, 12, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
-			currTroop = troop;
 		}
 		
 	}
@@ -134,6 +143,21 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		tiledMapRenderer.setView(camera);
 		
 		
+		
+		
+		switch(turnState) {
+			case PLAYER1UPKEEP: 
+				//stuuuuuuff
+				currTroop = null;
+				turnState = TURNGS.PLAYER1TURN;
+				break;
+			case PLAYER2UPKEEP:
+				//STUUUUUUUFF
+				currTroop = null;
+				turnState = TURNGS.PLAYER2TURN;
+				break;
+		}
+				
 		
 		for (Troop t : RedTroops) {
 			t.update(Gdx.graphics.getDeltaTime());
@@ -161,52 +185,53 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	public void drawHUD() {
 		//draw big scroll
 		batch.draw(troopScroll, screenw-192, 261, 192, 192);
-		
-		//draw troop name
-		switch(currTroop.troopType) {
-				case KNIGHT: {
-					font.draw(batch, "Knight", screenw-115, 435);
+		if (currTroop != null){
+			//draw troop name
+			switch(currTroop.troopType) {
+					case KNIGHT: {
+						font.draw(batch, "Knight", screenw-115, 435);
+						break;
+					}
+					case ARCHER: {
+						font.draw(batch, "Archer", screenw-115, 435);
+						break;
+					}
+					case WIZARD: {
+						font.draw(batch, "Wizard", screenw-115, 435);
+						break;
+					}
+			}
+			//draw troop scaled up over current tile
+	
+			//get the cell "under" the troop position
+			currTroopCell = landscape.getCell(((int)currTroop.getPos().x)/16, ((int)currTroop.getPos().y)/16);
+
+			//based on movement cost, draw the right one. this assumes cant move on sea/water
+			switch(currTroopCell.getTile().getProperties().get("moveCost", Integer.class)) {
+				case 1:
+					batch.draw(plainsTroopScroll, screenw-115, 346, 48, 48);
 					break;
-				}
-				case ARCHER: {
-					font.draw(batch, "Archer", screenw-115, 435);
+				case 2:
+					batch.draw(forestTroopScroll, screenw-115, 346, 48, 48);
 					break;
-				}
-				case WIZARD: {
-					font.draw(batch, "Wizard", screenw-115, 435);
+				case 3:
+					batch.draw(mountainTroopScroll, screenw-115, 346, 48, 48);
 					break;
-				}
+			}
+
+			TextureRegion reg = null;
+			reg = currTroop.animation.getKeyFrame(currTroop.stateTime,true);
+			batch.draw(reg.getTexture(), screenw-115, 346, 48, 48,
+					   reg.getRegionX(), reg.getRegionY(),
+					   reg.getRegionWidth(), reg.getRegionHeight(),
+					   false, false);
+
+			//draw stats of said troop
+			font.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150, 336);
+			font.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95, 336);					
+			font.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150, 316);
+			font.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95, 316);
 		}
-		//draw troop scaled up over current tile
-
-		//get the cell "under" the troop position
-		currTroopCell = landscape.getCell(((int)currTroop.getPos().x)/16, ((int)currTroop.getPos().y)/16);
-
-		//based on movement cost, draw the right one. this assumes cant move on sea/water
-		switch(currTroopCell.getTile().getProperties().get("moveCost", Integer.class)) {
-			case 1:
-				batch.draw(plainsTroopScroll, screenw-115, 346, 48, 48);
-				break;
-			case 2:
-				batch.draw(forestTroopScroll, screenw-115, 346, 48, 48);
-				break;
-			case 3:
-				batch.draw(mountainTroopScroll, screenw-115, 346, 48, 48);
-				break;
-		}
-
-		TextureRegion reg = null;
-		reg = currTroop.animation.getKeyFrame(currTroop.stateTime,true);
-		batch.draw(reg.getTexture(), screenw-115, 346, 48, 48,
-			   reg.getRegionX(), reg.getRegionY(),
-			   reg.getRegionWidth(), reg.getRegionHeight(),
-			   false, false);
-
-		//draw stats of said troop
-		font.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150, 336);
-		font.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95, 336);					
-		font.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150, 316);
-		font.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95, 316);
 	}
 
 	public void drawMinimap() {
@@ -273,20 +298,35 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			//This is just silly testing
 			case Input.Keys.W:
-				if (currTroop.getPos().y < screenh-16)
-					currTroop.updatePos(0, 1, troopOn, troopTeam);
+				if (currTroop != null) {
+					if ((int)currTroop.getPos().y/16 < landscape.getHeight()-1)
+						currTroop.updatePos(0, 1, troopOn, troopTeam);
+				}
 			break;
 			case Input.Keys.S:
-				if (currTroop.getPos().y > 0)
-					currTroop.updatePos(0, -1, troopOn, troopTeam);
+				if (currTroop != null) {
+					if (currTroop.getPos().y > 0)
+						currTroop.updatePos(0, -1, troopOn, troopTeam);
+				}
 			break;
 			case Input.Keys.A:
-				if (currTroop.getPos().x > 0)
-					currTroop.updatePos(-1, 0, troopOn, troopTeam);
+				if (currTroop != null) {
+					if (currTroop.getPos().x > 0)
+						currTroop.updatePos(-1, 0, troopOn, troopTeam);
+				}
 			break;
 			case Input.Keys.D:
-				if (currTroop.getPos().x < screenw-16)
-					currTroop.updatePos(1, 0, troopOn, troopTeam);
+				if (currTroop != null) {
+					if ((int)currTroop.getPos().x/16 < landscape.getWidth()-1)
+						currTroop.updatePos(1, 0, troopOn, troopTeam);
+				}
+			break;
+			//for now, space ends a player turn
+			case Input.Keys.SPACE:
+				if (turnState == TURNGS.PLAYER1TURN)
+					turnState = TURNGS.PLAYER2UPKEEP;
+				else if (turnState == TURNGS.PLAYER2TURN)
+					turnState = TURNGS.PLAYER1UPKEEP;
 			break;
 		}
 		return false;
@@ -310,22 +350,31 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		screenY = (int)screenh - screenY;
 		
 		String clickLocation = "";
-		clickLocation = String.format("(%d, %d)", screenX, screenY);
+		clickLocation = String.format("(%d, %d)", screenX/16, screenY/16);
 		Gdx.app.log("Click Location:", clickLocation);
-		
-		for (Troop t : RedTroops) {
-			if(t.bounds.contains(screenX, screenY)){
-				Gdx.app.log("?", "Touched");
-				currTroop = t;
+		if (screenX/16 > -1 && screenX/16 < landscape.getWidth() && screenY/16 > -1 && screenY/16 < landscape.getHeight()) {
+			if (troopOn[screenX/16][screenY/16]){
+				if (turnState == TURNGS.PLAYER1TURN) {
+					for (Troop t : RedTroops) {
+						if(t.bounds.contains(screenX, screenY)){
+							Gdx.app.log("?", "Touched");
+							currTroop = t;
+						}
+					}
+				}
+				if (turnState == TURNGS.PLAYER2TURN) {
+					for (Troop t2 : BlueTroops) {
+						if(t2.bounds.contains(screenX, screenY)){
+							Gdx.app.log("?", "Touched");
+							currTroop = t2;
+						}
+					}
+				}
+			}
+			else {
+				currTroop = null;
 			}
 		}
-		for (Troop t2 : BlueTroops) {
-			if(t2.bounds.contains(screenX, screenY)){
-				Gdx.app.log("?", "Touched");
-				currTroop = t2;
-			}
-		}
-
         return false;
     }
 
