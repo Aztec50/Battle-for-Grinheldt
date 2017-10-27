@@ -59,6 +59,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture plainsTroopScroll;
 	Texture forestTroopScroll;
 	Texture mountainTroopScroll;
+	Texture waterTroopScroll;
 	Cell currTroopCell;
 
 
@@ -67,6 +68,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Array<Troop> RedTroops;
 	Array<Troop> BlueTroops;
 	Troop currTroop;
+	Cell currTile;
 	
 	//Screen resolution variables
 	float screenw;
@@ -118,6 +120,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
 		mountainTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_mountain.png"));
+		waterTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_water.png"));
 
 		for (int i = 0; i < 16; i++) {
 		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
@@ -149,11 +152,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case PLAYER1UPKEEP: 
 				//stuuuuuuff
 				currTroop = null;
+				currTile = null;
 				turnState = TURNGS.PLAYER1TURN;
 				break;
 			case PLAYER2UPKEEP:
 				//STUUUUUUUFF
 				currTroop = null;
+				currTile = null;
 				turnState = TURNGS.PLAYER2TURN;
 				break;
 		}
@@ -231,6 +236,34 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			font.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95, 336);					
 			font.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150, 316);
 			font.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95, 316);
+		} else if (currTile != null) {
+			//draw troop name
+			switch(currTile.getTile().getProperties().get("moveCost", Integer.class)) {
+				case 1: {
+					font.draw(batch, "Plains", screenw-115, 435);
+					batch.draw(plainsTroopScroll, screenw-115, 346, 48, 48);
+					font.draw(batch, "Move Cost: 1", screenw-140, 336);
+					break;
+				}
+				case 2: {
+					font.draw(batch, "Forest", screenw-115, 435);
+					batch.draw(forestTroopScroll, screenw-115, 346, 48, 48);
+					font.draw(batch, "Move Cost: 2", screenw-140, 336);
+					break;
+				}
+				case 3: {
+					font.draw(batch, "Mountain", screenw-118, 435);
+					batch.draw(mountainTroopScroll, screenw-115, 346, 48, 48);
+					font.draw(batch, "Move Cost: 3", screenw-140, 336);
+					break;
+				}
+				case -1: {
+					font.draw(batch, "Water", screenw-113, 435);
+					batch.draw(waterTroopScroll, screenw-115, 346, 48, 48);
+					font.draw(batch, "Move Cost: N/A", screenw-150, 336);
+					break;
+				}
+			}
 		}
 	}
 
@@ -352,6 +385,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		String clickLocation = "";
 		clickLocation = String.format("(%d, %d)", screenX/16, screenY/16);
 		Gdx.app.log("Click Location:", clickLocation);
+		//bound clicks to the map, also stops going out of troopOn bounds
 		if (screenX/16 > -1 && screenX/16 < landscape.getWidth() && screenY/16 > -1 && screenY/16 < landscape.getHeight()) {
 			if (troopOn[screenX/16][screenY/16]){
 				if (turnState == TURNGS.PLAYER1TURN) {
@@ -359,6 +393,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						if(t.bounds.contains(screenX, screenY)){
 							Gdx.app.log("?", "Touched");
 							currTroop = t;
+							currTile = null;
+							break;
 						}
 					}
 				}
@@ -367,12 +403,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						if(t2.bounds.contains(screenX, screenY)){
 							Gdx.app.log("?", "Touched");
 							currTroop = t2;
+							currTile = null;
+							break;
 						}
 					}
 				}
 			}
 			else {
 				currTroop = null;
+				currTile = landscape.getCell(screenX/16, screenY/16);
 			}
 		}
         return false;
