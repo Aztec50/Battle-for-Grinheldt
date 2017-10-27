@@ -25,7 +25,7 @@
  <tile id="3">
   <properties>
    <property name="moveCost" type="int" value="-1"/>
-   <property name="troopOn" type="bool" value="false"/>
+   <property name="troopOn" type="bool" value="true"/>
    <property name="troopTeam" type="bool" value="false"/>
   </properties>
  </tile>
