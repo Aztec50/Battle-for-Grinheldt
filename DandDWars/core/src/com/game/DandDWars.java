@@ -77,9 +77,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 	Texture startScreen;
 	Texture infoScreen;
+	Texture pauseScreen;
 	Rectangle startButton;
 	Rectangle infoButton;
 	Rectangle infoBackButton;
+	Rectangle pauseButton;
+	Rectangle resumeButton;
 
 	boolean[][] troopOn;
 	boolean[][] troopTeam;
@@ -100,7 +103,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	public void create () {
 		screenw = 640f; //screen resolution
         screenh = 640f;  //screen resolution
-		zoomLevel = 2; // 1 = 100%, 2 = 200%, 3 = 400% zoom
+		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -116,7 +119,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
-		gameState = GAMEGS.START;
+		gameState = GAMEGS.GAMERUNNING;
 		
 
 		currentMap = "maps/TestingMap.tmx";
@@ -150,6 +153,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		infoScreen = new Texture(Gdx.files.internal("game_menus/info.png"));
 		infoButton = new Rectangle(346, 147, 118, 120);
 		infoBackButton = new Rectangle(18, 18, 69, 66);
+		pauseButton = new Rectangle( screenw-31, screenh-34, 30, 32);
+		pauseScreen = new Texture(Gdx.files.internal("game_menus/pause.png"));
+		resumeButton = new Rectangle( 234, 160, 130, 132);
 
 		for (int i = 0; i < 16; i++) {
 		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
@@ -228,7 +234,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				batch.end();
 			break;
 			case PAUSE:
-
+				batch.begin();
+				batch.draw(pauseScreen, 0, 0);
+				batch.end();
 			break;
 		}
 		
@@ -313,13 +321,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 		}
+		//draw pause button
+		batch.draw(troopScroll, screenw-32, 606, 32, 32);
+		batch.end();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.BLACK);
+		sr.rect( screenw-14, 613, 5, 17);
+		sr.rect( screenw-22, 613, 5, 17);
+		sr.end();
+		batch.begin();
 	}
 
 	public void drawMinimap() {
 	    int offsetX = (int)screenw-(landscape.getWidth()*3)-64;
 	    int offsetY = 69;
 
-	    //batch.draw(troopScroll, screenw, 0, 0, 0, 256, 256, 1, 1, 90f, 0, 0, 32, 32, false, true);
+	    
 	    batch.draw(troopScroll, screenw-256, 5, 256, 256);
 	    batch.end();
 	    sr.begin(ShapeType.Filled);
@@ -379,35 +396,37 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			//This is just silly testing
 			case Input.Keys.W:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING ) {
 					if ((int)currTroop.getPos().y/16 < landscape.getHeight()-1)
 						currTroop.updatePos(0, 1, troopOn, troopTeam);
 				}
 			break;
 			case Input.Keys.S:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
 					if (currTroop.getPos().y > 0)
 						currTroop.updatePos(0, -1, troopOn, troopTeam);
 				}
 			break;
 			case Input.Keys.A:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
 					if (currTroop.getPos().x > 0)
 						currTroop.updatePos(-1, 0, troopOn, troopTeam);
 				}
 			break;
 			case Input.Keys.D:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
 					if ((int)currTroop.getPos().x/16 < landscape.getWidth()-1)
 						currTroop.updatePos(1, 0, troopOn, troopTeam);
 				}
 			break;
 			//for now, space ends a player turn
 			case Input.Keys.SPACE:
-				if (turnState == TURNGS.PLAYER1TURN)
-					turnState = TURNGS.PLAYER2UPKEEP;
-				else if (turnState == TURNGS.PLAYER2TURN)
-					turnState = TURNGS.PLAYER1UPKEEP;
+				if (gameState == GAMEGS.GAMERUNNING) {
+					if (turnState == TURNGS.PLAYER1TURN)
+						turnState = TURNGS.PLAYER2UPKEEP;
+					else if (turnState == TURNGS.PLAYER2TURN)
+						turnState = TURNGS.PLAYER1UPKEEP;
+				}
 			break;
 		}
 		return false;
@@ -465,6 +484,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTroop = null;
 						currTile = landscape.getCell(screenX/16, screenY/16);
 					}
+					if (pauseButton.contains(screenX, screenY)) { 
+						if(gameState != GAMEGS.PAUSE) {
+							Gdx.app.log("?", "game PAUSE");
+							gameState = GAMEGS.PAUSE;
+						}
+					}
 				}
 			break;
 			case START: 
@@ -490,7 +515,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			break;
 			case PAUSE:
-
+				if (resumeButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.GAMERUNNING) {
+						Gdx.app.log("?", "game resume");
+						gameState = GAMEGS.GAMERUNNING;
+					}
+				}
 			break;
 		}
 
