@@ -204,6 +204,10 @@ public class Troop{
 	 * relation to the defense of the enemy
 	 * Damage is (so far):
 	 * 		damage of troop - defense of enemy troop
+	 * Possible suggestion for improved damage:
+	 * luck = 1.0 to 1.1
+	 * Damage = Damage * luck - enemy def - terrain 
+	 *
 	 */
 	
 	public int giveDamage(int defEnemy){

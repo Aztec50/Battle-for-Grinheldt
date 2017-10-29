@@ -334,7 +334,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 	public void drawMinimap() {
 	    int offsetX = (int)screenw-(landscape.getWidth()*3)-64;
-	    int offsetY = 69;
+	    int offsetY = 69; // nice
 
 	    
 	    batch.draw(troopScroll, screenw-256, 5, 256, 256);
@@ -377,6 +377,31 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 	    sr.end();
 	    batch.begin();
+	}
+	
+	public void drawMovementTiles(int troopX, int troopY, int move){
+		if(move <= 0) return;
+		
+		//Checks tiles in order: left <, up ^, right >, down v
+		//This allows for movement onto any terrain so long as the unit has 1 move left
+		drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
+		drawMovementTiles(troopX, troopY+1, (move - landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class)));
+		drawMovementTiles(troopX+1, troopY, (move - landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
+		drawMovementTiles(troopX, troopY-1, (move - landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class)));
+		
+		
+	}
+	
+	public void drawAttackTiles(int troopX, int troopY, int atkMin, int atkMax, int draw){
+		if(draw == atkMax) return;
+		
+		drawAttackTiles(troopX-1, troopY, atkMin, atkMax, draw+1);
+		drawAttackTiles(troopX, troopY+1, atkMin, atkMax, draw+1);
+		drawAttackTiles(troopX+1, troopY, atkMin, atkMax, draw+1);
+		drawAttackTiles(troopX, troopY-1, atkMin, atkMax, draw+1);
+		
+		if(draw >= atkMin); // draw here
+	
 	}
 	
 	@Override
