@@ -31,6 +31,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
+import com.badlogic.gdx.math.Rectangle;
+
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	OrthographicCamera camera;
@@ -45,6 +47,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	String currentMap;
 	
+	//turn game states
 	enum TURNGS {
 		PLAYER1UPKEEP,
 		PLAYER1TURN,
@@ -54,6 +57,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	TURNGS turnState;
 	
+	//overall game game states
+	enum GAMEGS {
+		START,
+		INFO,
+		GAMERUNNING,
+		PAUSE
+	}
+
+	GAMEGS gameState;
+
 	//textures for UI
 	Texture troopScroll;
 	Texture plainsTroopScroll;
@@ -62,6 +75,14 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture waterTroopScroll;
 	Cell currTroopCell;
 
+	Texture startScreen;
+	Texture infoScreen;
+	Texture pauseScreen;
+	Rectangle startButton;
+	Rectangle infoButton;
+	Rectangle infoBackButton;
+	Rectangle pauseButton;
+	Rectangle resumeButton;
 
 	boolean[][] troopOn;
 	boolean[][] troopTeam;
@@ -82,7 +103,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	public void create () {
 		screenw = 640f; //screen resolution
         screenh = 640f;  //screen resolution
-		zoomLevel = 2; // 1 = 100%, 2 = 200%, 3 = 400% zoom
+		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -95,6 +116,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		BlueTroops = new Array<Troop>();
 
 		turnState = TURNGS.PLAYER1UPKEEP;
+
+
+		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
+		gameState = GAMEGS.GAMERUNNING;
+		
 
 		currentMap = "maps/TestingMap.tmx";
 	
@@ -122,6 +148,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		mountainTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_mountain.png"));
 		waterTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_water.png"));
 
+		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
+		startButton = new Rectangle(140, 136, 120, 120);
+		infoScreen = new Texture(Gdx.files.internal("game_menus/info.png"));
+		infoButton = new Rectangle(346, 147, 118, 120);
+		infoBackButton = new Rectangle(18, 18, 69, 66);
+		pauseButton = new Rectangle( screenw-31, screenh-34, 30, 32);
+		pauseScreen = new Texture(Gdx.files.internal("game_menus/pause.png"));
+		resumeButton = new Rectangle( 234, 160, 130, 132);
+
 		for (int i = 0; i < 16; i++) {
 		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
 			Troop troop2 = new Troop("knight", "blue", i+3, 12, troopOn, troopTeam);
@@ -145,46 +180,67 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		tiledMapRenderer.setView(camera);
 		
-		
-		
-		
-		switch(turnState) {
-			case PLAYER1UPKEEP: 
-				//stuuuuuuff
-				currTroop = null;
-				currTile = null;
-				turnState = TURNGS.PLAYER1TURN;
-				break;
-			case PLAYER2UPKEEP:
-				//STUUUUUUUFF
-				currTroop = null;
-				currTile = null;
-				turnState = TURNGS.PLAYER2TURN;
-				break;
-		}
+		//various things for game state. i put the running one first as it is the
+		//most important
+		switch(gameState) {
+			case GAMERUNNING:
+				switch(turnState) {
+					case PLAYER1UPKEEP: 
+						//stuuuuuuff
+						currTroop = null;
+						currTile = null;
+						turnState = TURNGS.PLAYER1TURN;
+					break;
+					case PLAYER2UPKEEP:
+						//STUUUUUUUFF
+						currTroop = null;
+						currTile = null;
+						turnState = TURNGS.PLAYER2TURN;
+					break;
+					}
 				
 		
-		for (Troop t : RedTroops) {
-			t.update(Gdx.graphics.getDeltaTime());
-		}
-		for (Troop t2 : BlueTroops) {
-			t2.update(Gdx.graphics.getDeltaTime());
+				for (Troop t : RedTroops) {
+					t.update(Gdx.graphics.getDeltaTime());
+				}
+				for (Troop t2 : BlueTroops) {
+					t2.update(Gdx.graphics.getDeltaTime());
+				}
+		
+				//More code goes here
+		
+				tiledMapRenderer.render();
+		
+				batch.begin();
+				for (Troop t : RedTroops) {
+					t.render(batch);
+				}
+				for (Troop t2 : BlueTroops) {
+					t2.render(batch);
+				}
+				drawHUD();
+				drawMinimap();
+				batch.end();
+			break;
+			case START: 
+				batch.begin();
+				batch.draw(startScreen, 0, 0);
+				batch.end();
+				
+			break;
+			case INFO:
+				batch.begin();
+				batch.draw(infoScreen, 0, 0);
+				batch.end();
+			break;
+			case PAUSE:
+				batch.begin();
+				batch.draw(pauseScreen, 0, 0);
+				batch.end();
+			break;
 		}
 		
-		//More code goes here
 		
-		tiledMapRenderer.render();
-		
-		batch.begin();
-		for (Troop t : RedTroops) {
-			t.render(batch);
-		}
-		for (Troop t2 : BlueTroops) {
-			t2.render(batch);
-		}
-		drawHUD();
-		drawMinimap();
-		batch.end();
 	}
 	
 	public void drawHUD() {
@@ -265,13 +321,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 		}
+		//draw pause button
+		batch.draw(troopScroll, screenw-32, 606, 32, 32);
+		batch.end();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.BLACK);
+		sr.rect( screenw-14, 613, 5, 17);
+		sr.rect( screenw-22, 613, 5, 17);
+		sr.end();
+		batch.begin();
 	}
 
 	public void drawMinimap() {
 	    int offsetX = (int)screenw-(landscape.getWidth()*3)-64;
 	    int offsetY = 69;
 
-	    //batch.draw(troopScroll, screenw, 0, 0, 0, 256, 256, 1, 1, 90f, 0, 0, 32, 32, false, true);
+	    
 	    batch.draw(troopScroll, screenw-256, 5, 256, 256);
 	    batch.end();
 	    sr.begin(ShapeType.Filled);
@@ -331,35 +396,37 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			//This is just silly testing
 			case Input.Keys.W:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING ) {
 					if ((int)currTroop.getPos().y/16 < landscape.getHeight()-1)
 						currTroop.updatePos(0, 1, troopOn, troopTeam);
 				}
 			break;
 			case Input.Keys.S:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
 					if (currTroop.getPos().y > 0)
 						currTroop.updatePos(0, -1, troopOn, troopTeam);
 				}
 			break;
 			case Input.Keys.A:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
 					if (currTroop.getPos().x > 0)
 						currTroop.updatePos(-1, 0, troopOn, troopTeam);
 				}
 			break;
 			case Input.Keys.D:
-				if (currTroop != null) {
+				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
 					if ((int)currTroop.getPos().x/16 < landscape.getWidth()-1)
 						currTroop.updatePos(1, 0, troopOn, troopTeam);
 				}
 			break;
 			//for now, space ends a player turn
 			case Input.Keys.SPACE:
-				if (turnState == TURNGS.PLAYER1TURN)
-					turnState = TURNGS.PLAYER2UPKEEP;
-				else if (turnState == TURNGS.PLAYER2TURN)
-					turnState = TURNGS.PLAYER1UPKEEP;
+				if (gameState == GAMEGS.GAMERUNNING) {
+					if (turnState == TURNGS.PLAYER1TURN)
+						turnState = TURNGS.PLAYER2UPKEEP;
+					else if (turnState == TURNGS.PLAYER2TURN)
+						turnState = TURNGS.PLAYER1UPKEEP;
+				}
 			break;
 		}
 		return false;
@@ -385,35 +452,80 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		String clickLocation = "";
 		clickLocation = String.format("(%d, %d)", screenX/16, screenY/16);
 		Gdx.app.log("Click Location:", clickLocation);
-		//bound clicks to the map, also stops going out of troopOn bounds
-		if (screenX/16 > -1 && screenX/16 < landscape.getWidth() && screenY/16 > -1 && screenY/16 < landscape.getHeight()) {
-			if (troopOn[screenX/16][screenY/16]){
-				if (turnState == TURNGS.PLAYER1TURN) {
-					for (Troop t : RedTroops) {
-						if(t.bounds.contains(screenX, screenY)){
-							Gdx.app.log("?", "Touched");
-							currTroop = t;
-							currTile = null;
-							break;
+
+
+		switch(gameState) {
+			case GAMERUNNING:
+				//bound clicks to the map, also stops going out of troopOn bounds
+				if (screenX/16 > -1 && screenX/16 < landscape.getWidth() && screenY/16 > -1 && screenY/16 < landscape.getHeight()) {
+					if (troopOn[screenX/16][screenY/16]){
+						if (turnState == TURNGS.PLAYER1TURN) {
+							for (Troop t : RedTroops) {
+								if(t.bounds.contains(screenX, screenY)){
+									Gdx.app.log("?", "Touched");
+									currTroop = t;
+									currTile = null;
+									break;
+								}
+							}
+						}
+						if (turnState == TURNGS.PLAYER2TURN) {
+							for (Troop t2 : BlueTroops) {
+								if(t2.bounds.contains(screenX, screenY)){
+									Gdx.app.log("?", "Touched");
+									currTroop = t2;
+									currTile = null;
+									break;
+								}
+							}
+						}
+					}
+					else {
+						currTroop = null;
+						currTile = landscape.getCell(screenX/16, screenY/16);
+					}
+					if (pauseButton.contains(screenX, screenY)) { 
+						if(gameState != GAMEGS.PAUSE) {
+							Gdx.app.log("?", "game PAUSE");
+							gameState = GAMEGS.PAUSE;
 						}
 					}
 				}
-				if (turnState == TURNGS.PLAYER2TURN) {
-					for (Troop t2 : BlueTroops) {
-						if(t2.bounds.contains(screenX, screenY)){
-							Gdx.app.log("?", "Touched");
-							currTroop = t2;
-							currTile = null;
-							break;
-						}
+			break;
+			case START: 
+				if (startButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.GAMERUNNING) {
+						Gdx.app.log("?", "game START");
+						gameState = GAMEGS.GAMERUNNING;
 					}
 				}
-			}
-			else {
-				currTroop = null;
-				currTile = landscape.getCell(screenX/16, screenY/16);
-			}
+				if (infoButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.INFO) {
+						Gdx.app.log("?", "game INFO");
+						gameState = GAMEGS.INFO;
+					}
+				}
+			break;
+			case INFO:
+				if (infoBackButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.START) {
+						Gdx.app.log("?", "game STARTMENU");
+						gameState = GAMEGS.START;
+					}
+				}
+			break;
+			case PAUSE:
+				if (resumeButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.GAMERUNNING) {
+						Gdx.app.log("?", "game resume");
+						gameState = GAMEGS.GAMERUNNING;
+					}
+				}
+			break;
 		}
+
+
+		
         return false;
     }
 
