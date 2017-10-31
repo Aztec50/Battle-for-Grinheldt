@@ -43,6 +43,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	SpriteBatch batch;
 	ShapeRenderer sr;
+	ShapeRenderer tileDraw;
 	BitmapFont font;
 	
 	String currentMap;
@@ -91,6 +92,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Troop currTroop;
 	Cell currTile;
 	
+	Rectangle[][] drawTiles;
+	boolean drawCheck;
+	
 	//Screen resolution variables
 	float screenw;
 	float screenh;
@@ -111,7 +115,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font = new BitmapFont();
 		font.setColor(Color.BLACK);
 		sr = new ShapeRenderer();
-
+		tileDraw = new ShapeRenderer();
+		
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
 
@@ -137,6 +142,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					troopTeam[i][j] = landscape.getCell(i, j).getTile().getProperties().get("troopTeam", Boolean.class);
 			}
 		}
+		
+		drawTiles = new Rectangle[landscape.getWidth()][landscape.getHeight()];
+		for (int i = 0; i < landscape.getWidth(); i++){
+			for(int j = 0; j < landscape.getHeight(); j++){
+					drawTiles[i][j] = new Rectangle();
+					drawTiles[i][j].setX(i * 16);
+					drawTiles[i][j].setY(j * 16);
+					drawTiles[i][j].setWidth(16);
+					drawTiles[i][j].setHeight(16);
+			}
+		}
+		drawCheck = false;
+		
 		
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
@@ -218,6 +236,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				for (Troop t2 : BlueTroops) {
 					t2.render(batch);
 				}
+				if(currTroop != null){// && drawCheck == false){
+					Vector2 temp = currTroop.getPos();
+					drawMovementTiles((int)temp.x / 16, (int)temp.y / 16, currTroop.speed);
+					drawCheck = true;
+				}
+				
 				drawHUD();
 				drawMinimap();
 				batch.end();
@@ -373,22 +397,50 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		for (Troop t2 : BlueTroops) {
 	    	sr.rect( ((((int)t2.getPos().x)/16)*3)+offsetX, ((((int)t2.getPos().y)/16)*3)+offsetY, 3, 3);
 		}
-
-
+		
+		
 	    sr.end();
 	    batch.begin();
 	}
 	
 	public void drawMovementTiles(int troopX, int troopY, int move){
-		if(move <= 0) return;
+		String report = String.format("move: %d  X: %d  Y: %d", move, troopX, troopY);
+		Gdx.app.log("Info: ", report);
+		report = String.format("getWidth: %d  getHeight: %d", landscape.getWidth(), landscape.getHeight());
+		Gdx.app.log("Info: ", report);
+
+		tileDraw.begin(ShapeType.Filled);
+		tileDraw.setColor(1,1,1,0.1f);
+		tileDraw.rect(troopX*16, troopY*16, 16, 16);
+		tileDraw.end();
 		
+		if(move <= 0) return;
+		if(troopX < 0) return;
+		if(troopY < 0) return;
+		if(troopX > landscape.getWidth()) return;
+		if(troopY > landscape.getHeight()) return;
+		
+		//need to use troopOn;
+		//		      troopTeam;
 		//Checks tiles in order: left <, up ^, right >, down v
 		//This allows for movement onto any terrain so long as the unit has 1 move left
-		drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
-		drawMovementTiles(troopX, troopY+1, (move - landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class)));
-		drawMovementTiles(troopX+1, troopY, (move - landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
-		drawMovementTiles(troopX, troopY-1, (move - landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class)));
-		
+		Gdx.app.log("Test", "Test");
+		if(troopX-1 > 0 &&
+		   landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
+		}					
+		if(troopY+1 < landscape.getHeight() &&
+		   landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX, troopY+1, (move - landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class)));
+		}
+		if(troopX+1 < landscape.getWidth() &&
+		   landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX+1, troopY, (move - landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
+		}
+		if(troopY-1 > 0 &&
+		   landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX, troopY-1, (move - landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class)));
+		}
 		
 	}
 	
@@ -490,6 +542,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 									Gdx.app.log("?", "Touched");
 									currTroop = t;
 									currTile = null;
+									drawCheck = false;
 									break;
 								}
 							}
@@ -500,6 +553,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 									Gdx.app.log("?", "Touched");
 									currTroop = t2;
 									currTile = null;
+									drawCheck = false;
 									break;
 								}
 							}
