@@ -92,8 +92,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Troop currTroop;
 	Cell currTile;
 	
-	Rectangle[][] drawTiles;
 	boolean drawCheck;
+	boolean hasDrawnTiles;
+	boolean[][] drawTiles;
 	
 	//Screen resolution variables
 	float screenw;
@@ -143,17 +144,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		
-		drawTiles = new Rectangle[landscape.getWidth()][landscape.getHeight()];
-		for (int i = 0; i < landscape.getWidth(); i++){
-			for(int j = 0; j < landscape.getHeight(); j++){
-					drawTiles[i][j] = new Rectangle();
-					drawTiles[i][j].setX(i * 16);
-					drawTiles[i][j].setY(j * 16);
-					drawTiles[i][j].setWidth(16);
-					drawTiles[i][j].setHeight(16);
+		drawCheck = false;
+		hasDrawnTiles = false;
+		drawTiles = new boolean[landscape.getWidth()][landscape.getHeight()];
+		
+		for (int i = 0; i < landscape.getWidth(); i++) {
+			for(int j = 0; j < landscape.getHeight(); j++) {
+				drawTiles[i][j] = false;
 			}
 		}
-		drawCheck = false;
 		
 		
 		camera = new OrthographicCamera();
@@ -182,6 +181,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			BlueTroops.add((Troop)troop2);
 		}
 		
+		for (int i = 0; i < 16; i++) {
+		    Troop troop = new Troop("wizard", "red", i+3, 20, troopOn, troopTeam);
+			Troop troop2 = new Troop("wizard", "blue", i+3, 22, troopOn, troopTeam);
+			RedTroops.add((Troop)troop);
+			BlueTroops.add((Troop)troop2);
+		}
+		
+		for (int i = 0; i < 16; i++) {
+		    Troop troop = new Troop("archer", "red", i+18, 21, troopOn, troopTeam);
+			Troop troop2 = new Troop("archer", "blue", i+18, 23, troopOn, troopTeam);
+			RedTroops.add((Troop)troop);
+			BlueTroops.add((Troop)troop2);
+		}
+		
+		
+		
 	}
 
 	@Override
@@ -189,6 +204,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		camera.viewportWidth = screenw;
 		camera.viewportHeight = screenh;
@@ -228,6 +245,27 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				//More code goes here
 		
 				tiledMapRenderer.render();
+				
+				if(currTroop != null){
+					tileDraw.setProjectionMatrix(camera.combined);
+					tileDraw.begin(ShapeType.Filled);
+					tileDraw.setColor(new Color(1, 1, 1, 0.1f));
+					for (int i = 0; i < landscape.getWidth(); i++) {
+						for(int j = 0; j < landscape.getHeight(); j++) {
+							if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
+						}
+					}
+					tileDraw.end();
+				}
+				if(currTroop == null){
+					for (int i = 0; i < landscape.getWidth(); i++) {
+						for(int j = 0; j < landscape.getHeight(); j++) {
+							drawTiles[i][j] = false;
+						}
+					}
+				}
+		
+		
 		
 				batch.begin();
 				for (Troop t : RedTroops) {
@@ -236,15 +274,17 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				for (Troop t2 : BlueTroops) {
 					t2.render(batch);
 				}
-				if(currTroop != null){// && drawCheck == false){
+				if(currTroop != null && drawCheck == false){
 					Vector2 temp = currTroop.getPos();
 					drawMovementTiles((int)temp.x / 16, (int)temp.y / 16, currTroop.speed);
 					drawCheck = true;
 				}
+
 				
 				drawHUD();
 				drawMinimap();
 				batch.end();
+				
 			break;
 			case START: 
 				batch.begin();
@@ -408,17 +448,14 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Gdx.app.log("Info: ", report);
 		report = String.format("getWidth: %d  getHeight: %d", landscape.getWidth(), landscape.getHeight());
 		Gdx.app.log("Info: ", report);
-
-		tileDraw.begin(ShapeType.Filled);
-		tileDraw.setColor(1,1,1,0.1f);
-		tileDraw.rect(troopX*16, troopY*16, 16, 16);
-		tileDraw.end();
 		
+		drawTiles[troopX][troopY] = true;
 		if(move <= 0) return;
 		if(troopX < 0) return;
 		if(troopY < 0) return;
 		if(troopX > landscape.getWidth()) return;
 		if(troopY > landscape.getHeight()) return;
+		
 		
 		//need to use troopOn;
 		//		      troopTeam;

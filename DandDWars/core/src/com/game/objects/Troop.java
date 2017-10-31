@@ -287,6 +287,26 @@ public class Troop{
 	}
 	
 	public void createArcher(){
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedArcherAnimation.atlas");
+			fileSourceAnimation = String.format("RedArcherIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueArcherAnimation.atlas");
+			fileSourceAnimation = String.format("BlueArcherIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
+		stateTime = 0;
+		
+		
+		
 		health = 5;
 		speed = 5;
 		damage = 7;
@@ -296,6 +316,26 @@ public class Troop{
 	}
 	
 	public void createWizard(){
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedWizardAnimation.atlas");
+			fileSourceAnimation = String.format("RedWizardIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueWizardAnimation.atlas");
+			fileSourceAnimation = String.format("BlueWizardIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
+		stateTime = 0;
+		
+		
+		
 		health = 10;
 		speed = 2;
 		damage = 10;
