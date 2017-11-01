@@ -222,12 +222,18 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				switch(turnState) {
 					case PLAYER1UPKEEP: 
 						//stuuuuuuff
+						for (Troop t : RedTroops) {
+							t.moved = false;
+						}
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER1TURN;
 					break;
 					case PLAYER2UPKEEP:
 						//STUUUUUUUFF
+						for (Troop t2 : BlueTroops) {
+							t2.moved = false;
+						}
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER2TURN;
@@ -274,7 +280,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				for (Troop t2 : BlueTroops) {
 					t2.render(batch);
 				}
-				if(currTroop != null && drawCheck == false){
+				if(currTroop != null && drawCheck == false && !(currTroop.moved)){
 					Vector2 temp = currTroop.getPos();
 					drawMovementTiles((int)temp.x / 16, (int)temp.y / 16, currTroop.speed);
 					drawCheck = true;
@@ -449,6 +455,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		report = String.format("getWidth: %d  getHeight: %d", landscape.getWidth(), landscape.getHeight());
 		Gdx.app.log("Info: ", report);
 		
+		
 		drawTiles[troopX][troopY] = true;
 		if(move <= 0) return;
 		if(troopX < 0) return;
@@ -508,31 +515,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case Input.Keys.RIGHT:
 				camera.translate(16, 0);
 			break;
-			//This is just silly testing
-			case Input.Keys.W:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING ) {
-					if ((int)currTroop.getPos().y/16 < landscape.getHeight()-1)
-						currTroop.updatePos(0, 1, troopOn, troopTeam);
-				}
-			break;
-			case Input.Keys.S:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
-					if (currTroop.getPos().y > 0)
-						currTroop.updatePos(0, -1, troopOn, troopTeam);
-				}
-			break;
-			case Input.Keys.A:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
-					if (currTroop.getPos().x > 0)
-						currTroop.updatePos(-1, 0, troopOn, troopTeam);
-				}
-			break;
-			case Input.Keys.D:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
-					if ((int)currTroop.getPos().x/16 < landscape.getWidth()-1)
-						currTroop.updatePos(1, 0, troopOn, troopTeam);
-				}
-			break;
 			//for now, space ends a player turn
 			case Input.Keys.SPACE:
 				if (gameState == GAMEGS.GAMERUNNING) {
@@ -577,6 +559,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for (Troop t : RedTroops) {
 								if(t.bounds.contains(screenX, screenY)){
 									Gdx.app.log("?", "Touched");
+									currTroop = null;
+									for (int i = 0; i < landscape.getWidth(); i++) {
+										for(int j = 0; j < landscape.getHeight(); j++) {
+											drawTiles[i][j] = false;
+										}
+									}
 									currTroop = t;
 									currTile = null;
 									drawCheck = false;
@@ -588,13 +576,30 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for (Troop t2 : BlueTroops) {
 								if(t2.bounds.contains(screenX, screenY)){
 									Gdx.app.log("?", "Touched");
+									currTroop = null;
+									for (int i = 0; i < landscape.getWidth(); i++) {
+										for(int j = 0; j < landscape.getHeight(); j++) {
+											drawTiles[i][j] = false;
+										}
+									}
 									currTroop = t2;
 									currTile = null;
-									drawCheck = false;
-									break;
+										drawCheck = false;
+						 			break;
 								}
 							}
-						}
+						}			
+					}
+					else if (currTroop != null) {
+							//cant move freely in the space. this results in infinite movement if otherwise, and not sure how to fix...
+							if (drawTiles[screenX/16][screenY/16] && !(currTroop.moved)) {
+								currTroop.updatePos(screenX/16, screenY/16, troopOn, troopTeam, drawTiles);
+								currTroop.moved = true;
+				
+							} else {
+								currTroop = null;
+								currTile = landscape.getCell(screenX/16, screenY/16);		
+							}
 					}
 					else {
 						currTroop = null;
