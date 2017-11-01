@@ -22,6 +22,7 @@ public class Troop{
 	public int defense;
 	int attackRangeMin;
 	int attackRangeMax;
+	public boolean moved;
 	
 	public Rectangle bounds;
 
@@ -99,7 +100,8 @@ public class Troop{
 		position.x = posx*16;
 		position.y = posy*16;
 		bounds.x = posx * 16;
-		bounds.y = posy * 16;		
+		bounds.y = posy * 16;	
+		moved = false;	
 	}
 	
 	//Takes a string and turns it into an enum
@@ -159,9 +161,30 @@ public class Troop{
 	 *with relation to the amount of speed the 
 	 *troop actually has and where they went.
 	 */
-	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam) {
-		//no matter what it will not let the troop move...
-		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
+	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
+		if (!troopOn[posx][posy] && drawTiles[posx][posy]) {
+			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
+			position.x = posx * 16;
+			position.y = posy * 16;
+			bounds.x = posx * 16;
+			bounds.y = posy * 16;
+			troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+			
+			//in terms of troopTeam, RED = false   BLUE = true
+			switch(team) {
+				case RED: 
+					troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+					break;
+				case BLUE:
+					troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+					break;
+			}
+		}
+	}
+	/*
+	 * old move function
+	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
+		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy] && drawTiles[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
 			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
 			position.x += posx * 16;
 			position.y += posy * 16;
@@ -180,7 +203,7 @@ public class Troop{
 			}
 		}
 	}
-	
+	*/
 	// Returns the position, could be handy
 	public Vector2 getPos(){
 		return position;
