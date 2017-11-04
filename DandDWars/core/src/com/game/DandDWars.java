@@ -284,7 +284,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					Vector2 temp = currTroop.getPos();
 					//drawMovementTiles((int)temp.x / 16, (int)temp.y / 16, currTroop.speed);
 					
-					drawAttackTiles((int)temp.x/16, (int)temp.y/16, currTroop.attackRangeMin, currTroop.attackRangeMax, 0);
+					drawAttackTiles((int)temp.x/16, (int)temp.y/16, currTroop.attackRangeMin, currTroop.attackRangeMax, currTroop.attackRangeMin);
 					//attack tiles: do the same as move but make sure that it is within the bounds
 		
 					drawCheck = true;
@@ -499,22 +499,29 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		if(draw == atkMax) return;
 		//drawTiles[troopX][troopY] = true;
 		if(draw >= atkMin) {
-			if(troopX-draw > -1){
-				drawTiles[troopX-draw][troopY] = true;
-				drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
-			}					
+			
+			for (int i = 0; i < draw; i++) {
+				if(troopX-(draw-i) > -1 && troopY+i < landscape.getHeight()){
+					drawTiles[troopX-(draw-i)][troopY+i] = true;
+				}				
+				if(troopY-(draw-i) > -1 && troopX-i > -1){
+					drawTiles[troopX-i][troopY-(draw-i)] = true;
+				}
+				if(troopY+(draw-i) < landscape.getHeight() && troopX+i < landscape.getWidth()){
+					drawTiles[troopX+i][troopY+(draw-i)] = true;
+				}
+				if(troopX+(draw-i) < landscape.getWidth() && troopY-i > -1){
+					drawTiles[troopX+(draw-i)][troopY-i] = true;
+				}
+				
+			}
+			/*
 			if(troopY+draw < landscape.getHeight()){
 				drawTiles[troopX][troopY+draw] = true;
-				drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
 			}
-			if(troopX+draw < landscape.getWidth()){
-				drawTiles[troopX+draw][troopY] = true;
-				drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
-			}
-			if(troopY-draw > -1){
-				drawTiles[troopX][troopY-draw] = true;
-				drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
-			}
+			
+			*/
+			drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
 		} // draw here
 		
 		
@@ -627,6 +634,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTile = landscape.getCell(screenX/16, screenY/16);
 					}
 					if (pauseButton.contains(screenX, screenY)) { 
+						currTroop = null;
+						currTile = null;
 						if(gameState != GAMEGS.PAUSE) {
 							Gdx.app.log("?", "game PAUSE");
 							gameState = GAMEGS.PAUSE;
