@@ -20,8 +20,8 @@ public class Troop{
 	public int speed;
 	public int damage;
 	public int defense;
-	int attackRangeMin;
-	int attackRangeMax;
+	public int attackRangeMin;
+	public int attackRangeMax;
 	public boolean moved;
 	
 	public Rectangle bounds;
@@ -306,7 +306,7 @@ public class Troop{
 		damage = 5;
 		defense = 3;
 		attackRangeMin = 1;
-		attackRangeMax = 1;
+		attackRangeMax = 2;
 	}
 	
 	public void createArcher(){
