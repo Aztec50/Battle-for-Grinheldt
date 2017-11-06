@@ -23,6 +23,8 @@ public class Troop{
 	public int attackRangeMin;
 	public int attackRangeMax;
 	public boolean moved;
+	public boolean attacked;
+	public boolean dead;
 	
 	public Rectangle bounds;
 
@@ -44,6 +46,11 @@ public class Troop{
 		//Megatank xD 
 		//:P https://images-na.ssl-images-amazon.com/images/M/MV5BYjdlYjM2NGItZTY0Mi00NmVjLWIwMTAtNTBiZTg4NTc3NGJjXkEyXkFqcGdeQXVyNjExODE1MDc@._V1_UY268_CR76,0,182,268_AL_.jpg
 	}
+	public enum ACTION {
+		MOVE,
+		ATTACK,
+		IDLE
+	}
 	public enum TEAM{
 		RED,
 		BLUE
@@ -51,6 +58,7 @@ public class Troop{
 	
 	public TROOP_TYPE troopType;
 	public TEAM team;
+	public ACTION state;
 	
 	
 	public Troop (String type, String t, int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam) {
@@ -102,6 +110,9 @@ public class Troop{
 		bounds.x = posx * 16;
 		bounds.y = posy * 16;	
 		moved = false;	
+		attacked = false;
+		dead = false;
+		state = ACTION.IDLE;
 	}
 	
 	//Takes a string and turns it into an enum
@@ -218,6 +229,9 @@ public class Troop{
 	public void updateHealth(int incomingDamage){
 		//d is damage being delt to the troop
 		health -= incomingDamage;
+		if (health <= 0) {
+			dead = true;
+		}
 	}
 	
 	/*giveDamage
