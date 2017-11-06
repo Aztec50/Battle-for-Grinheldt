@@ -20,8 +20,11 @@ public class Troop{
 	public int speed;
 	public int damage;
 	public int defense;
-	int attackRangeMin;
-	int attackRangeMax;
+	public int attackRangeMin;
+	public int attackRangeMax;
+	public boolean moved;
+	public boolean attacked;
+	public boolean dead;
 	
 	public Rectangle bounds;
 
@@ -43,6 +46,11 @@ public class Troop{
 		//Megatank xD 
 		//:P https://images-na.ssl-images-amazon.com/images/M/MV5BYjdlYjM2NGItZTY0Mi00NmVjLWIwMTAtNTBiZTg4NTc3NGJjXkEyXkFqcGdeQXVyNjExODE1MDc@._V1_UY268_CR76,0,182,268_AL_.jpg
 	}
+	public enum ACTION {
+		MOVE,
+		ATTACK,
+		IDLE
+	}
 	public enum TEAM{
 		RED,
 		BLUE
@@ -50,6 +58,7 @@ public class Troop{
 	
 	public TROOP_TYPE troopType;
 	public TEAM team;
+	public ACTION state;
 	
 	
 	public Troop (String type, String t, int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam) {
@@ -99,7 +108,11 @@ public class Troop{
 		position.x = posx*16;
 		position.y = posy*16;
 		bounds.x = posx * 16;
-		bounds.y = posy * 16;		
+		bounds.y = posy * 16;	
+		moved = false;	
+		attacked = false;
+		dead = false;
+		state = ACTION.IDLE;
 	}
 	
 	//Takes a string and turns it into an enum
@@ -159,9 +172,30 @@ public class Troop{
 	 *with relation to the amount of speed the 
 	 *troop actually has and where they went.
 	 */
-	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam) {
-		//no matter what it will not let the troop move...
-		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
+	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
+		if (!troopOn[posx][posy] && drawTiles[posx][posy]) {
+			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
+			position.x = posx * 16;
+			position.y = posy * 16;
+			bounds.x = posx * 16;
+			bounds.y = posy * 16;
+			troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+			
+			//in terms of troopTeam, RED = false   BLUE = true
+			switch(team) {
+				case RED: 
+					troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+					break;
+				case BLUE:
+					troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+					break;
+			}
+		}
+	}
+	/*
+	 * old move function
+	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
+		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy] && drawTiles[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
 			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
 			position.x += posx * 16;
 			position.y += posy * 16;
@@ -180,7 +214,7 @@ public class Troop{
 			}
 		}
 	}
-	
+	*/
 	// Returns the position, could be handy
 	public Vector2 getPos(){
 		return position;
@@ -195,6 +229,9 @@ public class Troop{
 	public void updateHealth(int incomingDamage){
 		//d is damage being delt to the troop
 		health -= incomingDamage;
+		if (health <= 0) {
+			dead = true;
+		}
 	}
 	
 	/*giveDamage
@@ -283,10 +320,30 @@ public class Troop{
 		damage = 5;
 		defense = 3;
 		attackRangeMin = 1;
-		attackRangeMax = 1;
+		attackRangeMax = 2;
 	}
 	
 	public void createArcher(){
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedArcherAnimation.atlas");
+			fileSourceAnimation = String.format("RedArcherIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueArcherAnimation.atlas");
+			fileSourceAnimation = String.format("BlueArcherIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
+		stateTime = 0;
+		
+		
+		
 		health = 5;
 		speed = 5;
 		damage = 7;
@@ -296,6 +353,26 @@ public class Troop{
 	}
 	
 	public void createWizard(){
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedWizardAnimation.atlas");
+			fileSourceAnimation = String.format("RedWizardIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueWizardAnimation.atlas");
+			fileSourceAnimation = String.format("BlueWizardIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
+		stateTime = 0;
+		
+		
+		
 		health = 10;
 		speed = 2;
 		damage = 10;

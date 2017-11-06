@@ -43,6 +43,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	SpriteBatch batch;
 	ShapeRenderer sr;
+	ShapeRenderer tileDraw;
 	BitmapFont font;
 	
 	String currentMap;
@@ -90,6 +91,14 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Array<Troop> BlueTroops;
 	Troop currTroop;
 	Cell currTile;
+
+	Rectangle attackButton;
+	Rectangle moveButton;
+	Rectangle nextTurnButton;
+	
+	boolean drawCheck;
+	boolean hasDrawnTiles;
+	boolean[][] drawTiles;
 	
 	//Screen resolution variables
 	float screenw;
@@ -111,7 +120,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font = new BitmapFont();
 		font.setColor(Color.BLACK);
 		sr = new ShapeRenderer();
-
+		tileDraw = new ShapeRenderer();
+		
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
 
@@ -138,6 +148,17 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		
+		drawCheck = false;
+		hasDrawnTiles = false;
+		drawTiles = new boolean[landscape.getWidth()][landscape.getHeight()];
+		
+		for (int i = 0; i < landscape.getWidth(); i++) {
+			for(int j = 0; j < landscape.getHeight(); j++) {
+				drawTiles[i][j] = false;
+			}
+		}
+		
+		
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
         camera.update();
@@ -156,6 +177,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		pauseButton = new Rectangle( screenw-31, screenh-34, 30, 32);
 		pauseScreen = new Texture(Gdx.files.internal("game_menus/pause.png"));
 		resumeButton = new Rectangle( 234, 160, 130, 132);
+		attackButton = new Rectangle( screenw-130, 485, 90, 25);
+		moveButton = new Rectangle( screenw-130, 455, 90, 25);
+		nextTurnButton = new Rectangle (screenw-140, 520, 110, 25);
 
 		for (int i = 0; i < 16; i++) {
 		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
@@ -164,6 +188,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			BlueTroops.add((Troop)troop2);
 		}
 		
+		for (int i = 0; i < 16; i++) {
+		    Troop troop = new Troop("wizard", "red", i+3, 20, troopOn, troopTeam);
+			Troop troop2 = new Troop("wizard", "blue", i+3, 22, troopOn, troopTeam);
+			RedTroops.add((Troop)troop);
+			BlueTroops.add((Troop)troop2);
+		}
+		
+		for (int i = 0; i < 16; i++) {
+		    Troop troop = new Troop("archer", "red", i+18, 21, troopOn, troopTeam);
+			Troop troop2 = new Troop("archer", "blue", i+18, 23, troopOn, troopTeam);
+			RedTroops.add((Troop)troop);
+			BlueTroops.add((Troop)troop2);
+		}
+		
+		
+		
 	}
 
 	@Override
@@ -171,6 +211,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		camera.viewportWidth = screenw;
 		camera.viewportHeight = screenh;
@@ -187,12 +229,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				switch(turnState) {
 					case PLAYER1UPKEEP: 
 						//stuuuuuuff
+						for (Troop t : RedTroops) {
+							t.moved = false;
+							t.attacked = false;
+						}
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER1TURN;
 					break;
 					case PLAYER2UPKEEP:
 						//STUUUUUUUFF
+						for (Troop t2 : BlueTroops) {
+							t2.moved = false;
+							t2.attacked = false;
+						}
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER2TURN;
@@ -210,6 +260,30 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				//More code goes here
 		
 				tiledMapRenderer.render();
+				
+				if(currTroop != null){
+					tileDraw.setProjectionMatrix(camera.combined);
+					tileDraw.begin(ShapeType.Filled);
+					if (currTroop.state == Troop.ACTION.MOVE)
+						tileDraw.setColor(new Color(1, 1, 1, 0.1f));
+					else if (currTroop.state == Troop.ACTION.ATTACK)
+						tileDraw.setColor(new Color(1, 0, 0, 0.1f));
+					for (int i = 0; i < landscape.getWidth(); i++) {
+						for(int j = 0; j < landscape.getHeight(); j++) {
+							if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
+						}
+					}
+					tileDraw.end();
+				}
+				if(currTroop == null){
+					for (int i = 0; i < landscape.getWidth(); i++) {
+						for(int j = 0; j < landscape.getHeight(); j++) {
+							drawTiles[i][j] = false;
+						}
+					}
+				}
+		
+		
 		
 				batch.begin();
 				for (Troop t : RedTroops) {
@@ -218,9 +292,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				for (Troop t2 : BlueTroops) {
 					t2.render(batch);
 				}
+				if(currTroop != null && drawCheck == false && !(currTroop.moved) && currTroop.state == Troop.ACTION.MOVE){
+					Vector2 temp = currTroop.getPos();
+					drawMovementTiles((int)temp.x / 16, (int)temp.y / 16, currTroop.speed);
+					drawCheck = true;
+				}
+				if(currTroop != null && drawCheck == false && !(currTroop.attacked) && currTroop.state == Troop.ACTION.ATTACK){
+					Vector2 temp = currTroop.getPos();
+					drawAttackTiles((int)temp.x/16, (int)temp.y/16, currTroop.attackRangeMin, currTroop.attackRangeMax, currTroop.attackRangeMin);
+					drawCheck = true;
+				}
+
+				
 				drawHUD();
 				drawMinimap();
 				batch.end();
+				
 			break;
 			case START: 
 				batch.begin();
@@ -244,6 +331,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	}
 	
 	public void drawHUD() {
+		
 		//draw big scroll
 		batch.draw(troopScroll, screenw-192, 261, 192, 192);
 		if (currTroop != null){
@@ -262,6 +350,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						break;
 					}
 			}
+			
+			
+			
 			//draw troop scaled up over current tile
 	
 			//get the cell "under" the troop position
@@ -328,8 +419,55 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		sr.setColor(Color.BLACK);
 		sr.rect( screenw-14, 613, 5, 17);
 		sr.rect( screenw-22, 613, 5, 17);
+
+		sr.setColor(Color.GREEN);
+		sr.rect(nextTurnButton.x, nextTurnButton.y, nextTurnButton.width, nextTurnButton.height);
+		
+		switch (turnState) {
+				case PLAYER1TURN:
+					sr.setColor(Color.RED);
+				break;
+				case PLAYER2TURN:
+					sr.setColor(Color.CYAN);
+				break;
+		}
+		sr.rect(240,602,169,25); 
+
+		if (currTroop != null) {
+			if(!currTroop.attacked)
+				sr.setColor(Color.YELLOW);
+			else
+				sr.setColor(Color.LIGHT_GRAY);
+			sr.rect(attackButton.x, attackButton.y, attackButton.width, attackButton.height);
+			if(!currTroop.moved)
+				sr.setColor(Color.YELLOW);
+			else
+				sr.setColor(Color.LIGHT_GRAY);
+			sr.rect(moveButton.x, moveButton.y, moveButton.width, moveButton.height);
+		}
 		sr.end();
 		batch.begin();
+		font.draw(batch, "END TURN", nextTurnButton.x+18, nextTurnButton.y+15);
+		if (currTroop != null) {
+			if (!currTroop.moved)
+				font.draw(batch, "MOVE", moveButton.x+24, moveButton.y+15);
+			else
+				font.draw(batch, "MOVED", moveButton.x+19, moveButton.y+15);
+				
+				
+			if (!currTroop.attacked)
+				font.draw(batch, "ATTACK", attackButton.x+17, attackButton.y+15);
+			else
+				font.draw(batch, "ATTACKED", attackButton.x+8, attackButton.y+15);
+		}
+		switch (turnState) {
+				case PLAYER1TURN:
+					font.draw(batch, "Player 1 Turn", 280, 620);
+				break;
+				case PLAYER2TURN:
+					font.draw(batch, "Player 2 Turn", 280, 620);
+				break;
+		}
 	}
 
 	public void drawMinimap() {
@@ -373,40 +511,90 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		for (Troop t2 : BlueTroops) {
 	    	sr.rect( ((((int)t2.getPos().x)/16)*3)+offsetX, ((((int)t2.getPos().y)/16)*3)+offsetY, 3, 3);
 		}
-
-
+		
+		
 	    sr.end();
 	    batch.begin();
 	}
 	
 	public void drawMovementTiles(int troopX, int troopY, int move){
-		if(move <= 0) return;
+		String report = String.format("move: %d  X: %d  Y: %d", move, troopX, troopY);
+		Gdx.app.log("Info: ", report);
+		report = String.format("getWidth: %d  getHeight: %d", landscape.getWidth(), landscape.getHeight());
+		Gdx.app.log("Info: ", report);
 		
+		
+		drawTiles[troopX][troopY] = true;
+		if(move <= 0) return;
+		if(troopX < 0) return;
+		if(troopY < 0) return;
+		if(troopX > landscape.getWidth()) return;
+		if(troopY > landscape.getHeight()) return;
+		
+		
+		//need to use troopOn;
+		//		      troopTeam;
 		//Checks tiles in order: left <, up ^, right >, down v
 		//This allows for movement onto any terrain so long as the unit has 1 move left
-		drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
-		drawMovementTiles(troopX, troopY+1, (move - landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class)));
-		drawMovementTiles(troopX+1, troopY, (move - landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
-		drawMovementTiles(troopX, troopY-1, (move - landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class)));
-		
+		Gdx.app.log("Test", "Test");
+		if(troopX-1 > -1 &&
+		   landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
+		}					
+		if(troopY+1 < landscape.getHeight() &&
+		   landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX, troopY+1, (move - landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class)));
+		}
+		if(troopX+1 < landscape.getWidth() &&
+		   landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX+1, troopY, (move - landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
+		}
+		if(troopY-1 > -1 &&
+		   landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class) != -1){
+			drawMovementTiles(troopX, troopY-1, (move - landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class)));
+		}
 		
 	}
 	
 	public void drawAttackTiles(int troopX, int troopY, int atkMin, int atkMax, int draw){
+		String report = String.format("draw: %d  X: %d  Y: %d", draw, troopX, troopY);
+		Gdx.app.log("Info: ", report);
+		
 		if(draw == atkMax) return;
+		//drawTiles[troopX][troopY] = true;
+		if(draw >= atkMin) {
+			
+			for (int i = 0; i < draw; i++) {
+				if(troopX-(draw-i) > -1 && troopY+i < landscape.getHeight()){
+					drawTiles[troopX-(draw-i)][troopY+i] = true;
+				}				
+				if(troopY-(draw-i) > -1 && troopX-i > -1){
+					drawTiles[troopX-i][troopY-(draw-i)] = true;
+				}
+				if(troopY+(draw-i) < landscape.getHeight() && troopX+i < landscape.getWidth()){
+					drawTiles[troopX+i][troopY+(draw-i)] = true;
+				}
+				if(troopX+(draw-i) < landscape.getWidth() && troopY-i > -1){
+					drawTiles[troopX+(draw-i)][troopY-i] = true;
+				}
+				
+			}
+			/*
+			if(troopY+draw < landscape.getHeight()){
+				drawTiles[troopX][troopY+draw] = true;
+			}
+			
+			*/
+			drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
+		} // draw here
 		
-		drawAttackTiles(troopX-1, troopY, atkMin, atkMax, draw+1);
-		drawAttackTiles(troopX, troopY+1, atkMin, atkMax, draw+1);
-		drawAttackTiles(troopX+1, troopY, atkMin, atkMax, draw+1);
-		drawAttackTiles(troopX, troopY-1, atkMin, atkMax, draw+1);
 		
-		if(draw >= atkMin); // draw here
 	
 	}
 	
 	@Override
     public boolean keyDown(int keycode) {
-		switch(keycode){
+		/*switch(keycode){
 			case Input.Keys.UP:
 				camera.translate(0, 16);
 			break;
@@ -419,41 +607,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case Input.Keys.RIGHT:
 				camera.translate(16, 0);
 			break;
-			//This is just silly testing
-			case Input.Keys.W:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING ) {
-					if ((int)currTroop.getPos().y/16 < landscape.getHeight()-1)
-						currTroop.updatePos(0, 1, troopOn, troopTeam);
-				}
-			break;
-			case Input.Keys.S:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
-					if (currTroop.getPos().y > 0)
-						currTroop.updatePos(0, -1, troopOn, troopTeam);
-				}
-			break;
-			case Input.Keys.A:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
-					if (currTroop.getPos().x > 0)
-						currTroop.updatePos(-1, 0, troopOn, troopTeam);
-				}
-			break;
-			case Input.Keys.D:
-				if (currTroop != null && gameState == GAMEGS.GAMERUNNING) {
-					if ((int)currTroop.getPos().x/16 < landscape.getWidth()-1)
-						currTroop.updatePos(1, 0, troopOn, troopTeam);
-				}
-			break;
 			//for now, space ends a player turn
 			case Input.Keys.SPACE:
-				if (gameState == GAMEGS.GAMERUNNING) {
-					if (turnState == TURNGS.PLAYER1TURN)
-						turnState = TURNGS.PLAYER2UPKEEP;
-					else if (turnState == TURNGS.PLAYER2TURN)
-						turnState = TURNGS.PLAYER1UPKEEP;
-				}
+				
 			break;
-		}
+		}*/
 		return false;
     }
 	
@@ -482,39 +640,164 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		switch(gameState) {
 			case GAMERUNNING:
 				//bound clicks to the map, also stops going out of troopOn bounds
-				if (screenX/16 > -1 && screenX/16 < landscape.getWidth() && screenY/16 > -1 && screenY/16 < landscape.getHeight()) {
-					if (troopOn[screenX/16][screenY/16]){
-						if (turnState == TURNGS.PLAYER1TURN) {
-							for (Troop t : RedTroops) {
-								if(t.bounds.contains(screenX, screenY)){
-									Gdx.app.log("?", "Touched");
-									currTroop = t;
-									currTile = null;
-									break;
-								}
-							}
-						}
-						if (turnState == TURNGS.PLAYER2TURN) {
-							for (Troop t2 : BlueTroops) {
-								if(t2.bounds.contains(screenX, screenY)){
-									Gdx.app.log("?", "Touched");
-									currTroop = t2;
-									currTile = null;
-									break;
-								}
-							}
-						}
-					}
-					else {
-						currTroop = null;
-						currTile = landscape.getCell(screenX/16, screenY/16);
-					}
+				if (screenX/16>-1&&screenX/16<landscape.getWidth()&&screenY/16>-1&&screenY/16<landscape.getHeight()){
 					if (pauseButton.contains(screenX, screenY)) { 
+						if (currTroop != null)
+							currTroop.state = Troop.ACTION.IDLE;
+						currTroop = null;
+						currTile = null;
 						if(gameState != GAMEGS.PAUSE) {
 							Gdx.app.log("?", "game PAUSE");
 							gameState = GAMEGS.PAUSE;
 						}
+					} 
+					else if (nextTurnButton.contains(screenX, screenY)) { 
+						if (gameState == GAMEGS.GAMERUNNING) {
+							if (turnState == TURNGS.PLAYER1TURN)
+								turnState = TURNGS.PLAYER2UPKEEP;
+							else if (turnState == TURNGS.PLAYER2TURN)
+								turnState = TURNGS.PLAYER1UPKEEP;
+						}
+					} 
+					else if (attackButton.contains(screenX, screenY)) { 
+						if(currTroop != null) {
+							if (!currTroop.attacked){
+								currTroop.state = Troop.ACTION.ATTACK;
+								for (int i = 0; i < landscape.getWidth(); i++) {
+									for(int j = 0; j < landscape.getHeight(); j++) {
+										drawTiles[i][j] = false;
+									}
+								}
+								drawCheck = false;
+							}
+						}
 					}
+					else if (moveButton.contains(screenX, screenY)) { 
+						if(currTroop != null) {
+							if (!currTroop.moved){
+								currTroop.state = Troop.ACTION.MOVE;
+								for (int i = 0; i < landscape.getWidth(); i++) {
+									for(int j = 0; j < landscape.getHeight(); j++) {
+										drawTiles[i][j] = false;
+									}
+								}
+								drawCheck = false;
+							}
+						}
+					}
+					else if (currTroop != null && currTroop.state == Troop.ACTION.ATTACK && troopOn[screenX/16][screenY/16]) {
+							if (turnState == TURNGS.PLAYER1TURN) {
+								for (Troop t2 : BlueTroops) {
+									if(t2.bounds.contains(screenX, screenY) && drawTiles[screenX/16][screenY/16]){
+										Gdx.app.log("?", "attackin");
+										t2.updateHealth(currTroop.giveDamage(t2.defense));
+										if (t2.dead) {
+											BlueTroops.removeIndex(BlueTroops.indexOf(t2, false));
+										}
+										currTroop.attacked = true;
+										if (currTroop != null)
+											currTroop.state = Troop.ACTION.IDLE;
+										for (int i = 0; i < landscape.getWidth(); i++) {
+											for(int j = 0; j < landscape.getHeight(); j++) {
+												drawTiles[i][j] = false;
+											}
+										}
+									}
+								}
+							} 
+							if (turnState == TURNGS.PLAYER2TURN) {
+								for (Troop t : RedTroops) {
+									if(t.bounds.contains(screenX, screenY) && drawTiles[screenX/16][screenY/16]){
+										t.updateHealth(currTroop.giveDamage(t.defense));
+										if (t.dead) {
+											RedTroops.removeIndex(RedTroops.indexOf(t, false));
+										}
+										currTroop.attacked = true;
+										if (currTroop != null)
+											currTroop.state = Troop.ACTION.IDLE;
+										for (int i = 0; i < landscape.getWidth(); i++) {
+											for(int j = 0; j < landscape.getHeight(); j++) {
+												drawTiles[i][j] = false;
+											}
+										}
+									}
+								}
+							}
+
+					}
+					else if (currTroop != null && currTroop.state == Troop.ACTION.MOVE) {
+							//cant move freely in the space. this results in infinite movement if otherwise, and not sure how to fix...
+							if (drawTiles[screenX/16][screenY/16] && !(currTroop.moved)) {
+								currTroop.updatePos(screenX/16, screenY/16, troopOn, troopTeam, drawTiles);
+								currTroop.moved = true;
+								if (currTroop != null)
+									currTroop.state = Troop.ACTION.IDLE;
+								for (int i = 0; i < landscape.getWidth(); i++) {
+											for(int j = 0; j < landscape.getHeight(); j++) {
+												drawTiles[i][j] = false;
+											}
+										}
+				
+							} else {
+								if (currTroop != null)
+									currTroop.state = Troop.ACTION.IDLE;
+								currTroop = null;
+								currTile = landscape.getCell(screenX/16, screenY/16);		
+							}
+					}
+
+					else if (troopOn[screenX/16][screenY/16]){
+						if (turnState == TURNGS.PLAYER1TURN) {
+							
+								for (Troop t : RedTroops) {
+									if(t.bounds.contains(screenX, screenY)){
+										Gdx.app.log("?", "Touched");
+										if (currTroop != null)
+											currTroop.state = Troop.ACTION.IDLE;
+										currTroop = null;
+										for (int i = 0; i < landscape.getWidth(); i++) {
+											for(int j = 0; j < landscape.getHeight(); j++) {
+												drawTiles[i][j] = false;
+											}
+										}
+										currTroop = t;
+										currTile = null;
+										drawCheck = false;
+										break;
+									}
+								}
+							
+						}
+						if (turnState == TURNGS.PLAYER2TURN) {
+							
+								for (Troop t2 : BlueTroops) {
+									if(t2.bounds.contains(screenX, screenY)){
+										Gdx.app.log("?", "Touched");
+										if (currTroop != null)
+											currTroop.state = Troop.ACTION.IDLE;
+										currTroop = null;
+										for (int i = 0; i < landscape.getWidth(); i++) {
+											for(int j = 0; j < landscape.getHeight(); j++) {
+												drawTiles[i][j] = false;
+											}
+										}
+										currTroop = t2;
+										currTile = null;
+										drawCheck = false;
+						 				break;
+									}
+								}
+							
+						}			
+					}
+					
+					else {
+						if (currTroop != null)
+							currTroop.state = Troop.ACTION.IDLE;
+						currTroop = null;
+						currTile = landscape.getCell(screenX/16, screenY/16);
+					}
+					
 				}
 			break;
 			case START: 
