@@ -373,10 +373,10 @@ public class Troop{
 		
 		
 		
-		health = 10;
+		health = 4;
 		speed = 2;
-		damage = 10;
-		defense = 7;
+		damage = 8;
+		defense = 6;
 		attackRangeMin = 3;
 		attackRangeMax = 9;
 	}

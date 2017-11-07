@@ -175,7 +175,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
 		startButton = new Rectangle(140, 136, 120, 120);
-		infoScreen = new Texture(Gdx.files.internal("game_menus/info.png"));
+		infoScreen = new Texture(Gdx.files.internal("game_menus/DandInfo.png"));
 		infoButton = new Rectangle(346, 147, 118, 120);
 		infoBackButton = new Rectangle(18, 18, 69, 66);
 		pauseButton = new Rectangle( screenw-31, screenh-34, 30, 32);
@@ -472,13 +472,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font.draw(batch, "END TURN", nextTurnButton.x+18, nextTurnButton.y+15);
 		if (currTroop != null) {
 			if (!currTroop.moved)
-				font.draw(batch, "MOVE", moveButton.x+24, moveButton.y+15);
+				font.draw(batch, "(M)OVE", moveButton.x+24, moveButton.y+15);
 			else
 				font.draw(batch, "MOVED", moveButton.x+19, moveButton.y+15);
 				
 				
 			if (!currTroop.attacked)
-				font.draw(batch, "ATTACK", attackButton.x+17, attackButton.y+15);
+				font.draw(batch, "(A)TTACK", attackButton.x+17, attackButton.y+15);
 			else
 				font.draw(batch, "ATTACKED", attackButton.x+8, attackButton.y+15);
 		}
@@ -616,6 +616,34 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	@Override
     public boolean keyDown(int keycode) {
+		switch(keycode){
+			case Input.Keys.M:
+			if(currTroop != null){
+				if (!currTroop.moved){
+					currTroop.state = Troop.ACTION.MOVE;
+					for (int i = 0; i < landscape.getWidth(); i++) {
+						for(int j = 0; j < landscape.getHeight(); j++) {
+							drawTiles[i][j] = false;
+						}
+					}
+					drawCheck = false;
+				}
+			}
+			break;
+			case Input.Keys.A:
+			if(currTroop != null) {
+				if (!currTroop.attacked){
+					currTroop.state = Troop.ACTION.ATTACK;
+					for (int i = 0; i < landscape.getWidth(); i++) {
+						for(int j = 0; j < landscape.getHeight(); j++) {
+							drawTiles[i][j] = false;
+						}
+					}
+					drawCheck = false;
+				}
+			}
+			break;
+		}
 		/*switch(keycode){
 			case Input.Keys.UP:
 				camera.translate(0, 16);
