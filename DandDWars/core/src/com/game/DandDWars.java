@@ -63,7 +63,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		START,
 		INFO,
 		GAMERUNNING,
-		PAUSE
+		PAUSE,
+		ENDRED,
+		ENDBLUE
 	}
 
 	GAMEGS gameState;
@@ -79,6 +81,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture startScreen;
 	Texture infoScreen;
 	Texture pauseScreen;
+	Texture endRedScreen;
+	Texture endBlueScreen;
 	Rectangle startButton;
 	Rectangle infoButton;
 	Rectangle infoBackButton;
@@ -180,28 +184,29 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		attackButton = new Rectangle( screenw-130, 485, 90, 25);
 		moveButton = new Rectangle( screenw-130, 455, 90, 25);
 		nextTurnButton = new Rectangle (screenw-140, 520, 110, 25);
-
-		for (int i = 0; i < 16; i++) {
-		    Troop troop = new Troop("knight", "red", i+3, 0, troopOn, troopTeam);
-			Troop troop2 = new Troop("knight", "blue", i+3, 12, troopOn, troopTeam);
+		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
+		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
+		
+		for (int i = 0; i < 10; i++) {
+		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
+			Troop troop2 = new Troop("knight", "blue", i+14, 32, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
 		}
 		
-		for (int i = 0; i < 16; i++) {
-		    Troop troop = new Troop("wizard", "red", i+3, 20, troopOn, troopTeam);
-			Troop troop2 = new Troop("wizard", "blue", i+3, 22, troopOn, troopTeam);
+		for (int i = 0; i < 2; i++) {
+		    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
+			Troop troop2 = new Troop("wizard", "blue", i+18, 34, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
 		}
 		
-		for (int i = 0; i < 16; i++) {
-		    Troop troop = new Troop("archer", "red", i+18, 21, troopOn, troopTeam);
-			Troop troop2 = new Troop("archer", "blue", i+18, 23, troopOn, troopTeam);
+		for (int i = 0; i < 5; i++) {
+		    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
+			Troop troop2 = new Troop("archer", "blue", i+17, 33, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
 		}
-		
 		
 		
 	}
@@ -229,6 +234,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				switch(turnState) {
 					case PLAYER1UPKEEP: 
 						//stuuuuuuff
+						
 						for (Troop t : RedTroops) {
 							t.moved = false;
 							t.attacked = false;
@@ -236,6 +242,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER1TURN;
+						if (RedTroops.random() == null) {
+							gameState = GAMEGS.ENDBLUE;
+						}
 					break;
 					case PLAYER2UPKEEP:
 						//STUUUUUUUFF
@@ -246,6 +255,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER2TURN;
+						if (BlueTroops.random() == null) { //returns null if nothing in the "array"
+							gameState = GAMEGS.ENDRED;
+						}
 					break;
 					}
 				
@@ -323,6 +335,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case PAUSE:
 				batch.begin();
 				batch.draw(pauseScreen, 0, 0);
+				batch.end();
+			break;
+			case ENDRED:
+				batch.begin();
+				batch.draw(endRedScreen, 0, 0);
+				batch.end();
+			break;
+			case ENDBLUE:
+				batch.begin();
+				batch.draw(endBlueScreen, 0, 0);
 				batch.end();
 			break;
 		}
