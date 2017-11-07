@@ -133,7 +133,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
-		gameState = GAMEGS.GAMERUNNING;
+		gameState = GAMEGS.START;
 		
 
 		currentMap = "maps/TestingMap.tmx";
@@ -541,9 +541,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	public void drawMovementTiles(int troopX, int troopY, int move){
 		String report = String.format("move: %d  X: %d  Y: %d", move, troopX, troopY);
-		Gdx.app.log("Info: ", report);
+		//Gdx.app.log("Info: ", report);
 		report = String.format("getWidth: %d  getHeight: %d", landscape.getWidth(), landscape.getHeight());
-		Gdx.app.log("Info: ", report);
+		//Gdx.app.log("Info: ", report);
 		
 		
 		drawTiles[troopX][troopY] = true;
@@ -558,7 +558,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//		      troopTeam;
 		//Checks tiles in order: left <, up ^, right >, down v
 		//This allows for movement onto any terrain so long as the unit has 1 move left
-		Gdx.app.log("Test", "Test");
+		//Gdx.app.log("Test", "Test");
 		if(troopX-1 > -1 &&
 		   landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
 			drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
@@ -580,7 +580,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	public void drawAttackTiles(int troopX, int troopY, int atkMin, int atkMax, int draw){
 		String report = String.format("draw: %d  X: %d  Y: %d", draw, troopX, troopY);
-		Gdx.app.log("Info: ", report);
+		//Gdx.app.log("Info: ", report);
 		
 		if(draw == atkMax) return;
 		//drawTiles[troopX][troopY] = true;
@@ -656,7 +656,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		String clickLocation = "";
 		clickLocation = String.format("(%d, %d)", screenX/16, screenY/16);
-		Gdx.app.log("Click Location:", clickLocation);
+		//Gdx.app.log("Click Location:", clickLocation);
 
 
 		switch(gameState) {
@@ -669,7 +669,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTroop = null;
 						currTile = null;
 						if(gameState != GAMEGS.PAUSE) {
-							Gdx.app.log("?", "game PAUSE");
+							//Gdx.app.log("?", "game PAUSE");
 							gameState = GAMEGS.PAUSE;
 						}
 					} 
@@ -711,7 +711,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							if (turnState == TURNGS.PLAYER1TURN) {
 								for (Troop t2 : BlueTroops) {
 									if(t2.bounds.contains(screenX, screenY) && drawTiles[screenX/16][screenY/16]){
-										Gdx.app.log("?", "attackin");
+										//Gdx.app.log("?", "attackin");
 										t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
 											BlueTroops.removeIndex(BlueTroops.indexOf(t2, false));
@@ -773,7 +773,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							
 								for (Troop t : RedTroops) {
 									if(t.bounds.contains(screenX, screenY)){
-										Gdx.app.log("?", "Touched");
+										//Gdx.app.log("?", "Touched");
 										if (currTroop != null)
 											currTroop.state = Troop.ACTION.IDLE;
 										currTroop = null;
@@ -794,7 +794,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							
 								for (Troop t2 : BlueTroops) {
 									if(t2.bounds.contains(screenX, screenY)){
-										Gdx.app.log("?", "Touched");
+										//Gdx.app.log("?", "Touched");
 										if (currTroop != null)
 											currTroop.state = Troop.ACTION.IDLE;
 										currTroop = null;
@@ -825,13 +825,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case START: 
 				if (startButton.contains(screenX, screenY)) { 
 					if(gameState != GAMEGS.GAMERUNNING) {
-						Gdx.app.log("?", "game START");
+						//Gdx.app.log("?", "game START");
 						gameState = GAMEGS.GAMERUNNING;
 					}
 				}
 				if (infoButton.contains(screenX, screenY)) { 
 					if(gameState != GAMEGS.INFO) {
-						Gdx.app.log("?", "game INFO");
+					//	Gdx.app.log("?", "game INFO");
 						gameState = GAMEGS.INFO;
 					}
 				}
@@ -839,7 +839,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case INFO:
 				if (infoBackButton.contains(screenX, screenY)) { 
 					if(gameState != GAMEGS.START) {
-						Gdx.app.log("?", "game STARTMENU");
+						//Gdx.app.log("?", "game STARTMENU");
 						gameState = GAMEGS.START;
 					}
 				}
@@ -847,7 +847,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case PAUSE:
 				if (resumeButton.contains(screenX, screenY)) { 
 					if(gameState != GAMEGS.GAMERUNNING) {
-						Gdx.app.log("?", "game resume");
+						//Gdx.app.log("?", "game resume");
 						gameState = GAMEGS.GAMERUNNING;
 					}
 				}
