@@ -15,8 +15,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+
 public class Troop{
 	public int health;
+	int maxHealth;
 	public int speed;
 	public int damage;
 	public int defense;
@@ -112,6 +117,7 @@ public class Troop{
 		moved = false;	
 		attacked = false;
 		dead = false;
+		maxHealth = health;
 		state = ACTION.IDLE;
 	}
 	
@@ -266,8 +272,8 @@ public class Troop{
 		stateTime += deltaTime;
 	}
 	
-	public void render (SpriteBatch batch){
-
+	public void render (SpriteBatch batch, ShapeRenderer sr, int panOffsetX, int panOffsetY){
+		int healthBarGreen, healthBarRed;
 
 		TextureRegion reg = null;
 		reg = animation.getKeyFrame(stateTime,true);
@@ -286,7 +292,16 @@ public class Troop{
 				   reg.getRegionX(), reg.getRegionY(),
 				   reg.getRegionWidth(), reg.getRegionHeight(),
 				   false, false);
-		
+		batch.end();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.GREEN);
+		healthBarGreen = (int)((28f*(float)((float)health/(float)maxHealth)));
+		healthBarRed = 28 - healthBarGreen;
+		sr.rect(position.x+2-panOffsetX, position.y+2-panOffsetY, healthBarGreen,4);
+		sr.setColor(Color.RED);
+		sr.rect(position.x+2+healthBarGreen-panOffsetX, position.y+2-panOffsetY, healthBarRed, 4);
+		sr.end();
+		batch.begin();
 	}
 
 	
