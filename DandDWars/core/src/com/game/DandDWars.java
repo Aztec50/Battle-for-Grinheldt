@@ -33,6 +33,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.badlogic.gdx.math.Rectangle;
 
+import com.badlogic.gdx.audio.Music;
+
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
@@ -48,6 +50,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	BitmapFont font;
 	
 	String currentMap;
+	
+	Music music;
 	
 	//turn game states
 	enum TURNGS {
@@ -141,7 +145,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
 		gameState = GAMEGS.START;
-		
 
 		currentMap = "maps/TestingMap.tmx";
 	
