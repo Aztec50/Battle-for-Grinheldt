@@ -199,7 +199,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
 		}
-		
+		{
+		Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+		Troop troop2 = new Troop("knight", "blue", 6, 7, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		BlueTroops.add((Troop)troop2);
+		}
 		for (int i = 0; i < 2; i++) {
 		    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
 			Troop troop2 = new Troop("wizard", "blue", i+18, 34, troopOn, troopTeam);
@@ -305,7 +310,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 				batch.begin();
 				for (Troop t : RedTroops) {
-					t.render(batch);
+					t.render(batch, sr, panOffsetX, panOffsetY);
 					/* DEBUG TURN ON BOUNDING BOXES
 					batch.end();
 					sr.begin(ShapeType.Filled);
@@ -316,7 +321,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					*/
 				}
 				for (Troop t2 : BlueTroops) {
-					t2.render(batch);
+					t2.render(batch, sr, panOffsetX, panOffsetY);
 					/* DEBUG TURN ON BOUNDING BOXES
 					batch.end();
 					sr.begin(ShapeType.Filled);
@@ -558,6 +563,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		
 	    sr.end();
+		sr.begin(ShapeType.Line);
+		sr.setColor(Color.WHITE);
+		sr.rect(offsetX+((panOffsetX/32)*3), offsetY+((panOffsetY/32)*3), 60, 60);
+		sr.end();
 	    batch.begin();
 	}
 	
@@ -582,19 +591,23 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//This allows for movement onto any terrain so long as the unit has 1 move left
 		//Gdx.app.log("Test", "Test");
 		if(troopX-1 > -1 &&
-		   landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
+		   landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1 &&
+		   !troopOn[troopX-1][troopY]){
 			drawMovementTiles(troopX-1, troopY, (move - landscape.getCell(troopX-1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
 		}					
 		if(troopY+1 < landscape.getHeight() &&
-		   landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class) != -1){
+		   landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class) != -1 &&
+		   !troopOn[troopX][troopY+1]){
 			drawMovementTiles(troopX, troopY+1, (move - landscape.getCell(troopX, troopY+1).getTile().getProperties().get("moveCost", Integer.class)));
 		}
 		if(troopX+1 < landscape.getWidth() &&
-		   landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1){
+		   landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class) != -1 &&
+		   !troopOn[troopX+1][troopY]){
 			drawMovementTiles(troopX+1, troopY, (move - landscape.getCell(troopX+1, troopY).getTile().getProperties().get("moveCost", Integer.class)));
 		}
 		if(troopY-1 > -1 &&
-		   landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class) != -1){
+		   landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class) != -1 &&
+		   !troopOn[troopX][troopY-1]){
 			drawMovementTiles(troopX, troopY-1, (move - landscape.getCell(troopX, troopY-1).getTile().getProperties().get("moveCost", Integer.class)));
 		}
 		
@@ -666,24 +679,32 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 			break;
 			case Input.Keys.UP:
-				camera.translate(0, 32);
-				camera.update();
-				panOffsetY+=32;
+				if (panOffsetY+32 < 672) {
+					camera.translate(0, 32);
+					camera.update();
+					panOffsetY+=32;
+				}
 			break;
 			case Input.Keys.DOWN:
-				camera.translate(0, -32);
-				camera.update();
-				panOffsetY-=32;
+				if (panOffsetY-32 > -32) {
+					camera.translate(0, -32);
+					camera.update();
+					panOffsetY-=32;
+				}
 			break;
 			case Input.Keys.LEFT:
-				camera.translate(-32, 0);
-				camera.update();
-				panOffsetX-=32;
+				if (panOffsetX-32 > -32) {
+					camera.translate(-32, 0);
+					camera.update();
+					panOffsetX-=32;
+				}
 			break;
 			case Input.Keys.RIGHT:
-				camera.translate(32, 0);
-				camera.update();
-				panOffsetX+=32;
+				if (panOffsetX+32 < 672) {
+					camera.translate(32, 0);
+					camera.update();
+					panOffsetX+=32;
+				}
 			break;
 			//for now, space ends a player turn
 			case Input.Keys.SPACE:
