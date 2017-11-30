@@ -15,8 +15,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+
 public class Troop{
 	public int health;
+	int maxHealth;
 	public int speed;
 	public int damage;
 	public int defense;
@@ -65,15 +70,15 @@ public class Troop{
 		setType(type);
 		setTeam(t);
 		init(posx, posy);
-		troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+		troopOn[((int)position.x/32)][((int)position.y/32)] = true;
 		
 		//in terms of troopTeam, RED = false   BLUE = true
 		switch(team) {
 			case RED: 
-				troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+				troopTeam[((int)position.x/32)][((int)position.y/32)] = false;
 				break;
 			case BLUE:
-				troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+				troopTeam[((int)position.x/32)][((int)position.y/32)] = true;
 				break;
 		}
 	}
@@ -83,7 +88,7 @@ public class Troop{
 	public void init(int posx, int posy){
 		
 		//Initializes bounds, gets set with position later
-		bounds = new Rectangle(0,0, 16, 16);
+		bounds = new Rectangle(0,0, 32, 32);
 		
 		switch (troopType) {
 			case KNIGHT: 
@@ -105,13 +110,14 @@ public class Troop{
 
 		position = new Vector2();
 		//updatePos(posx,posy, land);
-		position.x = posx*16;
-		position.y = posy*16;
-		bounds.x = posx * 16;
-		bounds.y = posy * 16;	
+		position.x = posx*32;
+		position.y = posy*32;
+		bounds.x = posx * 32;
+		bounds.y = posy * 32;	
 		moved = false;	
 		attacked = false;
 		dead = false;
+		maxHealth = health;
 		state = ACTION.IDLE;
 	}
 	
@@ -174,20 +180,20 @@ public class Troop{
 	 */
 	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
 		if (!troopOn[posx][posy] && drawTiles[posx][posy]) {
-			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
-			position.x = posx * 16;
-			position.y = posy * 16;
-			bounds.x = posx * 16;
-			bounds.y = posy * 16;
-			troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+			troopOn[((int)position.x/32)][((int)position.y/32)] = false;
+			position.x = posx * 32;
+			position.y = posy * 32;
+			bounds.x = posx * 32;
+			bounds.y = posy * 32;
+			troopOn[((int)position.x/32)][((int)position.y/32)] = true;
 			
 			//in terms of troopTeam, RED = false   BLUE = true
 			switch(team) {
 				case RED: 
-					troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+					troopTeam[((int)position.x/32)][((int)position.y/32)] = false;
 					break;
 				case BLUE:
-					troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+					troopTeam[((int)position.x/32)][((int)position.y/32)] = true;
 					break;
 			}
 		}
@@ -195,7 +201,7 @@ public class Troop{
 	/*
 	 * old move function
 	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
-		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy] && drawTiles[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
+		if (!troopOn[((int)position.x/32)+posx][((int)position.y/16)+posy] && drawTiles[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
 			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
 			position.x += posx * 16;
 			position.y += posy * 16;
@@ -266,8 +272,8 @@ public class Troop{
 		stateTime += deltaTime;
 	}
 	
-	public void render (SpriteBatch batch){
-
+	public void render (SpriteBatch batch, ShapeRenderer sr, int panOffsetX, int panOffsetY){
+		int healthBarGreen, healthBarRed;
 
 		TextureRegion reg = null;
 		reg = animation.getKeyFrame(stateTime,true);
@@ -282,11 +288,20 @@ public class Troop{
 		 *		 boolean flipX, boolean flipY);
 		 */
 		
-		batch.draw(reg.getTexture(), position.x, position.y, 16, 16,
+		batch.draw(reg.getTexture(), position.x, position.y, 32, 32,
 				   reg.getRegionX(), reg.getRegionY(),
 				   reg.getRegionWidth(), reg.getRegionHeight(),
 				   false, false);
-		
+		batch.end();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.GREEN);
+		healthBarGreen = (int)((28f*(float)((float)health/(float)maxHealth)));
+		healthBarRed = 28 - healthBarGreen;
+		sr.rect(position.x+2-panOffsetX, position.y+2-panOffsetY, healthBarGreen,4);
+		sr.setColor(Color.RED);
+		sr.rect(position.x+2+healthBarGreen-panOffsetX, position.y+2-panOffsetY, healthBarRed, 4);
+		sr.end();
+		batch.begin();
 	}
 
 	
