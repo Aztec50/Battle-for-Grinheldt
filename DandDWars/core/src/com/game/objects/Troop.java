@@ -65,15 +65,15 @@ public class Troop{
 		setType(type);
 		setTeam(t);
 		init(posx, posy);
-		troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+		troopOn[((int)position.x/32)][((int)position.y/32)] = true;
 		
 		//in terms of troopTeam, RED = false   BLUE = true
 		switch(team) {
 			case RED: 
-				troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+				troopTeam[((int)position.x/32)][((int)position.y/32)] = false;
 				break;
 			case BLUE:
-				troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+				troopTeam[((int)position.x/32)][((int)position.y/32)] = true;
 				break;
 		}
 	}
@@ -83,7 +83,7 @@ public class Troop{
 	public void init(int posx, int posy){
 		
 		//Initializes bounds, gets set with position later
-		bounds = new Rectangle(0,0, 16, 16);
+		bounds = new Rectangle(0,0, 32, 32);
 		
 		switch (troopType) {
 			case KNIGHT: 
@@ -105,10 +105,10 @@ public class Troop{
 
 		position = new Vector2();
 		//updatePos(posx,posy, land);
-		position.x = posx*16;
-		position.y = posy*16;
-		bounds.x = posx * 16;
-		bounds.y = posy * 16;	
+		position.x = posx*32;
+		position.y = posy*32;
+		bounds.x = posx * 32;
+		bounds.y = posy * 32;	
 		moved = false;	
 		attacked = false;
 		dead = false;
@@ -174,20 +174,20 @@ public class Troop{
 	 */
 	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
 		if (!troopOn[posx][posy] && drawTiles[posx][posy]) {
-			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
-			position.x = posx * 16;
-			position.y = posy * 16;
-			bounds.x = posx * 16;
-			bounds.y = posy * 16;
-			troopOn[((int)position.x/16)][((int)position.y/16)] = true;
+			troopOn[((int)position.x/32)][((int)position.y/32)] = false;
+			position.x = posx * 32;
+			position.y = posy * 32;
+			bounds.x = posx * 32;
+			bounds.y = posy * 32;
+			troopOn[((int)position.x/32)][((int)position.y/32)] = true;
 			
 			//in terms of troopTeam, RED = false   BLUE = true
 			switch(team) {
 				case RED: 
-					troopTeam[((int)position.x/16)][((int)position.y/16)] = false;
+					troopTeam[((int)position.x/32)][((int)position.y/32)] = false;
 					break;
 				case BLUE:
-					troopTeam[((int)position.x/16)][((int)position.y/16)] = true;
+					troopTeam[((int)position.x/32)][((int)position.y/32)] = true;
 					break;
 			}
 		}
@@ -195,7 +195,7 @@ public class Troop{
 	/*
 	 * old move function
 	public void updatePos(int posx, int posy, boolean[][] troopOn, boolean[][] troopTeam, boolean[][] drawTiles) {
-		if (!troopOn[((int)position.x/16)+posx][((int)position.y/16)+posy] && drawTiles[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
+		if (!troopOn[((int)position.x/32)+posx][((int)position.y/16)+posy] && drawTiles[((int)position.x/16)+posx][((int)position.y/16)+posy]) {
 			troopOn[((int)position.x/16)][((int)position.y/16)] = false;
 			position.x += posx * 16;
 			position.y += posy * 16;
@@ -282,7 +282,7 @@ public class Troop{
 		 *		 boolean flipX, boolean flipY);
 		 */
 		
-		batch.draw(reg.getTexture(), position.x, position.y, 16, 16,
+		batch.draw(reg.getTexture(), position.x, position.y, 32, 32,
 				   reg.getRegionX(), reg.getRegionY(),
 				   reg.getRegionWidth(), reg.getRegionHeight(),
 				   false, false);
