@@ -33,6 +33,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.badlogic.gdx.math.Rectangle;
 
+
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	OrthographicCamera camera;
@@ -107,6 +108,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	boolean drawCheck;
 	boolean hasDrawnTiles;
 	boolean[][] drawTiles;
+	Texture movementTile;
+	Texture attackTile;
 	
 	//Screen resolution variables
 	float screenw;
@@ -165,6 +168,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				drawTiles[i][j] = false;
 			}
 		}
+		
+		movementTile = new Texture(Gdx.files.internal("land_tiles/tile_movement.png"));
+		attackTile = new Texture(Gdx.files.internal("land_tiles/tile_attack.png"));
+		
+		
 		
 		
 		camera = new OrthographicCamera();
@@ -283,21 +291,36 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				//More code goes here
 		
 				tiledMapRenderer.render();
-				
+				batch.begin();
 				if(currTroop != null){
-					tileDraw.setProjectionMatrix(camera.combined);
-					tileDraw.begin(ShapeType.Filled);
-					if (currTroop.state == Troop.ACTION.MOVE)
-						tileDraw.setColor(new Color(1, 1, 1, 0.1f));
-					else if (currTroop.state == Troop.ACTION.ATTACK)
-						tileDraw.setColor(new Color(1, 0, 0, 0.1f));
-					for (int i = 0; i < landscape.getWidth(); i++) {
-						for(int j = 0; j < landscape.getHeight(); j++) {
-							if(drawTiles[i][j] == true) tileDraw.rect(i*32, j*32, 32, 32);
+					//tileDraw.setProjectionMatrix(camera.combined);
+					//tileDraw.begin(ShapeType.Filled);
+					if (currTroop.state == Troop.ACTION.MOVE){
+						
+						for (int i = 0; i < landscape.getWidth(); i++) {
+							for(int j = 0; j < landscape.getHeight(); j++) {
+								//if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
+								//if(drawTiles[i][j] == true) batch.draw(movementTile, i*16, j*16);
+                if(drawTiles[i][j] == true) batch.draw(movementTile, i*32, j*32, 32, 32);
+							}
 						}
+
 					}
-					tileDraw.end();
+					else if (currTroop.state == Troop.ACTION.ATTACK){
+						
+						for (int i = 0; i < landscape.getWidth(); i++) {
+							for(int j = 0; j < landscape.getHeight(); j++) {
+								//if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
+								//if(drawTiles[i][j] == true) batch.draw(attackTile, i*16, j*16);
+                if(drawTiles[i][j] == true) batch.draw(attackTile, i*32, j*32, 32, 32);
+							}
+						}
+
+					}
+
+					//tileDraw.end();
 				}
+				batch.end();
 				if(currTroop == null){
 					for (int i = 0; i < landscape.getWidth(); i++) {
 						for(int j = 0; j < landscape.getHeight(); j++) {

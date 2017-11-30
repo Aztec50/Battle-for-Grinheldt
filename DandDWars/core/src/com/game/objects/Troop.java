@@ -396,7 +396,53 @@ public class Troop{
 		attackRangeMax = 9;
 	}
 	
+	public void createBarbarian(){
+		
+		stateTime = 0;
+		
+		health = 18;
+		speed = 4;
+		damage = 7;
+		defense = 3;
+		attackRangeMin = 1;
+		attackRangeMax = 2;		
+	}
 	
+	public void createRogue(){
+		
+		stateTime = 0;
+		
+		health = 5;
+		speed = 5;
+		damage = 10;
+		defense = 2;
+		attackRangeMin = 1;
+		attackRangeMax = 2;
+	}
 	
+	public void createMystic(){
+		
+		stateTime = 0;
+		
+		health = 8;
+		speed = 3;
+		damage = 1;
+		defense = 3;
+		attackRangeMin = 3;
+		attackRangeMax = 5;
+	}
+	
+	public void createDragon(){
+		
+		stateTime = 0;
+		
+		health = 20;
+		speed = 6;
+		damage = 8;
+		defense = 8;
+		attackRangeMin = 3;
+		attackRangeMax = 8;
+		
+	}
 	
 }
