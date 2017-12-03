@@ -97,6 +97,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Rectangle pauseButton;
 	Rectangle resumeButton;
 
+	//Team variables
 	boolean[][] troopOn;
 	boolean[][] troopTeam;
 	Array<Troop> RedTroops;
@@ -104,11 +105,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Troop currTroop;
 	Cell currTile;
 
+	//HUD object variables
 	Rectangle attackButton;
 	Rectangle moveButton;
 	Rectangle nextTurnButton;
 	Rectangle playerTurnBanner;
 	
+	//Dynamic tile draw variables
 	boolean drawCheck;
 	boolean hasDrawnTiles;
 	boolean[][] drawTiles;
