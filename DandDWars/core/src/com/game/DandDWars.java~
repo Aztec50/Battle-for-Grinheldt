@@ -33,16 +33,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.badlogic.gdx.math.Rectangle;
 
-import com.mygdx.game.ai.GraphImp;
-import com.mygdx.game.ai.GraphGenerator;
-
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	OrthographicCamera camera;
 	
 	TiledMap tiledMap;
-	public TiledMapTileLayer landscape;
+	TiledMapTileLayer landscape;
 	TiledMapRenderer tiledMapRenderer;
 	
 	SpriteBatch batch;
@@ -126,9 +123,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//Determines how zoomed in you are:
 	int zoomLevel;
 	
-	//ai shenanigans
-	GraphImp graph;
-	GraphGenerator GG;
 	
 	@Override
 	public void create () {
@@ -143,7 +137,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font.setColor(Color.BLACK);
 		sr = new ShapeRenderer();
 		tileDraw = new ShapeRenderer();
-		GG = new GraphGenerator();
 		
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
@@ -156,10 +149,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 
 		currentMap = "maps/TestingMap.tmx";
-		tiledMap = new TmxMapLoader().load(currentMap);
+	
+        levelLoader(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
-		graph = GG.generateGraph(landscape);
 
 		troopOn = new boolean[landscape.getWidth()][landscape.getHeight()];
 		troopTeam = new boolean[landscape.getWidth()][landscape.getHeight()];
@@ -244,6 +237,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		}
 		
 		
+	}
+
+	void levelLoader(String map){
+		tiledMap = new TmxMapLoader().load(map);
 	}
 
 	@Override
