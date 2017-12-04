@@ -276,6 +276,23 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		RedTroops.add((Troop)troop);
 		EnemyTroops.add((EnemyTroop)enemy);
 		
+		troop = new Troop("knight", "red", 6, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("archer", "red", 7, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 8, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("barbarian", "red", 9, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 10, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("mystic", "red", 11, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("dragon", "red", 12, 5, troopOn, troopTeam);		
+		RedTroops.add((Troop)troop);
+			
+		
+		
 		
 
 		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
