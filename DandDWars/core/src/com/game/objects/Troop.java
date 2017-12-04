@@ -48,7 +48,11 @@ public class Troop{
 	public enum TROOP_TYPE {
 		KNIGHT,
 		ARCHER,
-		WIZARD
+		WIZARD,
+		BARBARIAN,
+		ROGUE,
+		MYSTIC,
+		DRAGON
 		//Megatank xD 
 		//:P https://images-na.ssl-images-amazon.com/images/M/MV5BYjdlYjM2NGItZTY0Mi00NmVjLWIwMTAtNTBiZTg4NTc3NGJjXkEyXkFqcGdeQXVyNjExODE1MDc@._V1_UY268_CR76,0,182,268_AL_.jpg
 	}
@@ -104,6 +108,18 @@ public class Troop{
 				//MAGES or TANKS
 				createWizard();
 				break;
+			case BARBARIAN:
+				createBarbarian();
+				break;
+			case ROGUE:
+				createRogue();
+				break;
+			case MYSTIC:
+				createMystic();
+				break;
+			case DRAGON:
+				createDragon();
+				break;
 			default: 
 				//???
 				break;
@@ -133,6 +149,10 @@ public class Troop{
 		     if(type == "Knight" || type == "knight") typeNum = 1;
 		else if(type == "Archer" || type == "archer") typeNum = 2;
 		else if(type == "Wizard" || type == "wizard") typeNum = 3;
+		else if(type == "Barbarian" || type == "barbarian") typeNum = 4;
+		else if(type == "Rogue" || type == "rogue") typeNum = 5;
+		else if(type == "Mystic" || type == "mystic") typeNum = 6;
+		else if(type == "Dragon" || type == "dragon") typeNum = 7;
 				
 		switch(typeNum){
 			case 1:
@@ -143,6 +163,18 @@ public class Troop{
 			break;
 			case 3:
 				troopType = TROOP_TYPE.WIZARD;
+			break;
+			case 4:
+				troopType = TROOP_TYPE.BARBARIAN;
+			break;
+			case 5:
+				troopType = TROOP_TYPE.ROGUE;
+			break;
+			case 6:
+				troopType = TROOP_TYPE.MYSTIC;
+			break;
+			case 7:
+				troopType = TROOP_TYPE.DRAGON;
 			break;
 			default:
 			//Print out error message?
@@ -455,6 +487,21 @@ public class Troop{
 	
 	public void createBarbarian(){
 		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedBarbarianAnimation.atlas");
+			fileSourceAnimation = String.format("RedBarbarianIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueBarbarianAnimation.atlas");
+			fileSourceAnimation = String.format("BlueBarbarianIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
 		stateTime = 0;
 		
 		health = 18;
@@ -466,6 +513,21 @@ public class Troop{
 	}
 	
 	public void createRogue(){
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedRogueAnimation.atlas");
+			fileSourceAnimation = String.format("RedRogueIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueRogueAnimation.atlas");
+			fileSourceAnimation = String.format("BlueRogueIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
 		
 		stateTime = 0;
 		
@@ -479,6 +541,21 @@ public class Troop{
 	
 	public void createMystic(){
 		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedMysticAnimation.atlas");
+			fileSourceAnimation = String.format("RedMysticIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueMysticAnimation.atlas");
+			fileSourceAnimation = String.format("BlueMysticIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
+		
 		stateTime = 0;
 		
 		health = 8;
@@ -490,6 +567,21 @@ public class Troop{
 	}
 	
 	public void createDragon(){
+		
+		String fileSourceAtlas = "";
+		String fileSourceAnimation = "";
+		
+		// This needs to be better generalized
+		if(team == TEAM.RED){
+			fileSourceAtlas = String.format("unit_animations/RedDragonAnimation.atlas");
+			fileSourceAnimation = String.format("RedDragonIdle");
+		}else if(team == TEAM.BLUE){
+			fileSourceAtlas = String.format("unit_animations/BlueDragonAnimation.atlas");
+			fileSourceAnimation = String.format("BlueDragonIdle");
+		}
+		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
+		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
+
 		
 		stateTime = 0;
 		

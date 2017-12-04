@@ -262,13 +262,43 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			Troop troop2 = new Troop("archer", "blue", i+10, 12, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
-		}
-		{
-			Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
-			EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 9, troopOn, troopTeam);
-			RedTroops.add((Troop)troop);
-			EnemyTroops.add((EnemyTroop)enemy);
-		}
+
+		}*/
+
+  
+  
+		troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+		EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 12, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		EnemyTroops.add((EnemyTroop)enemy);
+		
+		troop = new Troop("knight", "red", 6, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("archer", "red", 7, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 8, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("barbarian", "red", 9, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 10, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("mystic", "red", 11, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("dragon", "red", 12, 5, troopOn, troopTeam);		
+		RedTroops.add((Troop)troop);
+		
+
+		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
+		BlueTroops.add((Troop)troop2);  
+  
+  
+  
+  
+  Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+	EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 9, troopOn, troopTeam);
+	RedTroops.add((Troop)troop);
+	EnemyTroops.add((EnemyTroop)enemy);
+  
 	}
 
 	@Override
