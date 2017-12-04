@@ -4,6 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.mygdx.game.ai.Node;
 
 public class GraphGenerator {
@@ -14,7 +15,7 @@ public class GraphGenerator {
 		
 		for (int j = 0; j < mapHeight; j++) {
 			for (int i = 0; i < mapWidth; i++) {
-				Node node = new Node();
+				Node node = new Node(i, j);
 				nodes.add(node);
 			}
 		}

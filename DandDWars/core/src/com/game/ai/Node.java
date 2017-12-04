@@ -7,10 +7,14 @@ import com.mygdx.game.ai.ConnectionImp;
 public class Node {
 	private Array<Connection<Node>> connections = new Array<Connection<Node>>();
 	public int type;
+	public int x;
+	public int y;
 	public int index;
 	
-	public Node() {
+	public Node(int x, int y) {
 		index = Node.Indexer.getIndex();
+		this.x = x;
+		this.y = y;
 	}
 	
 	public int getIndex() {

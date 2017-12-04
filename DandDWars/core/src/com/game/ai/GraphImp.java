@@ -5,9 +5,8 @@ import com.badlogic.gdx.ai.pfa.Graph;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.ai.Node;
-import com.game.DandDWars;
 
-public class GraphImp{
+public class GraphImp implements IndexedGraph<Node>{
 	private Array<Node> nodes = new Array<Node>();
 	int mapWidth;
 	
@@ -22,10 +21,12 @@ public class GraphImp{
 		return fromNode.getConnections();
 	}
 	
+	@Override
 	public int getIndex (Node node){
 		return node.getIndex();
 	}
 	
+	@Override
 	public int getNodeCount() {
 		int x = 0;
 		for (Node n : nodes){

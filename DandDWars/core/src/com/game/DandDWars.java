@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import com.mygdx.game.objects.Troop;
+import com.mygdx.game.objects.EnemyTroop;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -33,8 +34,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.badlogic.gdx.math.Rectangle;
 
-import com.mygdx.game.ai.GraphImp;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.mygdx.game.ai.GraphGenerator;
+import com.mygdx.game.ai.Node;
+import com.mygdx.game.ai.GraphImp;
 
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
@@ -100,6 +103,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	boolean[][] troopTeam;
 	Array<Troop> RedTroops;
 	Array<Troop> BlueTroops;
+	Array<EnemyTroop> EnemyTroops;
 	Troop currTroop;
 	Cell currTile;
 
@@ -130,6 +134,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	GraphImp graph;
 	GraphGenerator GG;
 	
+	Troop troop;
+	
 	@Override
 	public void create () {
 		screenw = 640f; //screen resolution
@@ -147,6 +153,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
+		EnemyTroops = new Array<EnemyTroop>();
 
 		turnState = TURNGS.PLAYER1UPKEEP;
 
@@ -217,7 +224,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
 		
-		for (int i = 0; i < 10; i++) {
+		/*for (int i = 0; i < 10; i++) {
 		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
 			Troop troop2 = new Troop("knight", "blue", i+14, 32, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
@@ -241,9 +248,17 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			Troop troop2 = new Troop("archer", "blue", i+17, 33, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
-		}
+		}*/
+		
+		troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+		EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 12, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		EnemyTroops.add((EnemyTroop)enemy);
 		
 		
+
+		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
+		BlueTroops.add((Troop)troop2);
 	}
 
 	@Override
@@ -302,6 +317,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 				for (Troop t2 : BlueTroops) {
 					t2.update(Gdx.graphics.getDeltaTime());
+				}
+				
+				for (EnemyTroop e : EnemyTroops) {
+					e.update(Gdx.graphics.getDeltaTime());
 				}
 		
 				//More code goes here
@@ -369,6 +388,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					sr.end();
 					batch.begin();
 					*/
+				}
+				for (EnemyTroop e : EnemyTroops) {
+					e.render(batch, sr, panOffsetX, panOffsetY);
+					e.findTarget(graph, troop, batch, highlightTile);
 				}
 				if(currTroop != null && drawCheck == false && !(currTroop.moved) && currTroop.state == Troop.ACTION.MOVE){
 					Vector2 temp = currTroop.getPos();
