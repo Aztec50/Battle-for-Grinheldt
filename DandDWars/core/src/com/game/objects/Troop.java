@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.MathUtils;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -250,12 +251,68 @@ public class Troop{
 	 * Possible suggestion for improved damage:
 	 * luck = 1.0 to 1.1
 	 * Damage = Damage * luck - enemy def - terrain 
+	 * 
+	 * Damage calculations
+	 * 0 armor = 100% damage taken
+	 * 1 armor = 90.9%
+	 * 2 armor = 83.3%
+	 * 3 armor = 76.9%
+	 * 4 armor = 71.4%
+	 * 5 armor = 66.6%
+	 * 6 armor = 62.5%
+	 * 7 armor = 58.8%
+	 * 8 armor = 55.5%
+	 * 9 armor = 52.6%
+	 * 10 armor= 50.0%
+	 *
+	 * Then add a variance of 20%
+	 *
+	 * Finally, truncate by converting to int
 	 *
 	 */
 	
 	public int giveDamage(int defEnemy){
 		int d;
-		d = damage-defEnemy;
+		float temp;
+		float randomNum;
+		String damageInfo;
+		
+		temp = 10f / (10f + (float)defEnemy);
+		
+		damageInfo = String.format("%f", temp);
+		//click still not working.
+		Gdx.app.log("Temp:", damageInfo);
+		
+		temp = temp * damage;
+		
+		damageInfo = String.format("%f", temp);
+		//click still not working.
+		Gdx.app.log("Temp:", damageInfo);
+		
+		randomNum = MathUtils.random(-0.2f, 0.2f);
+		
+		damageInfo = String.format("%f", randomNum);
+		//click still not working.
+		Gdx.app.log("RandomNum:", damageInfo);		
+		
+		temp = temp + (temp * randomNum);
+		
+
+		damageInfo = String.format("%f", temp);
+		//click still not working.
+		Gdx.app.log("Temp:", damageInfo);
+		
+		
+		
+		
+		d = (int)temp;
+		
+		damageInfo = String.format("%d", d);
+		//click still not working.
+		Gdx.app.log("Damage:", damageInfo);
+		
+		
+		//d = damage-defEnemy;
 		if (d > 0){
 			return d;
 		} else {

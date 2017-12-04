@@ -99,6 +99,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Rectangle pauseButton;
 	Rectangle resumeButton;
 
+	//Team variables
 	boolean[][] troopOn;
 	boolean[][] troopTeam;
 	Array<Troop> RedTroops;
@@ -107,21 +108,35 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Troop currTroop;
 	Cell currTile;
 
-	Texture buttonOffPlaque;
+
+  Texture buttonOffPlaque;
 	Texture buttonOnPlaque;
 	Texture redBanner;
 	Texture blueBanner;
+
+  
+  
+  //HUD object variables
 	Rectangle attackButton;
 	Rectangle moveButton;
 	Rectangle nextTurnButton;
 	Rectangle playerTurnBanner;
 	
+	//Dynamic tile draw variables
 	boolean drawCheck;
 	boolean hasDrawnTiles;
 	boolean[][] drawTiles;
 	Texture movementTile;
 	Texture attackTile;
 	Texture highlightTile;
+	
+	//Damage draw variables
+	String displayDamageValue;
+	Vector2 displayDamageValuePos;
+	Vector2 displayDamageValuePosTarget;
+	float displayDamageTime;
+	float displayDamageTimeCap;
+	boolean	displayDamage;
 	
 	//Screen resolution variables
 	float screenw;
@@ -190,10 +205,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		movementTile = new Texture(Gdx.files.internal("land_tiles/tile_movement.png"));
 		attackTile = new Texture(Gdx.files.internal("land_tiles/tile_attack.png"));
-		highlightTile = new Texture(Gdx.files.internal("land_tiles/tile_highlight.png"));
-		
-		
-		
+    highlightTile = new Texture(Gdx.files.internal("land_tiles/tile_highlight.png"));
+
+	  displayDamageValue = "";
+		displayDamageValuePos = new Vector2();
+		displayDamageValuePosTarget = new Vector2();
+		displayDamageTime = 0f;
+		displayDamageTimeCap = 1.0f;
+		displayDamage = false;	
+  
+  
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
         
@@ -405,9 +426,27 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 
 				
+				if(displayDamage == true){
+					//displayDamageValuePos.lerp(displayDamageValuePosTarget, 0);
+					float fadeoutValue;
+					fadeoutValue = 1 - (displayDamageTime / displayDamageTimeCap);
+					
+					font.setColor(255f, 0f, 0f, fadeoutValue);
+					font.draw(batch, displayDamageValue, displayDamageValuePos.x, displayDamageValuePos.y);
+					font.setColor(Color.BLACK);
+					displayDamageTime += Gdx.graphics.getDeltaTime();
+					if(displayDamageTime > displayDamageTimeCap){
+						displayDamageTime = 0f;
+						displayDamage = false;
+					}
+				}
+				
+				
 				drawHUD();
 				drawMinimap();
 				batch.end();
+				
+				
 				
 			break;
 			case START: 
@@ -857,7 +896,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 								for (Troop t2 : BlueTroops) {
 									if(t2.bounds.contains(screenX+panOffsetX, screenY+panOffsetY) && drawTiles[screenX/32+panOffsetX/32][screenY/32+panOffsetY/32]){
 										//Gdx.app.log("?", "attackin");
-										t2.updateHealth(currTroop.giveDamage(t2.defense));
+										int temp = currTroop.giveDamage(t2.defense);
+										displayDamageValue = String.format("%d", temp);
+										displayDamageValuePos.x = t2.getPos().x + 10;
+										displayDamageValuePos.y = t2.getPos().y + 22;
+										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
+										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
+										displayDamage = true;
+										t2.updateHealth(temp);
+										//t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
 											troopOn[(int)t2.getPos().x/32][(int)t2.getPos().y/32] = false;
 											BlueTroops.removeIndex(BlueTroops.indexOf(t2, false));
@@ -877,7 +924,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							if (turnState == TURNGS.PLAYER2TURN) {
 								for (Troop t : RedTroops) {
 									if(t.bounds.contains(screenX+panOffsetX, screenY+panOffsetY) && drawTiles[screenX/32+panOffsetX/32][screenY/32+panOffsetY/32]){//DOTHISTO EVERYTHING
-										t.updateHealth(currTroop.giveDamage(t.defense));
+										int temp = currTroop.giveDamage(t.defense);
+										displayDamageValue = String.format("%d", temp);
+										displayDamageValuePos.x = t.getPos().x + 10;
+										displayDamageValuePos.y = t.getPos().y + 22;
+										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
+										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
+										displayDamage = true;
+										t.updateHealth(temp);
+										//t.updateHealth(currTroop.giveDamage(t.defense));
 										if (t.dead) {
 											troopOn[(int)t.getPos().x/32][(int)t.getPos().y/32] = false;
 											RedTroops.removeIndex(RedTroops.indexOf(t, false));
