@@ -149,7 +149,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	GraphImp graph;
 	GraphGenerator GG;
 	
-	Troop troop;
 	
 	@Override
 	public void create () {
@@ -245,32 +244,29 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
 		
-		/*for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 10; i++) {
 		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
-			Troop troop2 = new Troop("knight", "blue", i+14, 32, troopOn, troopTeam);
+			Troop troop2 = new Troop("knight", "blue", i+8, 10, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
 		}
-		{
-		Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
-		Troop troop2 = new Troop("knight", "blue", 6, 7, troopOn, troopTeam);
-		RedTroops.add((Troop)troop);
-		BlueTroops.add((Troop)troop2);
-		}
 		for (int i = 0; i < 2; i++) {
 		    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
-			Troop troop2 = new Troop("wizard", "blue", i+18, 34, troopOn, troopTeam);
+			Troop troop2 = new Troop("wizard", "blue", i+9, 11, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
 		}
 		
 		for (int i = 0; i < 5; i++) {
 		    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
-			Troop troop2 = new Troop("archer", "blue", i+17, 33, troopOn, troopTeam);
+			Troop troop2 = new Troop("archer", "blue", i+10, 12, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
+
 		}*/
-		
+
+  
+  
 		troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
 		EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 12, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
@@ -290,13 +286,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		RedTroops.add((Troop)troop);
 		troop = new Troop("dragon", "red", 12, 5, troopOn, troopTeam);		
 		RedTroops.add((Troop)troop);
-			
-		
-		
 		
 
 		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
-		BlueTroops.add((Troop)troop2);
+		BlueTroops.add((Troop)troop2);  
+  
+  
+  
+  
+  Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+	EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 9, troopOn, troopTeam);
+	RedTroops.add((Troop)troop);
+	EnemyTroops.add((EnemyTroop)enemy);
+  
 	}
 
 	@Override
@@ -429,7 +431,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 				for (EnemyTroop e : EnemyTroops) {
 					e.render(batch, sr, panOffsetX, panOffsetY);
-					e.findTarget(graph, troop, batch, highlightTile);
+					if (currTroop != null)
+						e.findTarget(graph, currTroop, batch, highlightTile);
 				}
 				if(currTroop != null && drawCheck == false && !(currTroop.moved) && currTroop.state == Troop.ACTION.MOVE){
 					Vector2 temp = currTroop.getPos();
@@ -468,28 +471,28 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			case START: 
 				batch.begin();
-				batch.draw(startScreen, 0, 0);
+				batch.draw(startScreen, 0+panOffsetX, 0+panOffsetY);
 				batch.end();
 				
 			break;
 			case INFO:
 				batch.begin();
-				batch.draw(infoScreen, 0, 0);
+				batch.draw(infoScreen, 0+panOffsetX, 0+panOffsetY);
 				batch.end();
 			break;
 			case PAUSE:
 				batch.begin();
-				batch.draw(pauseScreen, 0, 0);
+				batch.draw(pauseScreen, 0+panOffsetX, 0+panOffsetY);
 				batch.end();
 			break;
 			case ENDRED:
 				batch.begin();
-				batch.draw(endRedScreen, 0, 0);
+				batch.draw(endRedScreen, 0+panOffsetX, 0+panOffsetY);
 				batch.end();
 			break;
 			case ENDBLUE:
 				batch.begin();
-				batch.draw(endBlueScreen, 0, 0);
+				batch.draw(endBlueScreen, 0+panOffsetX, 0+panOffsetY);
 				batch.end();
 			break;
 		}
@@ -936,7 +939,34 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										}
 									}
 								}
+								
 							} 
+							for (EnemyTroop e : EnemyTroops) {
+									if(e.bounds.contains(screenX+panOffsetX, screenY+panOffsetY) && drawTiles[screenX/32+panOffsetX/32][screenY/32+panOffsetY/32]){
+										//Gdx.app.log("?", "attackin");
+										int temp = currTroop.giveDamage(e.defense);
+										displayDamageValue = String.format("%d", temp);
+										displayDamageValuePos.x = e.getPos().x + 10;
+										displayDamageValuePos.y = e.getPos().y + 22;
+										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
+										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
+										displayDamage = true;
+										e.updateHealth(temp);
+										//e.updateHealth(currTroop.giveDamage(e.defense));
+										if (e.dead) {
+											troopOn[(int)e.getPos().x/32][(int)e.getPos().y/32] = false;
+											EnemyTroops.removeIndex(EnemyTroops.indexOf(e, false));
+										}
+										currTroop.attacked = true;
+										if (currTroop != null)
+											currTroop.state = Troop.ACTION.IDLE;
+										for (int i = 0; i < landscape.getWidth(); i++) {
+											for(int j = 0; j < landscape.getHeight(); j++) {
+												drawTiles[i][j] = false;
+											}
+										}
+									}
+								}
 							//blue attacks red
 							if (turnState == TURNGS.PLAYER2TURN) {
 								for (Troop t : RedTroops) {

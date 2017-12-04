@@ -46,8 +46,8 @@ public class EnemyTroop extends Troop{
 		int endX = (int)target.getPos().x;
 		int endY = (int)target.getPos().y;
 		
-		Gdx.app.log("start: ", "X: " + startX + "  Y: " + startY);
-		Gdx.app.log("start: ", "X: " + startX + "  Y: " + startY);
+		//Gdx.app.log("start: ", "X: " + startX + "  Y: " + startY);
+		//Gdx.app.log("start: ", "X: " + startX + "  Y: " + startY);
 		
 		Node startNode = graph.getNodeByXY(startX, startY);
 		Node endNode = graph.getNodeByXY(endX, endY);
@@ -55,9 +55,9 @@ public class EnemyTroop extends Troop{
 		pathfinder.searchNodePath(startNode, endNode, new HeuristicImp(), tempPath);
 		resultPath = tempPath;
 		tempPath = new GraphPathImp();
-		Gdx.app.log("Path: ", Integer.toString(resultPath.getCount()));
+		//Gdx.app.log("Path: ", Integer.toString(resultPath.getCount()));
 		for (Node n : resultPath) {
-			Gdx.app.log("nodePath: ", "X: " + n.x + "  Y: " + n.y);
+			//Gdx.app.log("nodePath: ", "X: " + n.x + "  Y: " + n.y);
 			batch.draw(highlightTile, (n.x)*32, (n.y)*32, 32, 32);
 		}
 	}
