@@ -281,26 +281,26 @@ public class Troop{
 		
 		damageInfo = String.format("%f", temp);
 		//click still not working.
-		Gdx.app.log("Temp:", damageInfo);
+		//Gdx.app.log("Temp:", damageInfo);
 		
 		temp = temp * damage;
 		
 		damageInfo = String.format("%f", temp);
 		//click still not working.
-		Gdx.app.log("Temp:", damageInfo);
+		//Gdx.app.log("Temp:", damageInfo);
 		
 		randomNum = MathUtils.random(-0.2f, 0.2f);
 		
 		damageInfo = String.format("%f", randomNum);
 		//click still not working.
-		Gdx.app.log("RandomNum:", damageInfo);		
+		//Gdx.app.log("RandomNum:", damageInfo);		
 		
 		temp = temp + (temp * randomNum);
 		
 
 		damageInfo = String.format("%f", temp);
 		//click still not working.
-		Gdx.app.log("Temp:", damageInfo);
+		//Gdx.app.log("Temp:", damageInfo);
 		
 		
 		
@@ -309,7 +309,7 @@ public class Troop{
 		
 		damageInfo = String.format("%d", d);
 		//click still not working.
-		Gdx.app.log("Damage:", damageInfo);
+		//Gdx.app.log("Damage:", damageInfo);
 		
 		
 		//d = damage-defEnemy;
