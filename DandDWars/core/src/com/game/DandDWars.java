@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import com.mygdx.game.objects.Troop;
+import com.mygdx.game.objects.EnemyTroop;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -33,7 +34,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import com.badlogic.gdx.math.Rectangle;
 
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.mygdx.game.ai.GraphGenerator;
+import com.mygdx.game.ai.Node;
+import com.mygdx.game.ai.GraphImp;
 
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
@@ -41,7 +45,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	OrthographicCamera camera;
 	
 	TiledMap tiledMap;
-	TiledMapTileLayer landscape;
+	public TiledMapTileLayer landscape;
 	TiledMapRenderer tiledMapRenderer;
 	
 	SpriteBatch batch;
@@ -50,8 +54,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	BitmapFont font;
 	
 	String currentMap;
-	
-	Music music;
 	
 	//turn game states
 	enum TURNGS {
@@ -102,10 +104,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	boolean[][] troopTeam;
 	Array<Troop> RedTroops;
 	Array<Troop> BlueTroops;
+	Array<EnemyTroop> EnemyTroops;
 	Troop currTroop;
 	Cell currTile;
 
-	//HUD object variables
+
+  Texture buttonOffPlaque;
+	Texture buttonOnPlaque;
+	Texture redBanner;
+	Texture blueBanner;
+
+  
+  
+  //HUD object variables
 	Rectangle attackButton;
 	Rectangle moveButton;
 	Rectangle nextTurnButton;
@@ -117,6 +128,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	boolean[][] drawTiles;
 	Texture movementTile;
 	Texture attackTile;
+	Texture highlightTile;
 	
 	//Damage draw variables
 	String displayDamageValue;
@@ -133,6 +145,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//Determines how zoomed in you are:
 	int zoomLevel;
 	
+	//ai shenanigans
+	GraphImp graph;
+	GraphGenerator GG;
+	
+	Troop troop;
 	
 	@Override
 	public void create () {
@@ -147,21 +164,24 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font.setColor(Color.BLACK);
 		sr = new ShapeRenderer();
 		tileDraw = new ShapeRenderer();
+		GG = new GraphGenerator();
 		
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
+		EnemyTroops = new Array<EnemyTroop>();
 
 		turnState = TURNGS.PLAYER1UPKEEP;
 
 
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
 		gameState = GAMEGS.START;
+		
 
 		currentMap = "maps/TestingMap.tmx";
-	
-        tiledMap = new TmxMapLoader().load(currentMap);
+		tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
+		graph = GG.generateGraph(landscape);
 
 		troopOn = new boolean[landscape.getWidth()][landscape.getHeight()];
 		troopTeam = new boolean[landscape.getWidth()][landscape.getHeight()];
@@ -185,14 +205,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		movementTile = new Texture(Gdx.files.internal("land_tiles/tile_movement.png"));
 		attackTile = new Texture(Gdx.files.internal("land_tiles/tile_attack.png"));
-		
-		displayDamageValue = "";
+    highlightTile = new Texture(Gdx.files.internal("land_tiles/tile_highlight.png"));
+
+	  displayDamageValue = "";
 		displayDamageValuePos = new Vector2();
 		displayDamageValuePosTarget = new Vector2();
 		displayDamageTime = 0f;
 		displayDamageTimeCap = 1.0f;
-		displayDamage = false;
-		
+		displayDamage = false;	
+  
+  
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
         
@@ -203,7 +225,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
 		mountainTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_mountain.png"));
 		waterTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_water.png"));
-
+		buttonOffPlaque = new Texture(Gdx.files.internal("land_tiles/buttonOffPlaque.png"));
+		buttonOnPlaque = new Texture(Gdx.files.internal("land_tiles/buttonOnPlaque.png"));
+		redBanner = new Texture(Gdx.files.internal("land_tiles/redBanner.png"));
+		blueBanner = new Texture(Gdx.files.internal("land_tiles/blueBanner.png"));	
+		
 		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
 		startButton = new Rectangle(140, 136, 120, 120);
 		infoScreen = new Texture(Gdx.files.internal("game_menus/DandInfo.png"));
@@ -215,11 +241,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		attackButton = new Rectangle(screenw-130, 485, 90, 25);
 		moveButton = new Rectangle(screenw-130, 455, 90, 25);
 		nextTurnButton = new Rectangle (screenw-140, 520, 110, 25);
-		playerTurnBanner = new Rectangle(240,602,169,25);
+		playerTurnBanner = new Rectangle(208,600,200,32);
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
 		
-		for (int i = 0; i < 10; i++) {
+		/*for (int i = 0; i < 10; i++) {
 		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
 			Troop troop2 = new Troop("knight", "blue", i+14, 32, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
@@ -243,9 +269,17 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			Troop troop2 = new Troop("archer", "blue", i+17, 33, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
 			BlueTroops.add((Troop)troop2);
-		}
+		}*/
+		
+		troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+		EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 12, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		EnemyTroops.add((EnemyTroop)enemy);
 		
 		
+
+		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
+		BlueTroops.add((Troop)troop2);
 	}
 
 	@Override
@@ -305,6 +339,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				for (Troop t2 : BlueTroops) {
 					t2.update(Gdx.graphics.getDeltaTime());
 				}
+				
+				for (EnemyTroop e : EnemyTroops) {
+					e.update(Gdx.graphics.getDeltaTime());
+				}
 		
 				//More code goes here
 		
@@ -335,7 +373,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						}
 
 					}
-
+					batch.draw(highlightTile, currTroop.getPos().x, currTroop.getPos().y, 32, 32);
 					//tileDraw.end();
 				}
 				batch.end();
@@ -371,6 +409,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					sr.end();
 					batch.begin();
 					*/
+				}
+				for (EnemyTroop e : EnemyTroops) {
+					e.render(batch, sr, panOffsetX, panOffsetY);
+					e.findTarget(graph, troop, batch, highlightTile);
 				}
 				if(currTroop != null && drawCheck == false && !(currTroop.moved) && currTroop.state == Troop.ACTION.MOVE){
 					Vector2 temp = currTroop.getPos();
@@ -522,58 +564,58 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		}
 		//draw pause button
 		batch.draw(troopScroll, screenw-32+panOffsetX, 606+panOffsetY, 32, 32);
+		switch (turnState) {
+				case PLAYER1TURN:
+					batch.draw(redBanner, playerTurnBanner.x+panOffsetX, playerTurnBanner.y+panOffsetY, 
+									playerTurnBanner.width, playerTurnBanner.height);
+				break;
+				case PLAYER2TURN:
+					batch.draw(blueBanner, playerTurnBanner.x+panOffsetX, playerTurnBanner.y+panOffsetY, 
+									playerTurnBanner.width, playerTurnBanner.height);
+				break;
+		}
+		
 		batch.end();
+
 		sr.begin(ShapeType.Filled);
 		sr.setColor(Color.BLACK);
 		sr.rect( screenw-14, 613, 5, 17);
 		sr.rect( screenw-22, 613, 5, 17);
-
 		sr.setColor(Color.GREEN);
 		sr.rect(nextTurnButton.x, nextTurnButton.y, nextTurnButton.width, nextTurnButton.height);
-		
-		switch (turnState) {
-				case PLAYER1TURN:
-					sr.setColor(Color.RED);
-				break;
-				case PLAYER2TURN:
-					sr.setColor(Color.CYAN);
-				break;
-		}
-		sr.rect(playerTurnBanner.x, playerTurnBanner.y, playerTurnBanner.width, playerTurnBanner.height); 
+		sr.end();
+
+		batch.begin();
 
 		if (currTroop != null) {
 			if(!currTroop.attacked)
-				sr.setColor(Color.YELLOW);
+				batch.draw(buttonOnPlaque, attackButton.x+panOffsetX, attackButton.y+panOffsetY, attackButton.width, attackButton.height);
 			else
-				sr.setColor(Color.LIGHT_GRAY);
-			sr.rect(attackButton.x, attackButton.y, attackButton.width, attackButton.height);
+				batch.draw(buttonOffPlaque, attackButton.x+panOffsetX, attackButton.y+panOffsetY, attackButton.width, attackButton.height);
 			if(!currTroop.moved)
-				sr.setColor(Color.YELLOW);
+				batch.draw(buttonOnPlaque, moveButton.x+panOffsetX, moveButton.y+panOffsetY, moveButton.width, moveButton.height);
 			else
-				sr.setColor(Color.LIGHT_GRAY);
-			sr.rect(moveButton.x, moveButton.y, moveButton.width, moveButton.height);
+				batch.draw(buttonOffPlaque, moveButton.x+panOffsetX, moveButton.y+panOffsetY, moveButton.width, moveButton.height);
 		}
-		sr.end();
-		batch.begin();
 		font.draw(batch, "END TURN", nextTurnButton.x+18+panOffsetX, nextTurnButton.y+15+panOffsetY);
 		if (currTroop != null) {
 			if (!currTroop.moved)
-				font.draw(batch, "(M)OVE", moveButton.x+24+panOffsetX, moveButton.y+15+panOffsetY);
+				font.draw(batch, "(M)OVE", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
 			else
-				font.draw(batch, "MOVED", moveButton.x+19+panOffsetX, moveButton.y+15+panOffsetY);
+				font.draw(batch, "MOVED", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
 				
 				
 			if (!currTroop.attacked)
-				font.draw(batch, "(A)TTACK", attackButton.x+17+panOffsetX, attackButton.y+15+panOffsetY);
+				font.draw(batch, "(A)TTACK", attackButton.x+13+panOffsetX, attackButton.y+18+panOffsetY);
 			else
-				font.draw(batch, "ATTACKED", attackButton.x+8+panOffsetX, attackButton.y+15+panOffsetY);
+				font.draw(batch, "ATTACKED", attackButton.x+8+panOffsetX, attackButton.y+18+panOffsetY);
 		}
 		switch (turnState) {
 				case PLAYER1TURN:
-					font.draw(batch, "Player 1 Turn", playerTurnBanner.x+40+panOffsetX, playerTurnBanner.y+15+panOffsetY);
+					font.draw(batch, "Player 1 Turn", playerTurnBanner.x+40+panOffsetX, playerTurnBanner.y+22+panOffsetY);
 				break;
 				case PLAYER2TURN:
-					font.draw(batch, "Player 2 Turn", playerTurnBanner.x+40+panOffsetX, playerTurnBanner.y+15+panOffsetY);
+					font.draw(batch, "Player 2 Turn", playerTurnBanner.x+40+panOffsetX, playerTurnBanner.y+22+panOffsetY);
 				break;
 		}
 	}
@@ -793,7 +835,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		String clickLocation = "";
 		clickLocation = String.format("(%d, %d)", screenX/32+panOffsetX/32, screenY/32+panOffsetY/32);
 		//click still not working.
-		Gdx.app.log("Click Location:", clickLocation);
+		//Gdx.app.log("Click Location:", clickLocation);
 
 
 		switch(gameState) {
@@ -820,7 +862,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						}
 					} 
 					//checks if attack button was pressed
-					else if (attackButton.contains(screenX, screenY)) { 
+					else if (attackButton.contains(screenX, screenY) && currTroop != null) { 
 						if(currTroop != null) {
 							if (!currTroop.attacked){
 								currTroop.state = Troop.ACTION.ATTACK;
@@ -834,7 +876,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						}
 					}
 					//check if move button is pressed
-					else if (moveButton.contains(screenX, screenY)) { 
+					else if (moveButton.contains(screenX, screenY) && currTroop != null) { 
 						if(currTroop != null) {
 							if (!currTroop.moved){
 								currTroop.state = Troop.ACTION.MOVE;
@@ -864,6 +906,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										t2.updateHealth(temp);
 										//t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
+											troopOn[(int)t2.getPos().x/32][(int)t2.getPos().y/32] = false;
 											BlueTroops.removeIndex(BlueTroops.indexOf(t2, false));
 										}
 										currTroop.attacked = true;
@@ -891,6 +934,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										t.updateHealth(temp);
 										//t.updateHealth(currTroop.giveDamage(t.defense));
 										if (t.dead) {
+											troopOn[(int)t.getPos().x/32][(int)t.getPos().y/32] = false;
 											RedTroops.removeIndex(RedTroops.indexOf(t, false));
 										}
 										currTroop.attacked = true;
