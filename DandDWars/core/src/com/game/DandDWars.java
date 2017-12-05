@@ -39,6 +39,8 @@ import com.mygdx.game.ai.GraphGenerator;
 import com.mygdx.game.ai.Node;
 import com.mygdx.game.ai.GraphImp;
 
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
@@ -51,6 +53,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	SpriteBatch batch;
 	ShapeRenderer sr;
 	ShapeRenderer tileDraw;
+	BitmapFont bitfont;
 	BitmapFont font;
 	
 	String currentMap;
@@ -159,11 +162,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(this);
 		
 		batch = new SpriteBatch();
-		font = new BitmapFont();
-		font.setColor(Color.BLACK);
+		bitfont = new BitmapFont();
+		bitfont.setColor(Color.BLACK);
 		sr = new ShapeRenderer();
 		tileDraw = new ShapeRenderer();
 		GG = new GraphGenerator();
+		
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/fantaisieartistique.medium.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = 18;
+		parameter.color = Color.BLACK;
+		font = generator.generateFont(parameter); // font size 12 pixels
+		generator.dispose(); // don't forget to dispose to avoid memory leaks!
+		
+		
+		
+		
 		
 		RedTroops = new Array<Troop>();
 		BlueTroops = new Array<Troop>();
@@ -549,10 +563,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					   false, false);
 
 			//draw stats of said troop
-			font.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150+panOffsetX, 336+panOffsetY);
-			font.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95+panOffsetX, 336+panOffsetY);					
-			font.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150+panOffsetX, 316+panOffsetY);
-			font.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95+panOffsetX, 316+panOffsetY);
+			bitfont.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150+panOffsetX, 336+panOffsetY);
+			bitfont.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95+panOffsetX, 336+panOffsetY);					
+			bitfont.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150+panOffsetX, 316+panOffsetY);
+			bitfont.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95+panOffsetX, 316+panOffsetY);
 		} else if (currTile != null) {
 			//draw troop name
 			switch(currTile.getTile().getProperties().get("moveCost", Integer.class)) {
@@ -620,13 +634,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		font.draw(batch, "END TURN", nextTurnButton.x+18+panOffsetX, nextTurnButton.y+15+panOffsetY);
 		if (currTroop != null) {
 			if (!currTroop.moved)
-				font.draw(batch, "(M)OVE", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
+				font.draw(batch, "MOVE", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
 			else
 				font.draw(batch, "MOVED", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
 				
 				
 			if (!currTroop.attacked)
-				font.draw(batch, "(A)TTACK", attackButton.x+13+panOffsetX, attackButton.y+18+panOffsetY);
+				font.draw(batch, "ATTACK", attackButton.x+13+panOffsetX, attackButton.y+18+panOffsetY);
 			else
 				font.draw(batch, "ATTACKED", attackButton.x+8+panOffsetX, attackButton.y+18+panOffsetY);
 		}
