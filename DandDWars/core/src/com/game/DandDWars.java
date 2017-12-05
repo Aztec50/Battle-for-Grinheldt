@@ -243,34 +243,34 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		playerTurnBanner = new Rectangle(208,600,200,32);
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
-		/*
+		
 		for (int i = 0; i < 10; i++) {
 		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
-			Troop troop2 = new Troop("knight", "blue", i+8, 10, troopOn, troopTeam);
+			EnemyTroop troop2 = new EnemyTroop("knight", "blue", i+8, 10, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
-			BlueTroops.add((Troop)troop2);
+			EnemyTroops.add((EnemyTroop)troop2);
 		}
 		for (int i = 0; i < 2; i++) {
 		    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
-			Troop troop2 = new Troop("wizard", "blue", i+9, 11, troopOn, troopTeam);
+			EnemyTroop troop2 = new EnemyTroop("wizard", "blue", i+9, 11, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
-			BlueTroops.add((Troop)troop2);
+			EnemyTroops.add((EnemyTroop)troop2);
 		}
 		
 		for (int i = 0; i < 5; i++) {
 		    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
-			Troop troop2 = new Troop("archer", "blue", i+10, 12, troopOn, troopTeam);
+			EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam);
 			RedTroops.add((Troop)troop);
-			BlueTroops.add((Troop)troop2);
+			EnemyTroops.add((EnemyTroop)troop2);
 
 		}
-		*/
+		
   
   
-		Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
-		EnemyTroop enemy = new EnemyTroop("dragon", "blue", 8, 12, troopOn, troopTeam);
-		RedTroops.add((Troop)troop);
-		EnemyTroops.add((EnemyTroop)enemy);
+		//Troop troop = new Troop("knight", "red", 6, 6, troopOn, troopTeam);
+		//EnemyTroop enemy = new EnemyTroop("dragon", "blue", 8, 12, troopOn, troopTeam);
+		//RedTroops.add((Troop)troop);
+		//EnemyTroops.add((EnemyTroop)enemy);
 		//
 		//troop = new Troop("knight", "red", 6, 5, troopOn, troopTeam);
 		//RedTroops.add((Troop)troop);
