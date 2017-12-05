@@ -24,6 +24,7 @@ public class Troop{
 	public int health;
 	int maxHealth;
 	public int speed;
+	int maxSpeed;
 	public int damage;
 	public int defense;
 	public int attackRangeMin;
@@ -135,6 +136,7 @@ public class Troop{
 		attacked = false;
 		dead = false;
 		maxHealth = health;
+		maxSpeed = speed;
 		state = ACTION.IDLE;
 	}
 	
@@ -202,6 +204,12 @@ public class Troop{
 	
 	public void setAnimation(TROOP_TYPE type){
 		
+	}
+	
+	public void upkeep(){
+		moved = false;
+		attacked = false;
+		speed = maxSpeed;
 	}
 	
 	/*updatePos
