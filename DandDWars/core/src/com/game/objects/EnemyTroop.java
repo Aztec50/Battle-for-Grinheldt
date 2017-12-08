@@ -32,7 +32,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class EnemyTroop extends Troop{
 	private IndexedAStarPathFinder<Node> pathfinder;
 	private GraphPathImp resultPath = new GraphPathImp();
-	private Troop target;
+	public Troop target;
 	boolean[][] attackTiles;
 	int w;
 	int h;
