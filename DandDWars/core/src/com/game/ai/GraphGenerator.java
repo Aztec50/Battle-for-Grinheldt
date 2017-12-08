@@ -15,7 +15,7 @@ public class GraphGenerator {
 		
 		for (int j = 0; j < mapHeight; j++) {
 			for (int i = 0; i < mapWidth; i++) {
-				Node node = new Node(i, j);
+				Node node = new Node(i, j, landscape.getCell(i, j).getTile().getProperties().get("moveCost", Integer.class));
 				nodes.add(node);
 			}
 		}

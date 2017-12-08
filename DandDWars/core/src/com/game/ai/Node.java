@@ -10,11 +10,13 @@ public class Node {
 	public int x;
 	public int y;
 	public int index;
+	public int moveCost;
 	
-	public Node(int x, int y) {
+	public Node(int x, int y, int mv) {
 		index = Node.Indexer.getIndex();
 		this.x = x;
 		this.y = y;
+		moveCost = mv;
 	}
 	
 	public int getIndex() {
