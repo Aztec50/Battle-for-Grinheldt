@@ -384,11 +384,14 @@ public class Troop{
 		 *		 int srcWidth, int srcHeight,
 		 *		 boolean flipX, boolean flipY);
 		 */
-		
+		if(attacked) batch.setColor(20,20,20,1);
+		if(moved) batch.setColor(20,100,50,1);
+		if(moved && attacked) batch.setColor(100,200,100, 0.5f);
 		batch.draw(reg.getTexture(), position.x, position.y, 32, 32,
 				   reg.getRegionX(), reg.getRegionY(),
 				   reg.getRegionWidth(), reg.getRegionHeight(),
 				   false, false);
+		batch.setColor(Color.WHITE);
 		batch.end();
 		sr.begin(ShapeType.Filled);
 		sr.setColor(Color.GREEN);
@@ -429,7 +432,7 @@ public class Troop{
 		
 		health = 10;
 		speed = 3;
-		damage = 5;
+		damage = 2;
 		defense = 3;
 		attackRangeMin = 1;
 		attackRangeMax = 2;
@@ -458,7 +461,7 @@ public class Troop{
 		
 		health = 5;
 		speed = 5;
-		damage = 7;
+		damage = 3;
 		defense = 1;
 		attackRangeMin = 2;
 		attackRangeMax = 6;
@@ -487,7 +490,7 @@ public class Troop{
 		
 		health = 4;
 		speed = 2;
-		damage = 8;
+		damage = 4;
 		defense = 6;
 		attackRangeMin = 3;
 		attackRangeMax = 9;
@@ -514,7 +517,7 @@ public class Troop{
 		
 		health = 18;
 		speed = 4;
-		damage = 7;
+		damage = 3;
 		defense = 3;
 		attackRangeMin = 1;
 		attackRangeMax = 2;		
@@ -541,7 +544,7 @@ public class Troop{
 		
 		health = 5;
 		speed = 5;
-		damage = 10;
+		damage = 5;
 		defense = 2;
 		attackRangeMin = 1;
 		attackRangeMax = 2;

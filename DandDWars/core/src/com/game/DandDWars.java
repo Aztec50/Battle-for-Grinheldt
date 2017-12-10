@@ -20,6 +20,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -32,8 +33,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
-import com.badlogic.gdx.math.Rectangle;
-
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.mygdx.game.ai.GraphGenerator;
 import com.mygdx.game.ai.Node;
@@ -41,6 +40,10 @@ import com.mygdx.game.ai.GraphImp;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
@@ -55,6 +58,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	ShapeRenderer tileDraw;
 	BitmapFont bitfont;
 	BitmapFont font;
+	BitmapFont damageFont;
 	
 	String currentMap;
 	
@@ -90,6 +94,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture waterTroopScroll;
 	Cell currTroopCell;
 	
+	//UI Control
+	boolean troopScrollShow;
+	
 	int panOffsetX = 0;
 	int panOffsetY = 0;
 
@@ -104,6 +111,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Rectangle infoBackButton;
 	Rectangle pauseButton;
 	Rectangle resumeButton;
+	
+	
 
 	//Team variables
 	boolean[][] troopOn;
@@ -115,18 +124,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Cell currTile;
 
 
-  Texture buttonOffPlaque;
+    Texture buttonOffPlaque;
 	Texture buttonOnPlaque;
 	Texture redBanner;
 	Texture blueBanner;
 
   
   
-  //HUD object variables
+    //HUD object variables
 	Rectangle attackButton;
 	Rectangle moveButton;
 	Rectangle nextTurnButton;
 	Rectangle playerTurnBanner;
+	
 	
 	//Dynamic tile draw variables
 	boolean drawCheck;
@@ -155,6 +165,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	GraphImp graph;
 	GraphGenerator GG;
 	
+	//Music and Sound
+	Music music;
+	Sound sword;
+	
 	
 	@Override
 	public void create () {
@@ -177,6 +191,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		parameter.color = Color.BLACK;
 		font = generator.generateFont(parameter); // font size 12 pixels
 		generator.dispose(); // don't forget to dispose to avoid memory leaks!
+		
+		FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("fonts/orange kid.ttf"));
+		FreeTypeFontParameter parameter2 = new FreeTypeFontParameter();
+		parameter2.size = 32;
+		parameter2.borderWidth = 2;
+		parameter2.borderColor = Color.BLACK;
+		parameter2.color = Color.RED;
+		damageFont = generator2.generateFont(parameter2); // font size 12 pixels
+		generator2.dispose(); // don't forget to dispose to avoid memory leaks!		
 		
 		
 		
@@ -230,12 +253,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		displayDamageTimeCap = 1.0f;
 		displayDamage = false;	
   
+		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
+		music.play();
+		sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall.mp3"));
+		//sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall_1.wav"));
+		//sword.play();
+		//sword.loop();
   
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
         
         camera.update();
 
+		troopScrollShow = false;
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
@@ -280,7 +310,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 			RedTroops.add((Troop)troop);
 			EnemyTroops.add((EnemyTroop)troop2);
-
 		}
 		
   
@@ -505,9 +534,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					float fadeoutValue;
 					fadeoutValue = 1 - (displayDamageTime / displayDamageTimeCap);
 					
-					font.setColor(255f, 0f, 0f, fadeoutValue);
-					font.draw(batch, displayDamageValue, displayDamageValuePos.x, displayDamageValuePos.y);
-					font.setColor(Color.BLACK);
+					damageFont.setColor(255f, 0f, 0f, fadeoutValue);
+					damageFont.draw(batch, displayDamageValue, displayDamageValuePos.x, displayDamageValuePos.y);
+					damageFont.setColor(Color.BLACK);
 					displayDamageTime += Gdx.graphics.getDeltaTime();
 					if(displayDamageTime > displayDamageTimeCap){
 						displayDamageTime = 0f;
@@ -517,7 +546,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				
 				
 				drawHUD();
-				drawMinimap();
+				if(troopScrollShow == true){
+					drawMinimap();
+				}else{
+					//Add rolled up scroll here
+				}
 				batch.end();
 				
 				
@@ -855,6 +888,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			break;
+			case Input.Keys.D:
+			if(troopScrollShow == false){
+				troopScrollShow = true;
+			}else{
+				troopScrollShow = false;
+			}
+			break;
 			case Input.Keys.UP:
 				if (panOffsetY+32 < 672) {
 					camera.translate(0, 32);
@@ -979,6 +1019,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
+										sword.play();
 										t2.updateHealth(temp);
 										//t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
@@ -1007,6 +1048,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
+										sword.play();
 										e.updateHealth(temp);
 										//e.updateHealth(currTroop.giveDamage(e.defense));
 										if (e.dead) {
@@ -1034,6 +1076,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
+										sword.play();
 										t.updateHealth(temp);
 										//t.updateHealth(currTroop.giveDamage(t.defense));
 										if (t.dead) {
