@@ -166,7 +166,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	GraphGenerator GG;
 	
 	//Music and Sound
-	
+	Music music;
+	Sound sword;
 	
 	
 	@Override
@@ -252,6 +253,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		displayDamageTimeCap = 1.0f;
 		displayDamage = false;	
   
+		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
+		music.play();
+		sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall.mp3"));
+		//sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall_1.wav"));
+		//sword.play();
+		//sword.loop();
   
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
@@ -303,7 +310,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 			RedTroops.add((Troop)troop);
 			EnemyTroops.add((EnemyTroop)troop2);
-
 		}
 		
   
@@ -1013,6 +1019,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
+										sword.play();
 										t2.updateHealth(temp);
 										//t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
@@ -1041,6 +1048,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
+										sword.play();
 										e.updateHealth(temp);
 										//e.updateHealth(currTroop.giveDamage(e.defense));
 										if (e.dead) {
@@ -1068,6 +1076,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
+										sword.play();
 										t.updateHealth(temp);
 										//t.updateHealth(currTroop.giveDamage(t.defense));
 										if (t.dead) {
