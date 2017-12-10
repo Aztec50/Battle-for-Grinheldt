@@ -90,6 +90,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture waterTroopScroll;
 	Cell currTroopCell;
 	
+	//UI Control
+	boolean troopScrollShow;
+	
 	int panOffsetX = 0;
 	int panOffsetY = 0;
 
@@ -104,6 +107,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Rectangle infoBackButton;
 	Rectangle pauseButton;
 	Rectangle resumeButton;
+	
+	
 
 	//Team variables
 	boolean[][] troopOn;
@@ -115,18 +120,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Cell currTile;
 
 
-  Texture buttonOffPlaque;
+    Texture buttonOffPlaque;
 	Texture buttonOnPlaque;
 	Texture redBanner;
 	Texture blueBanner;
 
   
   
-  //HUD object variables
+    //HUD object variables
 	Rectangle attackButton;
 	Rectangle moveButton;
 	Rectangle nextTurnButton;
 	Rectangle playerTurnBanner;
+	
 	
 	//Dynamic tile draw variables
 	boolean drawCheck;
@@ -236,6 +242,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
         
         camera.update();
 
+		troopScrollShow = false;
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
@@ -517,7 +524,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				
 				
 				drawHUD();
-				drawMinimap();
+				if(troopScrollShow == true){
+					drawMinimap();
+				}else{
+					//Add rolled up scroll here
+				}
 				batch.end();
 				
 				
@@ -853,6 +864,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					}
 					drawCheck = false;
 				}
+			}
+			break;
+			case Input.Keys.D:
+			if(troopScrollShow == false){
+				troopScrollShow = true;
+			}else{
+				troopScrollShow = false;
 			}
 			break;
 			case Input.Keys.UP:
