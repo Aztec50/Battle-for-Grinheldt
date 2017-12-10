@@ -20,6 +20,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -32,8 +33,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
-import com.badlogic.gdx.math.Rectangle;
-
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.mygdx.game.ai.GraphGenerator;
 import com.mygdx.game.ai.Node;
@@ -41,6 +40,10 @@ import com.mygdx.game.ai.GraphImp;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+
 
 public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
@@ -161,6 +164,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//ai shenanigans
 	GraphImp graph;
 	GraphGenerator GG;
+	
+	//Music and Sound
+	
 	
 	
 	@Override
