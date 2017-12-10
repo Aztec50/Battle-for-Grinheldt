@@ -432,7 +432,7 @@ public class Troop{
 		
 		health = 10;
 		speed = 3;
-		damage = 5;
+		damage = 2;
 		defense = 3;
 		attackRangeMin = 1;
 		attackRangeMax = 2;
@@ -461,7 +461,7 @@ public class Troop{
 		
 		health = 5;
 		speed = 5;
-		damage = 7;
+		damage = 3;
 		defense = 1;
 		attackRangeMin = 2;
 		attackRangeMax = 6;
@@ -490,7 +490,7 @@ public class Troop{
 		
 		health = 4;
 		speed = 2;
-		damage = 8;
+		damage = 4;
 		defense = 6;
 		attackRangeMin = 3;
 		attackRangeMax = 9;
@@ -517,7 +517,7 @@ public class Troop{
 		
 		health = 18;
 		speed = 4;
-		damage = 7;
+		damage = 3;
 		defense = 3;
 		attackRangeMin = 1;
 		attackRangeMax = 2;		
@@ -544,7 +544,7 @@ public class Troop{
 		
 		health = 5;
 		speed = 5;
-		damage = 10;
+		damage = 5;
 		defense = 2;
 		attackRangeMin = 1;
 		attackRangeMax = 2;

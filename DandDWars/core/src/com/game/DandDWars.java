@@ -55,6 +55,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	ShapeRenderer tileDraw;
 	BitmapFont bitfont;
 	BitmapFont font;
+	BitmapFont damageFont;
 	
 	String currentMap;
 	
@@ -183,6 +184,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		parameter.color = Color.BLACK;
 		font = generator.generateFont(parameter); // font size 12 pixels
 		generator.dispose(); // don't forget to dispose to avoid memory leaks!
+		
+		FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(Gdx.files.internal("fonts/orange kid.ttf"));
+		FreeTypeFontParameter parameter2 = new FreeTypeFontParameter();
+		parameter2.size = 32;
+		parameter2.borderWidth = 2;
+		parameter2.borderColor = Color.BLACK;
+		parameter2.color = Color.RED;
+		damageFont = generator2.generateFont(parameter2); // font size 12 pixels
+		generator2.dispose(); // don't forget to dispose to avoid memory leaks!		
 		
 		
 		
@@ -512,9 +522,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					float fadeoutValue;
 					fadeoutValue = 1 - (displayDamageTime / displayDamageTimeCap);
 					
-					font.setColor(255f, 0f, 0f, fadeoutValue);
-					font.draw(batch, displayDamageValue, displayDamageValuePos.x, displayDamageValuePos.y);
-					font.setColor(Color.BLACK);
+					damageFont.setColor(255f, 0f, 0f, fadeoutValue);
+					damageFont.draw(batch, displayDamageValue, displayDamageValuePos.x, displayDamageValuePos.y);
+					damageFont.setColor(Color.BLACK);
 					displayDamageTime += Gdx.graphics.getDeltaTime();
 					if(displayDamageTime > displayDamageTimeCap){
 						displayDamageTime = 0f;
