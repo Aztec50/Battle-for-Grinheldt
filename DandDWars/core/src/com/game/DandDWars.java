@@ -96,16 +96,18 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	//UI Control
 	boolean troopScrollShow;
-	boolean panCameraCheck;
-	float panCameraTick;
-	float panCameraCount;
-	int panCameraDirection; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
 	
 	int panOffsetX = 0;
 	int panOffsetY = 0;
+	
+	int helpPage = 0;
 
 	Texture startScreen;
-	Texture infoScreen;
+	Texture infoScreen1;
+	Texture infoScreen2;
+	Texture infoScreen3;
+	Texture infoScreen4;
+	Texture infoScreen5;
 	Texture pauseScreen;
 	Texture endRedScreen;
 	Texture endBlueScreen;
@@ -115,6 +117,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Rectangle infoBackButton;
 	Rectangle pauseButton;
 	Rectangle resumeButton;
+	Rectangle infoPlusButton;
+	Rectangle infoMinusButton;
+	
 	
 	
 
@@ -130,6 +135,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
     Texture buttonOffPlaque;
 	Texture buttonOnPlaque;
+	Texture buttonTurnPlaque;
 	Texture redBanner;
 	Texture blueBanner;
 
@@ -172,9 +178,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//Music and Sound
 	Music music;
 	Sound sword;
-	Sound fire;
-	Sound spell;
-	Sound arrow;
 	
 	
 	@Override
@@ -262,11 +265,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
   
 		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
 		music.play();
-		music.setLooping(true);
+		music.setVolume(.5f);
 		sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall.mp3"));
-		fire = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Fire.mp3"));
-		spell = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Spell1.mp3"));
-		arrow = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Archers-shooting.mp3"));
 		//sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall_1.wav"));
 		//sword.play();
 		//sword.loop();
@@ -276,11 +276,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
         
         camera.update();
 
-		panCameraCheck = false;
-		panCameraTick = 0.15f;
-		panCameraCount = 0.0f;
-		panCameraDirection = 0; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
-		
 		troopScrollShow = false;
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
@@ -289,44 +284,51 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		waterTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_water.png"));
 		buttonOffPlaque = new Texture(Gdx.files.internal("land_tiles/buttonOffPlaque.png"));
 		buttonOnPlaque = new Texture(Gdx.files.internal("land_tiles/buttonOnPlaque.png"));
+		buttonTurnPlaque = new Texture(Gdx.files.internal("land_tiles/buttonTurnPlaque.png"));
 		redBanner = new Texture(Gdx.files.internal("land_tiles/redBanner.png"));
 		blueBanner = new Texture(Gdx.files.internal("land_tiles/blueBanner.png"));	
 		
 		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
 		startButton = new Rectangle(140, 136, 120, 120);
-		infoScreen = new Texture(Gdx.files.internal("game_menus/DandInfo.png"));
+		infoScreen1 = new Texture(Gdx.files.internal("game_menus/DandInfo1.png"));
+		infoScreen2 = new Texture(Gdx.files.internal("game_menus/DandInfo2.png"));
+		infoScreen3 = new Texture(Gdx.files.internal("game_menus/DandInfo3.png"));
+		infoScreen4 = new Texture(Gdx.files.internal("game_menus/DandInfo4.png"));
+		infoScreen5 = new Texture(Gdx.files.internal("game_menus/DandInfo5.png"));
 		infoButton = new Rectangle(346, 147, 118, 120);
 		infoBackButton = new Rectangle(18, 18, 69, 66);
+		infoPlusButton = new Rectangle(365, 116, 35, 35);
+		infoMinusButton = new Rectangle(221, 116, 35, 35);
 		pauseButton = new Rectangle( screenw-31, screenh-34, 30, 32);
 		pauseScreen = new Texture(Gdx.files.internal("game_menus/pause.png"));
 		resumeButton = new Rectangle(234, 160, 130, 132);
-		attackButton = new Rectangle(screenw-130, 485, 90, 25);
-		moveButton = new Rectangle(screenw-130, 455, 90, 25);
-		nextTurnButton = new Rectangle (screenw-140, 520, 110, 25);
-		playerTurnBanner = new Rectangle(208,600,200,32);
+		attackButton = new Rectangle(screenw-135, 485, 100, 25);
+		moveButton = new Rectangle(screenw-135, 455, 100, 25);
+		nextTurnButton = new Rectangle (screenw-135, 515, 100, 25);
+		playerTurnBanner = new Rectangle(238,600,200,32);
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
 		endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		
-		for (int i = 0; i < 10; i++) {
-		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
-			//EnemyTroop troop2 = new EnemyTroop("knight", "blue", i+7, 5, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			RedTroops.add((Troop)troop);
-			//EnemyTroops.add((EnemyTroop)troop2);
-		}
-		for (int i = 0; i < 2; i++) {
-		    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
-			EnemyTroop troop2 = new EnemyTroop("wizard", "blue", i+9, 11, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			RedTroops.add((Troop)troop);
-			EnemyTroops.add((EnemyTroop)troop2);
-		}
-		
-		for (int i = 0; i < 5; i++) {
-		    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
-			EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			RedTroops.add((Troop)troop);
-			EnemyTroops.add((EnemyTroop)troop2);
-		}
+		//for (int i = 0; i < 1; i++) {
+		//    Troop troop = new Troop("knight", "red", i+12, 17, troopOn, troopTeam);
+		//	//EnemyTroop troop2 = new EnemyTroop("knight", "blue", i+7, 5, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		//	RedTroops.add((Troop)troop);
+		//	//EnemyTroops.add((EnemyTroop)troop2);
+		//}
+		//for (int i = 0; i < 2; i++) {
+		//    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
+		//	EnemyTroop troop2 = new EnemyTroop("wizard", "blue", i+9, 11, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		//	RedTroops.add((Troop)troop);
+		//	EnemyTroops.add((EnemyTroop)troop2);
+		//}
+		//
+		//for (int i = 0; i < 5; i++) {
+		//    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
+		//	EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		//	RedTroops.add((Troop)troop);
+		//	EnemyTroops.add((EnemyTroop)troop2);
+		//}
 		
   
   
@@ -335,20 +337,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//RedTroops.add((Troop)troop);
 		//EnemyTroops.add((EnemyTroop)enemy);
 		//
-		//troop = new Troop("knight", "red", 6, 5, troopOn, troopTeam);
-		//RedTroops.add((Troop)troop);
-		//troop = new Troop("archer", "red", 7, 5, troopOn, troopTeam);
-		//RedTroops.add((Troop)troop);
-		//troop = new Troop("wizard", "red", 8, 5, troopOn, troopTeam);
-		//RedTroops.add((Troop)troop);
-		//troop = new Troop("barbarian", "red", 9, 5, troopOn, troopTeam);
-		//RedTroops.add((Troop)troop);
-		//troop = new Troop("rogue", "red", 10, 5, troopOn, troopTeam);
-		//RedTroops.add((Troop)troop);
-		//troop = new Troop("mystic", "red", 11, 5, troopOn, troopTeam);
-		//RedTroops.add((Troop)troop);
-		//troop = new Troop("dragon", "red", 12, 5, troopOn, troopTeam);		
-		//RedTroops.add((Troop)troop);
+		Troop troop = new Troop("knight", "red", 6, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("archer", "red", 7, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 8, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("barbarian", "red", 9, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 10, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("mystic", "red", 11, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("dragon", "red", 12, 5, troopOn, troopTeam);		
+		RedTroops.add((Troop)troop);
 		//
         //
 		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
@@ -567,48 +569,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}else{
 					//Add rolled up scroll here
 				}
-				if(panCameraDirection != 0){
-					panCameraCount += Gdx.graphics.getDeltaTime();
-					if(panCameraCount > panCameraTick){
-						panCameraCount = 0.0f;
-						switch(panCameraDirection){
-							case 1:
-								if (panOffsetY+32 < 672) {
-									camera.translate(0, 32);
-									camera.update();
-									panOffsetY+=32;
-									panCameraDirection = 1;
-								}								
-							break;
-							case 2:
-								if (panOffsetX+32 < 672) {
-									camera.translate(32, 0);
-									camera.update();
-									panOffsetX+=32;
-									panCameraDirection = 2;
-								}
-							break;
-							case 3:
-								if (panOffsetY-32 > -32) {
-									camera.translate(0, -32);
-									camera.update();
-									panOffsetY-=32;
-									panCameraDirection = 3;
-								}				
-							break;
-							case 4:
-								if (panOffsetX-32 > -32) {
-									camera.translate(-32, 0);
-									camera.update();
-									panOffsetX-=32;
-									panCameraDirection = 4;
-								}
-							break;
-							
-						}	
-					}	
-				}
-				
 				batch.end();
 				
 				
@@ -622,7 +582,23 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			case INFO:
 				batch.begin();
-				batch.draw(infoScreen, 0+panOffsetX, 0+panOffsetY);
+				switch(helpPage){
+				case 0:
+					batch.draw(infoScreen1, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 1:
+					batch.draw(infoScreen2, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 2:
+					batch.draw(infoScreen3, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 3:
+					batch.draw(infoScreen4, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 4:
+					batch.draw(infoScreen5, 0+panOffsetX, 0+panOffsetY);
+					break;
+				}
 				batch.end();
 			break;
 			case PAUSE:
@@ -662,11 +638,27 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						break;
 					}
 					case ARCHER: {
-						font.draw(batch, "Archer", screenw-115+panOffsetX, 435+panOffsetY);
+						font.draw(batch, "Archer", screenw-118+panOffsetX, 435+panOffsetY);
 						break;
 					}
 					case WIZARD: {
-						font.draw(batch, "Wizard", screenw-115+panOffsetX, 435+panOffsetY);
+						font.draw(batch, "Wizard", screenw-118+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case MYSTIC: {
+						font.draw(batch, "Mystic", screenw-118+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case DRAGON: {
+						font.draw(batch, "Dragon", screenw-120+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case ROGUE: {
+						font.draw(batch, "Rogue", screenw-120+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case BARBARIAN: {
+						font.draw(batch, "Barbarian", screenw-130+panOffsetX, 435+panOffsetY);
 						break;
 					}
 			}
@@ -699,10 +691,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					   false, false);
 
 			//draw stats of said troop
-			bitfont.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150+panOffsetX, 336+panOffsetY);
-			bitfont.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95+panOffsetX, 336+panOffsetY);					
-			bitfont.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150+panOffsetX, 316+panOffsetY);
-			bitfont.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95+panOffsetX, 316+panOffsetY);
+			font.draw(batch, "HP: " + Integer.toString(currTroop.health), screenw-150+panOffsetX, 336+panOffsetY);
+			font.draw(batch, "DEF: " + Integer.toString(currTroop.defense), screenw-95+panOffsetX, 336+panOffsetY);					
+			font.draw(batch, "SPD: " + Integer.toString(currTroop.speed), screenw-150+panOffsetX, 316+panOffsetY);
+			font.draw(batch, "DMG: " + Integer.toString(currTroop.damage), screenw-95+panOffsetX, 316+panOffsetY);
 		} else if (currTile != null) {
 			//draw troop name
 			switch(currTile.getTile().getProperties().get("moveCost", Integer.class)) {
@@ -745,15 +737,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				break;
 		}
 		
-		//batch.draw(nexTurnButton.x, nextTurnButton.y);
 		batch.end();
 
 		sr.begin(ShapeType.Filled);
 		sr.setColor(Color.BLACK);
 		sr.rect( screenw-14, 613, 5, 17);
 		sr.rect( screenw-22, 613, 5, 17);
-		sr.setColor(Color.GREEN);
-		sr.rect(nextTurnButton.x, nextTurnButton.y, nextTurnButton.width, nextTurnButton.height);
+		
 		sr.end();
 
 		batch.begin();
@@ -768,7 +758,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			else
 				batch.draw(buttonOffPlaque, moveButton.x+panOffsetX, moveButton.y+panOffsetY, moveButton.width, moveButton.height);
 		}
-		font.draw(batch, "END TURN", nextTurnButton.x+18+panOffsetX, nextTurnButton.y+15+panOffsetY);
+		batch.draw(buttonTurnPlaque, nextTurnButton.x+panOffsetX, nextTurnButton.y+panOffsetY, nextTurnButton.width, nextTurnButton.height);
+		font.draw(batch, "END TURN", nextTurnButton.x+5+panOffsetX, nextTurnButton.y+20+panOffsetY);
 		if (currTroop != null) {
 			if (!currTroop.moved)
 				font.draw(batch, "MOVE", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
@@ -792,14 +783,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	}
 
 	public void drawMinimap() {
-		//These offsets control the actual info
-	    int offsetX = (int)screenw-(landscape.getWidth()*3)-64;
-	    int offsetY = 69; // nice
-		//int offsetY = 200;
+	    int offsetX = (landscape.getWidth()*3)-49;
+	    int offsetY = (int)screenh-190; // nice
 
 	    
-	    batch.draw(troopScroll, screenw-256+panOffsetX, 5+panOffsetY, 256, 256);
-		//batch.draw(troopScroll, screenw-656+panOffsetX, 5+panOffsetY, 256, 256);
+	    batch.draw(troopScroll, 2+panOffsetX, (int)screenh-256+panOffsetY, 256, 256, 0, 0, 32, 32, true, false);
 	    batch.end();
 	    sr.begin(ShapeType.Filled);
 	    
@@ -962,7 +950,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(0, 32);
 					camera.update();
 					panOffsetY+=32;
-					panCameraDirection = 1;
 				}
 			break;
 			case Input.Keys.DOWN:
@@ -970,7 +957,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(0, -32);
 					camera.update();
 					panOffsetY-=32;
-					panCameraDirection = 3;
 				}
 			break;
 			case Input.Keys.LEFT:
@@ -978,7 +964,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(-32, 0);
 					camera.update();
 					panOffsetX-=32;
-					panCameraDirection = 4;
 				}
 			break;
 			case Input.Keys.RIGHT:
@@ -986,7 +971,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(32, 0);
 					camera.update();
 					panOffsetX+=32;
-					panCameraDirection = 2;
 				}
 			break;
 			//for now, space ends a player turn
@@ -999,14 +983,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	@Override
     public boolean keyUp(int keycode) {
-		switch(keycode){
-			case Input.Keys.UP:
-			case Input.Keys.DOWN:
-			case Input.Keys.RIGHT:
-			case Input.Keys.LEFT:
-				panCameraDirection = 0;
-			break;
-		}
 		return false;
     }
 
@@ -1093,13 +1069,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
-										if(currTroop.troopType == Troop.TROOP_TYPE.KNIGHT ||
-										   currTroop.troopType == Troop.TROOP_TYPE.BARBARIAN ||
-										   currTroop.troopType == Troop.TROOP_TYPE.ROGUE) sword.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.WIZARD ||
-										   currTroop.troopType == Troop.TROOP_TYPE.DRAGON) fire.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.MYSTIC) spell.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.ARCHER) arrow.play();
+										sword.play();
 										t2.updateHealth(temp);
 										//t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
@@ -1128,14 +1098,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
-										if(currTroop.troopType == Troop.TROOP_TYPE.KNIGHT ||
-										   currTroop.troopType == Troop.TROOP_TYPE.BARBARIAN ||
-										   currTroop.troopType == Troop.TROOP_TYPE.ROGUE) sword.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.WIZARD ||
-										   currTroop.troopType == Troop.TROOP_TYPE.DRAGON) fire.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.MYSTIC) spell.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.ARCHER) arrow.play();
-										
+										sword.play();
 										e.updateHealth(temp);
 										//e.updateHealth(currTroop.giveDamage(e.defense));
 										if (e.dead) {
@@ -1163,13 +1126,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
-										if(currTroop.troopType == Troop.TROOP_TYPE.KNIGHT ||
-										   currTroop.troopType == Troop.TROOP_TYPE.BARBARIAN ||
-										   currTroop.troopType == Troop.TROOP_TYPE.ROGUE) sword.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.WIZARD ||
-										   currTroop.troopType == Troop.TROOP_TYPE.DRAGON) fire.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.MYSTIC) spell.play();
-										if(currTroop.troopType == Troop.TROOP_TYPE.ARCHER) arrow.play();
+										sword.play();
 										t.updateHealth(temp);
 										//t.updateHealth(currTroop.giveDamage(t.defense));
 										if (t.dead) {
@@ -1283,6 +1240,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					if(gameState != GAMEGS.START) {
 						//Gdx.app.log("?", "game STARTMENU");
 						gameState = GAMEGS.START;
+						helpPage = 0;
+					}
+				}
+				if (infoPlusButton.contains(screenX, screenY)) {
+					if (helpPage < 4) {
+						helpPage++;
+						//Gdx.app.log("Page: ", ""+helpPage);
+					}
+				}
+				if (infoMinusButton.contains(screenX, screenY)) {
+					if (helpPage > 0) {
+						helpPage--;
+						//Gdx.app.log("Page: ", ""+helpPage);
 					}
 				}
 			break;
