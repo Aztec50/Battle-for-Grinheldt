@@ -168,6 +168,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//Music and Sound
 	Music music;
 	Sound sword;
+	Sound fire;
+	Sound spell;
+	Sound arrow;
 	
 	
 	@Override
@@ -255,7 +258,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
   
 		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
 		music.play();
+		music.setLooping(true);
 		sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall.mp3"));
+		fire = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Fire.mp3"));
+		spell = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Spell1.mp3"));
+		arrow = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Archers-shooting.mp3"));
 		//sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall_1.wav"));
 		//sword.play();
 		//sword.loop();
@@ -1019,7 +1026,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
-										sword.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.KNIGHT ||
+										   currTroop.troopType == Troop.TROOP_TYPE.BARBARIAN ||
+										   currTroop.troopType == Troop.TROOP_TYPE.ROGUE) sword.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.WIZARD ||
+										   currTroop.troopType == Troop.TROOP_TYPE.DRAGON) fire.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.MYSTIC) spell.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.ARCHER) arrow.play();
 										t2.updateHealth(temp);
 										//t2.updateHealth(currTroop.giveDamage(t2.defense));
 										if (t2.dead) {
@@ -1048,7 +1061,14 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
-										sword.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.KNIGHT ||
+										   currTroop.troopType == Troop.TROOP_TYPE.BARBARIAN ||
+										   currTroop.troopType == Troop.TROOP_TYPE.ROGUE) sword.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.WIZARD ||
+										   currTroop.troopType == Troop.TROOP_TYPE.DRAGON) fire.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.MYSTIC) spell.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.ARCHER) arrow.play();
+										
 										e.updateHealth(temp);
 										//e.updateHealth(currTroop.giveDamage(e.defense));
 										if (e.dead) {
@@ -1076,7 +1096,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 										displayDamageValuePosTarget.x = displayDamageValuePos.x + 16;
 										displayDamageValuePosTarget.y = displayDamageValuePos.y + 16;
 										displayDamage = true;
-										sword.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.KNIGHT ||
+										   currTroop.troopType == Troop.TROOP_TYPE.BARBARIAN ||
+										   currTroop.troopType == Troop.TROOP_TYPE.ROGUE) sword.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.WIZARD ||
+										   currTroop.troopType == Troop.TROOP_TYPE.DRAGON) fire.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.MYSTIC) spell.play();
+										if(currTroop.troopType == Troop.TROOP_TYPE.ARCHER) arrow.play();
 										t.updateHealth(temp);
 										//t.updateHealth(currTroop.giveDamage(t.defense));
 										if (t.dead) {
