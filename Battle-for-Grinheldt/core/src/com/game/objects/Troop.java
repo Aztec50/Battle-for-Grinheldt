@@ -389,8 +389,8 @@ public class Troop{
 		 *		 int srcWidth, int srcHeight,
 		 *		 boolean flipX, boolean flipY);
 		 */
-		if(attacked) batch.setColor(20,20,20,1);
-		if(moved) batch.setColor(20,100,50,1);
+		if(attacked && !moved) batch.setColor(100,20,120,1);
+		if(moved && !attacked) batch.setColor(20,100,50,1);
 		if(moved && attacked) batch.setColor(100,200,100, 0.5f);
 		batch.draw(reg.getTexture(), position.x, position.y, 32, 32,
 				   reg.getRegionX(), reg.getRegionY(),
