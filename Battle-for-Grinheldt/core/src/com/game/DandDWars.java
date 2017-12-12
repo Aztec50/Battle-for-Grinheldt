@@ -270,7 +270,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		displayDamageTimeCap = 1.0f;
 		displayDamage = false;	
   
-		musicVol = 1;
+		musicVol = 0.5f;
 		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
 		music.play();
 		music.setLooping(true);
