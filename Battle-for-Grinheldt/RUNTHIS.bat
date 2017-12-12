@@ -1,1 +1,1 @@
-gradlew desktop:run
+cmd /k gradlew desktop:run
