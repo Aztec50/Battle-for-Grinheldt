@@ -274,6 +274,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
 		music.play();
 		music.setLooping(true);
+		music.setVolume(musicVol);
 		sword = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Socapex - Swordsmall.mp3"));
 		fire = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Fire.mp3"));
 		spell = Gdx.audio.newSound(Gdx.files.internal("audio/sound/Spell1.mp3"));
