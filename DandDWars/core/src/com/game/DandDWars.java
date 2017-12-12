@@ -176,6 +176,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	GraphGenerator GG;
 	
 	//Music and Sound
+	float musicVol;
 	Music music;
 	Sound sword;
 	
@@ -263,6 +264,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		displayDamageTimeCap = 1.0f;
 		displayDamage = false;	
   
+		musicVol = 1;
 		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
 		music.play();
 		music.setVolume(.5f);
@@ -912,6 +914,37 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	@Override
     public boolean keyDown(int keycode) {
 		switch(keycode){
+			case Input.Keys.ESCAPE:
+				currTroop.state = Troop.ACTION.IDLE;
+				currTroop = null;
+			break;
+			case Input.Keys.P:
+				if(gameState == GAMEGS.GAMERUNNING){
+					if (currTroop != null) currTroop.state = Troop.ACTION.IDLE;
+					currTroop = null;
+					currTile = null;
+					if(gameState != GAMEGS.PAUSE) {
+						//Gdx.app.log("?", "game PAUSE");
+						gameState = GAMEGS.PAUSE;
+					}
+				}else if(gameState == GAMEGS.PAUSE){
+					gameState = GAMEGS.GAMERUNNING;
+				}
+			break;
+			case Input.Keys.O:
+				//Put music muting here
+			break;
+			case Input.Keys.PLUS:
+				musicVol += 0.05;
+				if(musicVol > 1.0f) musicVol = 1.0f;
+				music.setVolume(musicVol);
+			break;
+			case Input.Keys.MINUS:
+				musicVol -= 0.05;
+				if(musicVol < 0.0f) musicVol = 0.0f;
+				music.setVolume(musicVol);
+			break;
+			
 			case Input.Keys.M:
 			if(currTroop != null){
 				if (!currTroop.moved){
