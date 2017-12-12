@@ -64,7 +64,8 @@ public class Troop{
 	}
 	public enum TEAM{
 		RED,
-		BLUE
+		BLUE,
+		AI
 	}
 	
 	public TROOP_TYPE troopType;
@@ -188,6 +189,7 @@ public class Troop{
 		
 			 if(t == "red" || t == "Red") teamNum = 1;
 		else if(t == "blue" || t == "Blue") teamNum = 2;
+		else if(t == "ai" || t == "Ai") teamNum = 3;
 		
 		switch(teamNum){
 			case 1:
@@ -195,6 +197,9 @@ public class Troop{
 			break;
 			case 2:
 				team = TEAM.BLUE;
+			break;
+			case 3:
+				team = TEAM.AI;
 			break;
 			default:
 			//potential error message?
@@ -384,8 +389,8 @@ public class Troop{
 		 *		 int srcWidth, int srcHeight,
 		 *		 boolean flipX, boolean flipY);
 		 */
-		if(attacked) batch.setColor(20,20,20,1);
-		if(moved) batch.setColor(20,100,50,1);
+		if(attacked && !moved) batch.setColor(100,20,120,1);
+		if(moved && !attacked) batch.setColor(20,100,50,1);
 		if(moved && attacked) batch.setColor(100,200,100, 0.5f);
 		batch.draw(reg.getTexture(), position.x, position.y, 32, 32,
 				   reg.getRegionX(), reg.getRegionY(),
@@ -422,6 +427,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueKnightAnimation.atlas");
 			fileSourceAnimation = String.format("BlueKnightIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiKnightAnimation.atlas");
+			fileSourceAnimation = String.format("AiKnightIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
@@ -450,6 +458,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueArcherAnimation.atlas");
 			fileSourceAnimation = String.format("BlueArcherIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiArcherAnimation.atlas");
+			fileSourceAnimation = String.format("AiArcherIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
@@ -479,6 +490,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueWizardAnimation.atlas");
 			fileSourceAnimation = String.format("BlueWizardIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiWizardAnimation.atlas");
+			fileSourceAnimation = String.format("AiWizardIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
@@ -508,6 +522,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueBarbarianAnimation.atlas");
 			fileSourceAnimation = String.format("BlueBarbarianIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiBarbarianAnimation.atlas");
+			fileSourceAnimation = String.format("AiBarbarianIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
@@ -535,6 +552,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueRogueAnimation.atlas");
 			fileSourceAnimation = String.format("BlueRogueIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiRogueAnimation.atlas");
+			fileSourceAnimation = String.format("AiRogueIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
@@ -562,6 +582,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueMysticAnimation.atlas");
 			fileSourceAnimation = String.format("BlueMysticIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiMysticAnimation.atlas");
+			fileSourceAnimation = String.format("AiMysticIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
@@ -589,6 +612,9 @@ public class Troop{
 		}else if(team == TEAM.BLUE){
 			fileSourceAtlas = String.format("unit_animations/BlueDragonAnimation.atlas");
 			fileSourceAnimation = String.format("BlueDragonIdle");
+		}else if(team == TEAM.AI){
+			fileSourceAtlas = String.format("unit_animations/AiDragonAnimation.atlas");
+			fileSourceAnimation = String.format("AiDragonIdle");
 		}
 		animationAtlas = new TextureAtlas(Gdx.files.internal(fileSourceAtlas));
 		animation = new Animation<TextureRegion>(0.3f, animationAtlas.findRegions(fileSourceAnimation), PlayMode.LOOP);
