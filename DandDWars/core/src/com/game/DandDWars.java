@@ -928,6 +928,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				currTroop.state = Troop.ACTION.IDLE;
 				currTroop = null;
 			break;
+			case Input.Keys.P:
+				if(gameState == GAMEGS.GAMERUNNING){
+					if (currTroop != null) currTroop.state = Troop.ACTION.IDLE;
+					currTroop = null;
+					currTile = null;
+					if(gameState != GAMEGS.PAUSE) {
+						//Gdx.app.log("?", "game PAUSE");
+						gameState = GAMEGS.PAUSE;
+					}
+				}else if(gameState == GAMEGS.PAUSE){
+					gameState = GAMEGS.GAMERUNNING;
+				}
+			break;
+			case Input.Keys.O:
+				//Put music muting here
+			break;
 			case Input.Keys.M:
 			if(currTroop != null){
 				if (!currTroop.moved){
