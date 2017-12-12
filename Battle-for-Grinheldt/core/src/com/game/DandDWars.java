@@ -103,9 +103,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	int panOffsetX = 0;
 	int panOffsetY = 0;
+	
+	int helpPage = 0;
 
 	Texture startScreen;
-	Texture infoScreen;
+	Texture infoScreen1;
+	Texture infoScreen2;
+	Texture infoScreen3;
+	Texture infoScreen4;
+	Texture infoScreen5;
 	Texture pauseScreen;
 	Texture endRedScreen;
 	Texture endBlueScreen;
@@ -115,6 +121,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Rectangle infoBackButton;
 	Rectangle pauseButton;
 	Rectangle resumeButton;
+	Rectangle infoPlusButton;
+	Rectangle infoMinusButton;
 	
 	
 
@@ -130,6 +138,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
     Texture buttonOffPlaque;
 	Texture buttonOnPlaque;
+	Texture buttonTurnPlaque;
 	Texture redBanner;
 	Texture blueBanner;
 
@@ -291,21 +300,28 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		waterTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_water.png"));
 		buttonOffPlaque = new Texture(Gdx.files.internal("land_tiles/buttonOffPlaque.png"));
 		buttonOnPlaque = new Texture(Gdx.files.internal("land_tiles/buttonOnPlaque.png"));
+		buttonTurnPlaque = new Texture(Gdx.files.internal("land_tiles/buttonTurnPlaque.png"));
 		redBanner = new Texture(Gdx.files.internal("land_tiles/redBanner.png"));
 		blueBanner = new Texture(Gdx.files.internal("land_tiles/blueBanner.png"));	
 		
 		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
 		startButton = new Rectangle(140, 136, 120, 120);
-		infoScreen = new Texture(Gdx.files.internal("game_menus/DandInfo.png"));
+		infoScreen1 = new Texture(Gdx.files.internal("game_menus/DandInfo1.png"));
+		infoScreen2 = new Texture(Gdx.files.internal("game_menus/DandInfo2.png"));
+		infoScreen3 = new Texture(Gdx.files.internal("game_menus/DandInfo3.png"));
+		infoScreen4 = new Texture(Gdx.files.internal("game_menus/DandInfo4.png"));
+		infoScreen5 = new Texture(Gdx.files.internal("game_menus/DandInfo5.png"));
 		infoButton = new Rectangle(346, 147, 118, 120);
 		infoBackButton = new Rectangle(18, 18, 69, 66);
+		infoPlusButton = new Rectangle(365, 116, 35, 35);
+		infoMinusButton = new Rectangle(221, 116, 35, 35);
 		pauseButton = new Rectangle( screenw-31, screenh-34, 30, 32);
 		pauseScreen = new Texture(Gdx.files.internal("game_menus/pause.png"));
 		resumeButton = new Rectangle(234, 160, 130, 132);
-		attackButton = new Rectangle(screenw-130, 485, 90, 25);
-		moveButton = new Rectangle(screenw-130, 455, 90, 25);
-		nextTurnButton = new Rectangle (screenw-140, 520, 110, 25);
-		playerTurnBanner = new Rectangle(208,600,200,32);
+		attackButton = new Rectangle(screenw-135, 485, 100, 25);
+		moveButton = new Rectangle(screenw-135, 455, 100, 25);
+		nextTurnButton = new Rectangle (screenw-135, 515, 100, 25);
+		playerTurnBanner = new Rectangle(238,600,200,32);
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
 		endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
@@ -624,7 +640,23 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			case INFO:
 				batch.begin();
-				batch.draw(infoScreen, 0+panOffsetX, 0+panOffsetY);
+				switch(helpPage){
+				case 0:
+					batch.draw(infoScreen1, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 1:
+					batch.draw(infoScreen2, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 2:
+					batch.draw(infoScreen3, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 3:
+					batch.draw(infoScreen4, 0+panOffsetX, 0+panOffsetY);
+					break;
+				case 4:
+					batch.draw(infoScreen5, 0+panOffsetX, 0+panOffsetY);
+					break;
+				}
 				batch.end();
 			break;
 			case PAUSE:
@@ -664,11 +696,27 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						break;
 					}
 					case ARCHER: {
-						font.draw(batch, "Archer", screenw-115+panOffsetX, 435+panOffsetY);
+						font.draw(batch, "Archer", screenw-118+panOffsetX, 435+panOffsetY);
 						break;
 					}
 					case WIZARD: {
-						font.draw(batch, "Wizard", screenw-115+panOffsetX, 435+panOffsetY);
+						font.draw(batch, "Wizard", screenw-118+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case MYSTIC: {
+						font.draw(batch, "Mystic", screenw-118+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case DRAGON: {
+						font.draw(batch, "Dragon", screenw-120+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case ROGUE: {
+						font.draw(batch, "Rogue", screenw-120+panOffsetX, 435+panOffsetY);
+						break;
+					}
+					case BARBARIAN: {
+						font.draw(batch, "Barbarian", screenw-130+panOffsetX, 435+panOffsetY);
 						break;
 					}
 			}
@@ -754,8 +802,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		sr.setColor(Color.BLACK);
 		sr.rect( screenw-14, 613, 5, 17);
 		sr.rect( screenw-22, 613, 5, 17);
-		sr.setColor(Color.GREEN);
-		sr.rect(nextTurnButton.x, nextTurnButton.y, nextTurnButton.width, nextTurnButton.height);
 		sr.end();
 
 		batch.begin();
@@ -770,18 +816,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			else
 				batch.draw(buttonOffPlaque, moveButton.x+panOffsetX, moveButton.y+panOffsetY, moveButton.width, moveButton.height);
 		}
-		font.draw(batch, "END TURN", nextTurnButton.x+18+panOffsetX, nextTurnButton.y+15+panOffsetY);
+		batch.draw(buttonTurnPlaque, nextTurnButton.x+panOffsetX, nextTurnButton.y+panOffsetY, nextTurnButton.width, nextTurnButton.height);
+		font.draw(batch, "END TURN", nextTurnButton.x+5+panOffsetX, nextTurnButton.y+20+panOffsetY);
 		if (currTroop != null) {
 			if (!currTroop.moved)
-				font.draw(batch, "MOVE", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
+				font.draw(batch, "MOVE", moveButton.x+25+panOffsetX, moveButton.y+18+panOffsetY);
 			else
-				font.draw(batch, "MOVED", moveButton.x+19+panOffsetX, moveButton.y+18+panOffsetY);
+				font.draw(batch, "MOVED", moveButton.x+20+panOffsetX, moveButton.y+18+panOffsetY);
 				
 				
 			if (!currTroop.attacked)
-				font.draw(batch, "ATTACK", attackButton.x+13+panOffsetX, attackButton.y+18+panOffsetY);
+				font.draw(batch, "ATTACK", attackButton.x+15+panOffsetX, attackButton.y+18+panOffsetY);
 			else
-				font.draw(batch, "ATTACKED", attackButton.x+8+panOffsetX, attackButton.y+18+panOffsetY);
+				font.draw(batch, "ATTACKED", attackButton.x+6+panOffsetX, attackButton.y+18+panOffsetY);
 		}
 		switch (turnState) {
 				case PLAYER1TURN:
@@ -795,12 +842,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 	public void drawMinimap() {
 		//These offsets control the actual info
-	    int offsetX = (int)screenw-(landscape.getWidth()*3)-64;
-	    int offsetY = 69; // nice
+	    int offsetX = (landscape.getWidth()*3)-49;
+	    int offsetY = (int)screenh-190; // nice
 		//int offsetY = 200;
 
 	    
-	    batch.draw(troopScroll, screenw-256+panOffsetX, 5+panOffsetY, 256, 256);
+	    batch.draw(troopScroll, 2+panOffsetX, (int)screenh-256+panOffsetY, 256, 256, 0, 0, 32, 32, true, false);
 		//batch.draw(troopScroll, screenw-656+panOffsetX, 5+panOffsetY, 256, 256);
 	    batch.end();
 	    sr.begin(ShapeType.Filled);
@@ -1316,6 +1363,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					if(gameState != GAMEGS.START) {
 						//Gdx.app.log("?", "game STARTMENU");
 						gameState = GAMEGS.START;
+						helpPage = 0;
+					}
+				}
+				if (infoPlusButton.contains(screenX, screenY)) {
+					if (helpPage < 4) {
+						helpPage++;
+						//Gdx.app.log("Page: ", ""+helpPage);
+					}
+				}
+				if (infoMinusButton.contains(screenX, screenY)) {
+					if (helpPage > 0) {
+						helpPage--;
+						//Gdx.app.log("Page: ", ""+helpPage);
 					}
 				}
 			break;
