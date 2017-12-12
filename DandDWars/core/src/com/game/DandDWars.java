@@ -96,6 +96,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	//UI Control
 	boolean troopScrollShow;
+	boolean panCameraCheck;
+	float panCameraTick;
+	float panCameraCount;
+	int panCameraDirection; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
 	
 	int panOffsetX = 0;
 	int panOffsetY = 0;
@@ -272,6 +276,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
         
         camera.update();
 
+		panCameraCheck = false;
+		panCameraTick = 0.15f;
+		panCameraCount = 0.0f;
+		panCameraDirection = 0; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
+		
 		troopScrollShow = false;
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
@@ -558,6 +567,48 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}else{
 					//Add rolled up scroll here
 				}
+				if(panCameraDirection != 0){
+					panCameraCount += Gdx.graphics.getDeltaTime();
+					if(panCameraCount > panCameraTick){
+						panCameraCount = 0.0f;
+						switch(panCameraDirection){
+							case 1:
+								if (panOffsetY+32 < 672) {
+									camera.translate(0, 32);
+									camera.update();
+									panOffsetY+=32;
+									panCameraDirection = 1;
+								}								
+							break;
+							case 2:
+								if (panOffsetX+32 < 672) {
+									camera.translate(32, 0);
+									camera.update();
+									panOffsetX+=32;
+									panCameraDirection = 2;
+								}
+							break;
+							case 3:
+								if (panOffsetY-32 > -32) {
+									camera.translate(0, -32);
+									camera.update();
+									panOffsetY-=32;
+									panCameraDirection = 3;
+								}				
+							break;
+							case 4:
+								if (panOffsetX-32 > -32) {
+									camera.translate(-32, 0);
+									camera.update();
+									panOffsetX-=32;
+									panCameraDirection = 4;
+								}
+							break;
+							
+						}	
+					}	
+				}
+				
 				batch.end();
 				
 				
@@ -694,6 +745,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				break;
 		}
 		
+		//batch.draw(nexTurnButton.x, nextTurnButton.y);
 		batch.end();
 
 		sr.begin(ShapeType.Filled);
@@ -740,11 +792,14 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	}
 
 	public void drawMinimap() {
+		//These offsets control the actual info
 	    int offsetX = (int)screenw-(landscape.getWidth()*3)-64;
 	    int offsetY = 69; // nice
+		//int offsetY = 200;
 
 	    
 	    batch.draw(troopScroll, screenw-256+panOffsetX, 5+panOffsetY, 256, 256);
+		//batch.draw(troopScroll, screenw-656+panOffsetX, 5+panOffsetY, 256, 256);
 	    batch.end();
 	    sr.begin(ShapeType.Filled);
 	    
@@ -907,6 +962,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(0, 32);
 					camera.update();
 					panOffsetY+=32;
+					panCameraDirection = 1;
 				}
 			break;
 			case Input.Keys.DOWN:
@@ -914,6 +970,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(0, -32);
 					camera.update();
 					panOffsetY-=32;
+					panCameraDirection = 3;
 				}
 			break;
 			case Input.Keys.LEFT:
@@ -921,6 +978,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(-32, 0);
 					camera.update();
 					panOffsetX-=32;
+					panCameraDirection = 4;
 				}
 			break;
 			case Input.Keys.RIGHT:
@@ -928,6 +986,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					camera.translate(32, 0);
 					camera.update();
 					panOffsetX+=32;
+					panCameraDirection = 2;
 				}
 			break;
 			//for now, space ends a player turn
@@ -940,6 +999,14 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	@Override
     public boolean keyUp(int keycode) {
+		switch(keycode){
+			case Input.Keys.UP:
+			case Input.Keys.DOWN:
+			case Input.Keys.RIGHT:
+			case Input.Keys.LEFT:
+				panCameraDirection = 0;
+			break;
+		}
 		return false;
     }
 
