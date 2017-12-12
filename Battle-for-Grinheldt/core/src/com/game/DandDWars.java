@@ -1166,7 +1166,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 								for (Troop t2 : BlueTroops) {
 									if(t2.bounds.contains(screenX+panOffsetX, screenY+panOffsetY) && drawTiles[screenX/32+panOffsetX/32][screenY/32+panOffsetY/32]){
 										//Gdx.app.log("?", "attackin");
-										int temp = currTroop.giveDamage(t2.defense);
+										int defenseTemp = t2.defense;
+										if (!(t2.attacked))
+											defenseTemp+=2;
+										if (!(t2.moved))
+											defenseTemp++;
+										int temp = currTroop.giveDamage(defenseTemp);
 										displayDamageValue = String.format("%d", temp);
 										displayDamageValuePos.x = t2.getPos().x + 10;
 										displayDamageValuePos.y = t2.getPos().y + 22;
@@ -1201,7 +1206,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for (EnemyTroop e : EnemyTroops) {
 									if(e.bounds.contains(screenX+panOffsetX, screenY+panOffsetY) && drawTiles[screenX/32+panOffsetX/32][screenY/32+panOffsetY/32]){
 										//Gdx.app.log("?", "attackin");
-										int temp = currTroop.giveDamage(e.defense);
+										int defenseTemp = e.defense;
+										if (!(e.attacked))
+											defenseTemp+=2;
+										if (!(e.moved))
+											defenseTemp++;
+										int temp = currTroop.giveDamage(defenseTemp);
 										displayDamageValue = String.format("%d", temp);
 										displayDamageValuePos.x = e.getPos().x + 10;
 										displayDamageValuePos.y = e.getPos().y + 22;
@@ -1236,7 +1246,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							if (turnState == TURNGS.PLAYER2TURN) {
 								for (Troop t : RedTroops) {
 									if(t.bounds.contains(screenX+panOffsetX, screenY+panOffsetY) && drawTiles[screenX/32+panOffsetX/32][screenY/32+panOffsetY/32]){//DOTHISTO EVERYTHING
-										int temp = currTroop.giveDamage(t.defense);
+										int defenseTemp = t.defense;
+										if (!(t.attacked))
+											defenseTemp+=2;
+										if (!(t.moved))
+											defenseTemp++;
+										int temp = currTroop.giveDamage(defenseTemp);
 										displayDamageValue = String.format("%d", temp);
 										displayDamageValuePos.x = t.getPos().x + 10;
 										displayDamageValuePos.y = t.getPos().y + 22;
