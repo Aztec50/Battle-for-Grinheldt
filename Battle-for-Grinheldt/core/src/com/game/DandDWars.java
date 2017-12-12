@@ -1020,15 +1020,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		RedTroops.add((Troop)troop);
 		
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("knight", "blue", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		troop2 = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "blue", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "blue", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		troop2 = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "blue", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		troop2 = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "blue", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		troop2 = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
 		EnemyTroops.add((EnemyTroop)troop2);
 		
 		
