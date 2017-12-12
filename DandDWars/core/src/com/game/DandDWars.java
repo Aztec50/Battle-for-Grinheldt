@@ -170,6 +170,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	GraphGenerator GG;
 	
 	//Music and Sound
+	float musicVol;
 	Music music;
 	Sound sword;
 	Sound fire;
@@ -260,6 +261,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		displayDamageTimeCap = 1.0f;
 		displayDamage = false;	
   
+		musicVol = 1;
 		music = Gdx.audio.newMusic(Gdx.files.internal("audio/music/Bumba_Crossing.mp3"));
 		music.play();
 		music.setLooping(true);
@@ -944,6 +946,17 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case Input.Keys.O:
 				//Put music muting here
 			break;
+			case Input.Keys.PLUS:
+				musicVol += 0.05;
+				if(musicVol > 1.0f) musicVol = 1.0f;
+				music.setVolume(musicVol);
+			break;
+			case Input.Keys.MINUS:
+				musicVol -= 0.05;
+				if(musicVol < 0.0f) musicVol = 0.0f;
+				music.setVolume(musicVol);
+			break;
+			
 			case Input.Keys.M:
 			if(currTroop != null){
 				if (!currTroop.moved){
