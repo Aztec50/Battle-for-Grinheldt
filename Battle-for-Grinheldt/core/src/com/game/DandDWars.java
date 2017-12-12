@@ -85,6 +85,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	}
 
 	GAMEGS gameState;
+	boolean AIflag;
+	
 
 	//textures for UI
 	Texture troopScroll;
@@ -383,7 +385,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 9, troopOn, troopTeam);
 	//RedTroops.add((Troop)troop);
 	//EnemyTroops.add((EnemyTroop)enemy);
-  
+		
 	}
 
 	@Override
@@ -499,7 +501,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for(int j = 0; j < landscape.getHeight(); j++) {
 								//if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
 								//if(drawTiles[i][j] == true) batch.draw(movementTile, i*16, j*16);
-                if(drawTiles[i][j] == true) batch.draw(movementTile, i*32, j*32, 32, 32);
+								if(drawTiles[i][j] == true) batch.draw(movementTile, i*32, j*32, 32, 32);
 							}
 						}
 
@@ -510,7 +512,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for(int j = 0; j < landscape.getHeight(); j++) {
 								//if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
 								//if(drawTiles[i][j] == true) batch.draw(attackTile, i*16, j*16);
-                if(drawTiles[i][j] == true) batch.draw(attackTile, i*32, j*32, 32, 32);
+								if(drawTiles[i][j] == true) batch.draw(attackTile, i*32, j*32, 32, 32);
 							}
 						}
 
@@ -1005,7 +1007,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	public void loadMap1(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
+		AIflag = false; //For testing
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 14, 17, troopOn, troopTeam);
@@ -1020,17 +1025,29 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		RedTroops.add((Troop)troop);
 		
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		
+		if(AIflag == true){
+			troopAI = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("knight", "blue", 20, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+			troop2 = new Troop("knight", "blue", 20, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+			troop2 = new Troop("knight", "blue", 21, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+			troop2 = new Troop("knight", "blue", 21, 24, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+			troop2 = new Troop("knight", "blue", 22, 24, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);			
+		}
 		
 	}
 	public void loadMap2(){
@@ -1055,10 +1072,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			case Input.Keys.ENTER:
 				if (gameState == GAMEGS.GAMERUNNING) {
-					if (turnState == TURNGS.PLAYER1TURN)
-						turnState = TURNGS.PLAYER2UPKEEP;
-					else if (turnState == TURNGS.PLAYER2TURN)
-						turnState = TURNGS.AIUPKEEPANDTURN;
+					if(AIflag == false){
+						if (turnState == TURNGS.PLAYER1TURN)
+							turnState = TURNGS.PLAYER2UPKEEP;
+						else if(turnState == TURNGS.PLAYER2TURN)
+							turnState = TURNGS.PLAYER1UPKEEP;
+					}else if(AIflag == true){
+						if(turnState == TURNGS.PLAYER1TURN)
+							turnState = TURNGS.AIUPKEEPANDTURN;
+					}
 				}
 			break;
 			case Input.Keys.P:
@@ -1217,10 +1239,15 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					//check if end turn is pressed
 					else if (nextTurnButton.contains(screenX, screenY)) { 
 						if (gameState == GAMEGS.GAMERUNNING) {
-							if (turnState == TURNGS.PLAYER1TURN)
-								turnState = TURNGS.PLAYER2UPKEEP;
-							else if (turnState == TURNGS.PLAYER2TURN)
-								turnState = TURNGS.AIUPKEEPANDTURN;
+							if(AIflag == false){
+								if (turnState == TURNGS.PLAYER1TURN)
+									turnState = TURNGS.PLAYER2UPKEEP;
+								else if(turnState == TURNGS.PLAYER2TURN)
+									turnState = TURNGS.PLAYER1UPKEEP;
+							}else if(AIflag == true){
+								if(turnState == TURNGS.PLAYER1TURN)
+									turnState = TURNGS.AIUPKEEPANDTURN;
+							}
 						}
 					} 
 					//checks if attack button was pressed
