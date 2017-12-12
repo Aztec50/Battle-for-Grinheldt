@@ -232,8 +232,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
 		gameState = GAMEGS.START;
 		
-
-		currentMap = "maps/TestingMap.tmx";
+		
+		mapLoader();
+		/*
+		//currentMap = "maps/TestingMap.tmx";
+		currentMap = "maps/Map1.tmx";
 		tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
@@ -258,7 +261,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				drawTiles[i][j] = false;
 			}
 		}
-		
+		*/
 		movementTile = new Texture(Gdx.files.internal("land_tiles/tile_movement.png"));
 		attackTile = new Texture(Gdx.files.internal("land_tiles/tile_attack.png"));
 		highlightTile = new Texture(Gdx.files.internal("land_tiles/tile_highlight.png"));
@@ -327,25 +330,25 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
 		endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		
-		for (int i = 0; i < 10; i++) {
-		    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
-			//EnemyTroop troop2 = new EnemyTroop("knight", "blue", i+7, 5, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			RedTroops.add((Troop)troop);
-			//EnemyTroops.add((EnemyTroop)troop2);
-		}
-		for (int i = 0; i < 2; i++) {
-		    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
-			EnemyTroop troop2 = new EnemyTroop("wizard", "blue", i+9, 11, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			RedTroops.add((Troop)troop);
-			EnemyTroops.add((EnemyTroop)troop2);
-		}
-		
-		for (int i = 0; i < 5; i++) {
-		    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
-			EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			RedTroops.add((Troop)troop);
-			EnemyTroops.add((EnemyTroop)troop2);
-		}
+		//for (int i = 0; i < 10; i++) {
+		//    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
+		//	//EnemyTroop troop2 = new EnemyTroop("knight", "blue", i+7, 5, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		//	RedTroops.add((Troop)troop);
+		//	//EnemyTroops.add((EnemyTroop)troop2);
+		//}
+		//for (int i = 0; i < 2; i++) {
+		//    Troop troop = new Troop("wizard", "red", i+10, 2, troopOn, troopTeam);
+		//	EnemyTroop troop2 = new EnemyTroop("wizard", "blue", i+9, 11, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		//	RedTroops.add((Troop)troop);
+		//	EnemyTroops.add((EnemyTroop)troop2);
+		//}
+		//
+		//for (int i = 0; i < 5; i++) {
+		//    Troop troop = new Troop("archer", "red", i+8, 3, troopOn, troopTeam);
+		//	EnemyTroop troop2 = new EnemyTroop("archer", "blue", i+10, 12, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		//	RedTroops.add((Troop)troop);
+		//	EnemyTroops.add((EnemyTroop)troop2);
+		//}
 		
   
   
@@ -370,8 +373,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//RedTroops.add((Troop)troop);
 		//
         //
-		Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
-		BlueTroops.add((Troop)troop2);  
+		//Troop troop2 = new Troop("wizard", "blue", 18, 34, troopOn, troopTeam);
+		//BlueTroops.add((Troop)troop2);  
   
   
   
@@ -969,6 +972,78 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			*/
 			drawAttackTiles(troopX, troopY, atkMin, atkMax, draw+1);
 		} // draw here
+	}
+	
+	public void mapLoader(){
+		currentMap = "maps/Map1.tmx";
+		tiledMap = new TmxMapLoader().load(currentMap);
+		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
+		graph = GG.generateGraph(landscape);
+
+		troopOn = new boolean[landscape.getWidth()][landscape.getHeight()];
+		troopTeam = new boolean[landscape.getWidth()][landscape.getHeight()];
+
+ 		for (int i = 0; i < landscape.getWidth(); i++) {
+			for(int j = 0; j < landscape.getHeight(); j++) {
+					troopOn[i][j] = landscape.getCell(i, j).getTile().getProperties().get("troopOn", Boolean.class);
+					troopTeam[i][j] = landscape.getCell(i, j).getTile().getProperties().get("troopTeam", Boolean.class);
+			}
+		}
+		
+		drawCheck = false;
+		hasDrawnTiles = false;
+		drawTiles = new boolean[landscape.getWidth()][landscape.getHeight()];
+		
+		for (int i = 0; i < landscape.getWidth(); i++) {
+			for(int j = 0; j < landscape.getHeight(); j++) {
+				drawTiles[i][j] = false;
+			}
+		}
+		loadMap1();	
+	}
+	
+	public void loadMap1(){
+		Troop troop;
+		EnemyTroop troop2;
+		
+		//Load Player Troops
+		troop = new Troop("knight", "red", 14, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("knight", "red", 14, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("knight", "red", 15, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("knight", "red", 15, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("knight", "red", 13, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("knight", "blue", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "blue", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "blue", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "blue", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "blue", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		
+	}
+	public void loadMap2(){
+		
+	}
+	public void loadMap3(){
+		
+	}
+	public void loadMap4(){
+		
+	}
+	public void loadMap5(){
+		
 	}
 	
 	@Override
