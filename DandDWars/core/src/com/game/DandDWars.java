@@ -924,6 +924,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	@Override
     public boolean keyDown(int keycode) {
 		switch(keycode){
+			case Input.Keys.ESCAPE:
+				currTroop.state = Troop.ACTION.IDLE;
+				currTroop = null;
+			break;
 			case Input.Keys.M:
 			if(currTroop != null){
 				if (!currTroop.moved){
