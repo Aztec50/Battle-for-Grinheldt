@@ -2230,6 +2230,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					}
 				}
 			break;
+			case ENDAI:
+			case ENDRED:
+			case ENDBLUE:
+				if (resumeButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.START) {
+						//Gdx.app.log("?", "game resume");
+						camera.translate(-panOffsetX, -panOffsetY);
+						camera.update();
+						panOffsetX=0;
+						panOffsetY=0;
+						gameState = GAMEGS.START;
+					}
+				}
+			break;
 		}
 
 
