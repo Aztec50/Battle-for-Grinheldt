@@ -363,7 +363,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		playerTurnBanner = new Rectangle(238,600,200,32);
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
-endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
+		endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		
 		//for (int i = 0; i < 10; i++) {
 		//    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
@@ -452,8 +452,8 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER1TURN;
-						if (RedTroops.random() == null && EnemyTroops.random() == null) {
-							gameState = GAMEGS.ENDBLUE;
+						if (BlueTroops.random() == null && EnemyTroops.random() == null) {
+							gameState = GAMEGS.ENDRED;
 						}
 					break;
 					case PLAYER2UPKEEP:
@@ -465,8 +465,8 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER2TURN;
-						if (BlueTroops.random() == null && EnemyTroops.random() == null) { //returns null if nothing in the "array"
-							gameState = GAMEGS.ENDRED;
+						if (RedTroops.random() == null && EnemyTroops.random() == null) { //returns null if nothing in the "array"
+							gameState = GAMEGS.ENDBLUE;
 						}
 					break;
 					case AIUPKEEPANDTURN:
@@ -1063,6 +1063,9 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 			}
 		}
 		
+		RedTroops = new Array<Troop>();
+		BlueTroops = new Array<Troop>();
+		EnemyTroops = new Array<EnemyTroop>();
 		
 		switch(mapNum){
 			case 1: loadMap1();	
@@ -1088,9 +1091,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		EnemyTroop troopAI;
 		//AIflag = true; //For testing
 		
-		RedTroops = new Array<Troop>();
-		BlueTroops = new Array<Troop>();
-		EnemyTroops = new Array<EnemyTroop>();
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 14, 17, troopOn, troopTeam);
@@ -1103,18 +1104,30 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		RedTroops.add((Troop)troop);
 		troop = new Troop("knight", "red", 13, 18, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("knight", "blue", 20, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 20, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 21, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 21, 24, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 22, 24, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);	
+		}
 		camera.translate(288, 384);
 		camera.update();
 		panOffsetX+=288;
@@ -1123,7 +1136,9 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 	}
 	public void loadMap2(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 20, 18, troopOn, troopTeam);
@@ -1141,23 +1156,38 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		troop = new Troop("archer", "red", 23, 17, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
 		
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 22, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 19, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 21, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 22, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 23, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		
+			troopAI = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 22, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 19, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 21, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 22, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 23, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("knight", "blue", 20, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 22, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 19, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 20, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 21, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 22, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 23, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+		}
 		camera.translate(384, 384);
 		camera.update();
 		panOffsetX+=384;
@@ -1165,7 +1195,9 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 	}
 	public void loadMap3(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 20, 18, troopOn, troopTeam);
@@ -1185,24 +1217,42 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		troop = new Troop("wizard", "red", 23, 16, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
 		
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);      
-		troop2 = new EnemyTroop("knight", "ai", 22, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);    
-		troop2 = new EnemyTroop("archer", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);    
-		troop2 = new EnemyTroop("archer", "ai", 21, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);    
-		troop2 = new EnemyTroop("archer", "ai", 22, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);    
-		troop2 = new EnemyTroop("wizard", "ai", 19, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);    
-		troop2 = new EnemyTroop("wizard", "ai", 21, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);    
-		troop2 = new EnemyTroop("wizard", "ai", 23, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);      
+			troopAI = new EnemyTroop("knight", "ai", 22, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);    
+			troopAI = new EnemyTroop("archer", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);    
+			troopAI = new EnemyTroop("archer", "ai", 21, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);    
+			troopAI = new EnemyTroop("archer", "ai", 22, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);    
+			troopAI = new EnemyTroop("wizard", "ai", 19, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);    
+			troopAI = new EnemyTroop("wizard", "ai", 21, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);    
+			troopAI = new EnemyTroop("wizard", "ai", 23, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("knight", "blue", 20, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 22, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 20, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 21, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 22, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("wizard", "blue", 19, 27, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("wizard", "blue", 21, 27, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("wizard", "blue", 23, 27, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+		}
 		
 		camera.translate(384, 384);
 		camera.update();
@@ -1211,7 +1261,9 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 	}
 	public void loadMap4(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
+
 		
 		//Load Player Troops          
 		troop = new Troop("knight", "red", 13, 17, troopOn, troopTeam);
@@ -1237,30 +1289,54 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		troop = new Troop("wizard", "red", 9, 13, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
 		
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("barbarian", "ai", 27, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 28, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 27, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 28, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 29, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 27, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 28, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 29, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 27, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 28, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 29, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("barbarian", "ai", 27, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 28, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 27, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 28, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 29, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 27, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 28, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 29, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 27, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 28, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 29, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("barbarian", "blue", 27, 22, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 28, 22, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 27, 21, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 28, 21, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 29, 21, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 27, 20, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 28, 20, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 29, 20, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 27, 19, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 28, 19, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 29, 19, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+		}
 		camera.translate(224, 320);
 		camera.update();
 		panOffsetX+=224;
@@ -1268,7 +1344,8 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 	}
 	public void loadMap5(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
 		
 		//Load Player Troops
 		troop = new Troop("barbarian", "red", 19, 14, troopOn, troopTeam);
@@ -1288,34 +1365,62 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		troop = new Troop("wizard", "red", 23, 13, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
 		
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("mystic", "ai", 11, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("mystic", "ai", 13, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("mystic", "ai", 10, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("mystic", "ai", 12, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("mystic", "ai", 15, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 32, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 31, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 32, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 31, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 32, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 31, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 32, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 31, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("mystic", "ai", 11, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("mystic", "ai", 13, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("mystic", "ai", 10, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("mystic", "ai", 12, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("mystic", "ai", 15, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 32, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 31, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 32, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 31, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 32, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 31, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 32, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 31, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("mystic", "blue", 11, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("mystic", "blue", 13, 27, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("mystic", "blue", 10, 24, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("mystic", "blue", 12, 25, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("mystic", "blue", 15, 26, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 32, 24, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 31, 24, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 32, 23, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 31, 23, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 32, 22, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 31, 22, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 32, 25, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);                                
+			troop2 = new Troop("rogue", "blue", 31, 25, troopOn, troopTeam );
+			BlueTroops.add((Troop)troop2);
+		}
 		
 		camera.translate(384, 384);
 		camera.update();
@@ -1324,7 +1429,8 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 	}
 	public void loadMap6(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
 		
 		//Load Player Troops         
 		troop = new Troop("knight", "red", 29, 16, troopOn, troopTeam);
@@ -1359,12 +1465,18 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		
 		
 		
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("dragon", "ai", 17, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("dragon", "ai", 17, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("dragon", "ai", 17, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("dragon", "ai", 17, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("dragon", "blue", 17, 23, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("dragon", "blue", 17, 23, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+		}
 		camera.translate(384, 384);
 		camera.update();
 		panOffsetX+=384;
@@ -1373,7 +1485,10 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 	
 	public void loadMap7(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
+		
+
 		
 		//Load Player Troops         
 		troop = new Troop("knight", "red", 13, 5, troopOn, troopTeam);
@@ -1445,75 +1560,144 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		troop = new Troop("dragon", "red", 17, 2, troopOn, troopTeam);
 		RedTroops.add((Troop)troop);
 		
-		
+		if(AIflag){
 		//Load Enemy Troops
-		troop2 = new EnemyTroop("knight", "ai", 18, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 19, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 20, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 21, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 22, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 23, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 24, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 25, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("knight", "ai", 26, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("knight", "ai", 18, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 19, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 20, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 21, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 22, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 23, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 24, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 25, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("knight", "ai", 26, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			
+			troopAI = new EnemyTroop("barbarian", "ai", 18, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 19, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 22, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 25, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("barbarian", "ai", 26, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			
+			troopAI = new EnemyTroop("archer", "ai", 19, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 20, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 21, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 22, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 23, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 24, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("archer", "ai", 25, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
 		
-		troop2 = new EnemyTroop("barbarian", "ai", 18, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 19, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 22, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 25, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("barbarian", "ai", 26, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troopAI = new EnemyTroop("wizard", "ai", 17, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("wizard", "ai", 18, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("wizard", "ai", 26, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("wizard", "ai", 27, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			
+			troopAI = new EnemyTroop("rogue", "ai", 18, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 20, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 22, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 24, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			troopAI = new EnemyTroop("rogue", "ai", 26, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+			
+			troopAI = new EnemyTroop("dragon", "ai", 22, 33, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+			EnemyTroops.add((EnemyTroop)troopAI);
+		}else{
+			troop2 = new Troop("knight", "blue", 18, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 19, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 20, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 21, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 22, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 23, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 24, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 25, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("knight", "blue", 26, 30, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			
+			troop2 = new Troop("barbarian", "blue", 18, 29, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 19, 29, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 22, 29, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 25, 29, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                                  
+			troop2 = new Troop("barbarian", "blue", 26, 29, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+			
+			troop2 = new Troop("archer", "blue", 19, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 20, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 21, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 22, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 23, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 24, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("archer", "blue", 25, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
 		
-		troop2 = new EnemyTroop("archer", "ai", 19, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 20, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 21, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 22, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 23, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 24, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("archer", "ai", 25, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		
-		troop2 = new EnemyTroop("wizard", "ai", 17, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("wizard", "ai", 18, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("wizard", "ai", 26, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("wizard", "ai", 27, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		
-		troop2 = new EnemyTroop("rogue", "ai", 18, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 20, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 22, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 24, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		troop2 = new EnemyTroop("rogue", "ai", 26, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
-		
-		troop2 = new EnemyTroop("dragon", "ai", 22, 33, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-		EnemyTroops.add((EnemyTroop)troop2);
+			troop2 = new Troop("wizard", "blue", 17, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("wizard", "blue", 18, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("wizard", "blue", 26, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			troop2 = new Troop("wizard", "blue", 27, 31, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                               
+			
+			troop2 = new Troop("rogue", "blue", 18, 28, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                              
+			troop2 = new Troop("rogue", "blue", 20, 28, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                              
+			troop2 = new Troop("rogue", "blue", 22, 28, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                              
+			troop2 = new Troop("rogue", "blue", 24, 28, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);                              
+			troop2 = new Troop("rogue", "blue", 26, 28, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+			
+			troop2 = new Troop("dragon", "blue", 22, 33, troopOn, troopTeam);
+			BlueTroops.add((Troop)troop2);
+		}
 		camera.translate(384, 384);
 		camera.update();
 		panOffsetX+=384;
@@ -1568,7 +1752,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				music.setVolume(musicVol);
 			break;
 			
-			case Input.Keys.M:
+			case Input.Keys.NUM_1:
 			if(currTroop != null){
 				if (!currTroop.moved){
 					currTroop.state = Troop.ACTION.MOVE;
@@ -1581,7 +1765,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			}
 			break;
-			case Input.Keys.A:
+			case Input.Keys.NUM_2:
 			if(currTroop != null) {
 				if (!currTroop.attacked){
 					currTroop.state = Troop.ACTION.ATTACK;
@@ -1594,7 +1778,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			}
 			break;
-			case Input.Keys.D:
+			case Input.Keys.M:
 			if(troopScrollShow == false){
 				troopScrollShow = true;
 			}else{
@@ -1602,6 +1786,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 			}
 			break;
 			case Input.Keys.UP:
+			case Input.Keys.W:
 				if (panOffsetY+32 < 672) {
 					camera.translate(0, 32);
 					camera.update();
@@ -1610,6 +1795,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			break;
 			case Input.Keys.DOWN:
+			case Input.Keys.S:
 				if (panOffsetY-32 > -32) {
 					camera.translate(0, -32);
 					camera.update();
@@ -1618,6 +1804,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			break;
 			case Input.Keys.LEFT:
+			case Input.Keys.A:
 				if (panOffsetX-32 > -32) {
 					camera.translate(-32, 0);
 					camera.update();
@@ -1626,6 +1813,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			break;
 			case Input.Keys.RIGHT:
+			case Input.Keys.D:
 				if (panOffsetX+32 < 672) {
 					camera.translate(32, 0);
 					camera.update();
@@ -1648,6 +1836,10 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 			case Input.Keys.DOWN:
 			case Input.Keys.RIGHT:
 			case Input.Keys.LEFT:
+			case Input.Keys.W:
+			case Input.Keys.A:
+			case Input.Keys.S:
+			case Input.Keys.D:
 				panCameraDirection = 0;
 			break;
 		}
@@ -1689,10 +1881,22 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 					//check if end turn is pressed
 					else if (nextTurnButton.contains(screenX, screenY)) { 
 						if (gameState == GAMEGS.GAMERUNNING) {
-							if (turnState == TURNGS.PLAYER1TURN)
-								turnState = TURNGS.PLAYER2UPKEEP;
-							else if (turnState == TURNGS.PLAYER2TURN)
-								turnState = TURNGS.AIUPKEEPANDTURN;
+							if(AIflag == false){
+								if (turnState == TURNGS.PLAYER1TURN)
+									turnState = TURNGS.PLAYER2UPKEEP;
+								else if(turnState == TURNGS.PLAYER2TURN)
+									turnState = TURNGS.PLAYER1UPKEEP;
+							}else if(AIflag == true){
+								if(turnState == TURNGS.PLAYER1TURN)
+									turnState = TURNGS.AIUPKEEPANDTURN;
+							}
+							
+							
+							
+							//if (turnState == TURNGS.PLAYER1TURN)
+							//	turnState = TURNGS.PLAYER2UPKEEP;
+							//else if (turnState == TURNGS.PLAYER2TURN)
+							//	turnState = TURNGS.AIUPKEEPANDTURN;
 						}
 					} 
 					//checks if attack button was pressed
@@ -2023,6 +2227,20 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 					if(gameState != GAMEGS.GAMERUNNING) {
 						//Gdx.app.log("?", "game resume");
 						gameState = GAMEGS.GAMERUNNING;
+					}
+				}
+			break;
+			case ENDAI:
+			case ENDRED:
+			case ENDBLUE:
+				if (resumeButton.contains(screenX, screenY)) { 
+					if(gameState != GAMEGS.START) {
+						//Gdx.app.log("?", "game resume");
+						camera.translate(-panOffsetX, -panOffsetY);
+						camera.update();
+						panOffsetX=0;
+						panOffsetY=0;
+						gameState = GAMEGS.START;
 					}
 				}
 			break;
