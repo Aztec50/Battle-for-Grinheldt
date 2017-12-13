@@ -61,6 +61,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	BitmapFont damageFont;
 	
 	String currentMap;
+	int currentMapNum;
 	
 	//turn game states
 	enum TURNGS {
@@ -76,6 +77,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//overall game game states
 	enum GAMEGS {
 		START,
+		LEVELSELECT,
 		INFO,
 		GAMERUNNING,
 		PAUSE,
@@ -85,7 +87,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	}
 
 	GAMEGS gameState;
-
+	boolean AIflag;
+	
 	//textures for UI
 	Texture troopScroll;
 	Texture plainsTroopScroll;
@@ -107,6 +110,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	int helpPage = 0;
 
 	Texture startScreen;
+	Texture levelSelectScreen;
 	Texture infoScreen1;
 	Texture infoScreen2;
 	Texture infoScreen3;
@@ -117,6 +121,19 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture endBlueScreen;
 	Texture endAIScreen;
 	Rectangle startButton;
+	Rectangle opponentSelectOutline;
+	Rectangle selectVsPlayerButton;
+	Rectangle selectVsAiButton;
+	Rectangle mapSelectOutline;
+	Rectangle map1Button;
+	Rectangle map2Button;
+	Rectangle map3Button;
+	Rectangle map4Button;
+	Rectangle map5Button;
+	Rectangle map6Button;
+	Rectangle map7Button;
+	Rectangle playGameButton;
+	Rectangle levelSelectBackButton;
 	Rectangle infoButton;
 	Rectangle infoBackButton;
 	Rectangle pauseButton;
@@ -192,6 +209,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		screenw = 640f; //screen resolution
         screenh = 640f;  //screen resolution
 		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
+		currentMapNum = 0;
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -313,6 +331,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
 		startButton = new Rectangle(140, 136, 120, 120);
+		levelSelectScreen = new Texture(Gdx.files.internal("game_menus/levelselect.png"));
+		opponentSelectOutline = new Rectangle(-500,-500,200,56);
+		selectVsPlayerButton = new Rectangle(18,544,200,56);
+		selectVsAiButton = new Rectangle(422,544,200,56);
+		mapSelectOutline = new Rectangle(-500,-500,200,102);
+		map1Button = new Rectangle(18,352,200,102);
+		map2Button = new Rectangle(220,352,200,102);
+		map3Button = new Rectangle(422,352,200,102);
+		map4Button = new Rectangle(18,248,200,102);
+		map5Button = new Rectangle(220,248,200,102);
+		map6Button = new Rectangle(422,248,200,102);
+		map7Button = new Rectangle(220,144,200,102);
+		playGameButton = new Rectangle(220,45,200,30);
+		levelSelectBackButton = new Rectangle(18, 18, 69, 66);
 		infoScreen1 = new Texture(Gdx.files.internal("game_menus/DandInfo1.png"));
 		infoScreen2 = new Texture(Gdx.files.internal("game_menus/DandInfo2.png"));
 		infoScreen3 = new Texture(Gdx.files.internal("game_menus/DandInfo3.png"));
@@ -331,7 +363,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		playerTurnBanner = new Rectangle(238,600,200,32);
 		endRedScreen = new Texture(Gdx.files.internal("game_menus/endRed.png"));
 		endBlueScreen = new Texture(Gdx.files.internal("game_menus/endBlue.png"));
-		endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
+endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 		
 		//for (int i = 0; i < 10; i++) {
 		//    Troop troop = new Troop("knight", "red", i+6, 4, troopOn, troopTeam);
@@ -1001,6 +1033,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Node.Indexer.index = 0;
 		
 		GG = new GraphGenerator();
+		
+		
+		
+		//comment
 		
 		tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
@@ -1889,9 +1925,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			case START: 
 				if (startButton.contains(screenX, screenY)) { 
-					if(gameState != GAMEGS.GAMERUNNING) {
+					if(gameState != GAMEGS.LEVELSELECT) {
 						//Gdx.app.log("?", "game START");
-						gameState = GAMEGS.GAMERUNNING;
+						//gameState = GAMEGS.GAMERUNNING;
+						gameState = GAMEGS.LEVELSELECT;
 					}
 				}
 				if (infoButton.contains(screenX, screenY)) { 
@@ -1900,6 +1937,65 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						gameState = GAMEGS.INFO;
 					}
 				}
+			break;
+			case LEVELSELECT:
+				if(levelSelectBackButton.contains(screenX, screenY)){
+					if(gameState != GAMEGS.START){
+						gameState = GAMEGS.START;
+					}
+				}
+				if(map1Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map1Button.x;
+					mapSelectOutline.y = map1Button.y;
+					currentMapNum = 1;
+				}	
+				if(map2Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map2Button.x;
+					mapSelectOutline.y = map2Button.y;
+					currentMapNum = 2;					
+				}                                       
+				if(map3Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map3Button.x;
+					mapSelectOutline.y = map3Button.y;
+					currentMapNum = 3;					
+				}                                       
+				if(map4Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map4Button.x;
+					mapSelectOutline.y = map4Button.y;    
+					currentMapNum = 4;					
+				}                                       
+				if(map5Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map5Button.x;
+					mapSelectOutline.y = map5Button.y;         
+					currentMapNum = 5;					
+				}                                       
+				if(map6Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map6Button.x;
+					mapSelectOutline.y = map6Button.y;             
+					currentMapNum = 6;					
+				}                                       
+				if(map7Button.contains(screenX, screenY)){
+					mapSelectOutline.x = map7Button.x;
+					mapSelectOutline.y = map7Button.y;
+					currentMapNum = 7;
+				}
+				if(selectVsAiButton.contains(screenX, screenY) || AIflag == true){
+					opponentSelectOutline.x = selectVsAiButton.x;
+					opponentSelectOutline.y = selectVsAiButton.y;
+					AIflag = true;
+				}
+				if(selectVsPlayerButton.contains(screenX, screenY) || AIflag == false){
+					opponentSelectOutline.x = selectVsPlayerButton.x;
+					opponentSelectOutline.y = selectVsPlayerButton.y;
+					AIflag = false;
+				}
+				if(playGameButton.contains(screenX, screenY)){
+					if(currentMapNum != 0 && (AIflag == true || AIflag == false)){
+						mapLoader(currentMapNum);
+						gameState = GAMEGS.GAMERUNNING;
+					}
+				}
+				
 			break;
 			case INFO:
 				if (infoBackButton.contains(screenX, screenY)) { 
