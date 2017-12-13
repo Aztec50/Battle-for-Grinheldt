@@ -452,8 +452,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER1TURN;
-						if (RedTroops.random() == null && EnemyTroops.random() == null) {
-							gameState = GAMEGS.ENDBLUE;
+						if (BlueTroops.random() == null && EnemyTroops.random() == null) {
+							gameState = GAMEGS.ENDRED;
 						}
 					break;
 					case PLAYER2UPKEEP:
@@ -465,8 +465,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						currTroop = null;
 						currTile = null;
 						turnState = TURNGS.PLAYER2TURN;
-						if (BlueTroops.random() == null && EnemyTroops.random() == null) { //returns null if nothing in the "array"
-							gameState = GAMEGS.ENDRED;
+						if (RedTroops.random() == null && EnemyTroops.random() == null) { //returns null if nothing in the "array"
+							gameState = GAMEGS.ENDBLUE;
 						}
 					break;
 					case AIUPKEEPANDTURN:
@@ -1063,6 +1063,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		
+		RedTroops = new Array<Troop>();
+		BlueTroops = new Array<Troop>();
+		EnemyTroops = new Array<EnemyTroop>();
 		
 		switch(mapNum){
 			case 1: loadMap1();	
@@ -1088,9 +1091,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		EnemyTroop troopAI;
 		//AIflag = true; //For testing
 		
-		RedTroops = new Array<Troop>();
-		BlueTroops = new Array<Troop>();
-		EnemyTroops = new Array<EnemyTroop>();
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 14, 17, troopOn, troopTeam);
@@ -1137,6 +1138,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Troop troop;
 		Troop troop2;
 		EnemyTroop troopAI;
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 20, 18, troopOn, troopTeam);
@@ -1195,6 +1197,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Troop troop;
 		Troop troop2;
 		EnemyTroop troopAI;
+		
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 20, 18, troopOn, troopTeam);
@@ -1260,6 +1263,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Troop troop;
 		Troop troop2;
 		EnemyTroop troopAI;
+
 		
 		//Load Player Troops          
 		troop = new Troop("knight", "red", 13, 17, troopOn, troopTeam);
@@ -1483,6 +1487,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Troop troop;
 		Troop troop2;
 		EnemyTroop troopAI;
+		
+
 		
 		//Load Player Troops         
 		troop = new Troop("knight", "red", 13, 5, troopOn, troopTeam);
