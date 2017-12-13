@@ -32,7 +32,7 @@ public class Node {
 	}
 	
 	public static class Indexer {
-		private static int index = 0;
+		public static int index = 0;
 		
 		public static int getIndex() {
 			return index++;

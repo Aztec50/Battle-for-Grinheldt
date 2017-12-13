@@ -232,6 +232,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
 		gameState = GAMEGS.START;
 		
+
 		camera = new OrthographicCamera();
         camera.setToOrtho(false,screenw,screenh);
         
@@ -241,7 +242,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		panCameraTick = 0.15f;
 		panCameraCount = 0.0f;
 		panCameraDirection = 0; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
-		mapLoader();
+		
+		//mapLoader(1);
 		/*
 		//currentMap = "maps/TestingMap.tmx";
 		currentMap = "maps/Map1.tmx";
@@ -270,6 +272,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		*/
+		
 		movementTile = new Texture(Gdx.files.internal("land_tiles/tile_movement.png"));
 		attackTile = new Texture(Gdx.files.internal("land_tiles/tile_attack.png"));
 		highlightTile = new Texture(Gdx.files.internal("land_tiles/tile_highlight.png"));
@@ -400,12 +403,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		batch.setProjectionMatrix(camera.combined);
 		camera.update();
 		
-		tiledMapRenderer.setView(camera);
+		//tiledMapRenderer.setView(camera);
 		
 		//various things for game state. i put the running one first as it is the
 		//most important
 		switch(gameState) {
 			case GAMERUNNING:
+				tiledMapRenderer.setView(camera);
 				switch(turnState) {
 					case PLAYER1UPKEEP: 
 						//stuuuuuuff
@@ -641,6 +645,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				batch.draw(startScreen, 0+panOffsetX, 0+panOffsetY);
 				batch.end();
 				
+			break;
+
+			case LEVELSELECT:
+				batch.begin();
+				batch.draw(levelSelectScreen, 0+panOffsetX, 0+panOffsetY);
+				batch.end();
+				sr.begin(ShapeType.Line);
+				sr.setColor(0, 255, 0, 0.1f);
+				sr.rect(mapSelectOutline.x, mapSelectOutline.y, mapSelectOutline.width+1, mapSelectOutline.height+1);
+				sr.rect(mapSelectOutline.x+1, mapSelectOutline.y+1, mapSelectOutline.width-1, mapSelectOutline.height-1);
+				
+				sr.rect(opponentSelectOutline.x, opponentSelectOutline.y, opponentSelectOutline.width+1, opponentSelectOutline.height+1);
+				sr.rect(opponentSelectOutline.x+1, opponentSelectOutline.y+1, opponentSelectOutline.width-1, opponentSelectOutline.height-1);
+				sr.end();
 			break;
 			case INFO:
 				batch.begin();
@@ -977,8 +995,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		} // draw here
 	}
 	
-	public void mapLoader(){
-		currentMap = "maps/Map7.tmx";
+	public void mapLoader(int mapNum){
+		currentMap = String.format("maps/Map%d.tmx", mapNum);
+		
+		Node.Indexer.index = 0;
+		
+		GG = new GraphGenerator();
+		
 		tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
@@ -1003,12 +1026,35 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				drawTiles[i][j] = false;
 			}
 		}
-		loadMap7();	
+		
+		
+		switch(mapNum){
+			case 1: loadMap1();	
+			break;
+			case 2: loadMap2();	
+			break;
+			case 3: loadMap3();	
+			break;
+			case 4: loadMap4();	
+			break;
+			case 5: loadMap5();	
+			break;
+			case 6: loadMap6();	
+			break;
+			case 7: loadMap7();	
+			break;
+		}
 	}
 	
 	public void loadMap1(){
 		Troop troop;
-		EnemyTroop troop2;
+		Troop troop2;
+		EnemyTroop troopAI;
+		//AIflag = true; //For testing
+		
+		RedTroops = new Array<Troop>();
+		BlueTroops = new Array<Troop>();
+		EnemyTroops = new Array<EnemyTroop>();
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 14, 17, troopOn, troopTeam);
@@ -1444,6 +1490,20 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case Input.Keys.ESCAPE:
 				currTroop.state = Troop.ACTION.IDLE;
 				currTroop = null;
+			break;
+
+			case Input.Keys.ENTER:
+				if (gameState == GAMEGS.GAMERUNNING) {
+					if(AIflag == false){
+						if (turnState == TURNGS.PLAYER1TURN)
+							turnState = TURNGS.PLAYER2UPKEEP;
+						else if(turnState == TURNGS.PLAYER2TURN)
+							turnState = TURNGS.PLAYER1UPKEEP;
+					}else if(AIflag == true){
+						if(turnState == TURNGS.PLAYER1TURN)
+							turnState = TURNGS.AIUPKEEPANDTURN;
+					}
+				}
 			break;
 			case Input.Keys.P:
 				if(gameState == GAMEGS.GAMERUNNING){
