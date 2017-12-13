@@ -389,9 +389,11 @@ public class Troop{
 		 *		 int srcWidth, int srcHeight,
 		 *		 boolean flipX, boolean flipY);
 		 */
-		if(attacked && !moved) batch.setColor(100,20,120,1);
-		if(moved && !attacked) batch.setColor(20,100,50,1);
-		if(moved && attacked) batch.setColor(100,200,100, 0.5f);
+		//if(attacked && !moved) batch.setColor(100,20,120,1);
+		//if(moved && !attacked) batch.setColor(20,100,50,1);
+		if(moved && attacked){
+			batch.setColor(100,200,100, 0.5f);
+		}
 		batch.draw(reg.getTexture(), position.x, position.y, 32, 32,
 				   reg.getRegionX(), reg.getRegionY(),
 				   reg.getRegionWidth(), reg.getRegionHeight(),
@@ -405,6 +407,14 @@ public class Troop{
 		sr.rect(position.x+2-panOffsetX, position.y+2-panOffsetY, healthBarGreen,4);
 		sr.setColor(Color.RED);
 		sr.rect(position.x+2+healthBarGreen-panOffsetX, position.y+2-panOffsetY, healthBarRed, 4);
+		sr.setColor(Color.RED);
+		if(!attacked){
+			sr.circle(position.x+5-panOffsetX, position.y+10-panOffsetY, 3);
+		}
+		sr.setColor(Color.BLUE);
+		if(!moved){
+			sr.circle(position.x+12-panOffsetX, position.y+10-panOffsetY, 3);
+		}
 		sr.end();
 		batch.begin();
 	}

@@ -681,8 +681,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				batch.end();
 				sr.begin(ShapeType.Line);
 				sr.setColor(0, 255, 0, 0.1f);
-				sr.rect(mapSelectOutline.x-panOffsetX, mapSelectOutline.y-panOffsetY, mapSelectOutline.width, mapSelectOutline.height);
-				sr.rect(opponentSelectOutline.x-panOffsetX, opponentSelectOutline.y-panOffsetY, opponentSelectOutline.width, opponentSelectOutline.height);
+				sr.rect(mapSelectOutline.x-panOffsetX, mapSelectOutline.y-panOffsetY, mapSelectOutline.width+1, mapSelectOutline.height+1);
+				sr.rect(mapSelectOutline.x-panOffsetX+1, mapSelectOutline.y-panOffsetY+1, mapSelectOutline.width-1, mapSelectOutline.height-1);
+				
+				sr.rect(opponentSelectOutline.x-panOffsetX, opponentSelectOutline.y-panOffsetY, opponentSelectOutline.width+1, opponentSelectOutline.height+1);
+				sr.rect(opponentSelectOutline.x-panOffsetX+1, opponentSelectOutline.y-panOffsetY+1, opponentSelectOutline.width-1, opponentSelectOutline.height-1);
+				//sr.rect(opponentSelectOutline.x-panOffsetX+2, opponentSelectOutline.y-panOffsetY+2, opponentSelectOutline.width-4, opponentSelectOutline.height-4);
 				sr.end();
 			break;
 			case INFO:
