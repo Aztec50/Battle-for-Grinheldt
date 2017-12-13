@@ -1132,7 +1132,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				music.setVolume(musicVol);
 			break;
 			
-			case Input.Keys.NUM_2:
+			case Input.Keys.NUM_1:
 			if(currTroop != null){
 				if (!currTroop.moved){
 					currTroop.state = Troop.ACTION.MOVE;
@@ -1145,7 +1145,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			break;
-			case Input.Keys.NUM_1:
+			case Input.Keys.NUM_2:
 			if(currTroop != null) {
 				if (!currTroop.attacked){
 					currTroop.state = Troop.ACTION.ATTACK;
