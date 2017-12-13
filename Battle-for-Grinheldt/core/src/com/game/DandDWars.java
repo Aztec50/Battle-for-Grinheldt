@@ -61,7 +61,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	BitmapFont damageFont;
 	
 	String currentMap;
-	int currentMapNum;
 	
 	//turn game states
 	enum TURNGS {
@@ -77,7 +76,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//overall game game states
 	enum GAMEGS {
 		START,
-		LEVELSELECT,
 		INFO,
 		GAMERUNNING,
 		PAUSE,
@@ -87,8 +85,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	}
 
 	GAMEGS gameState;
-	boolean AIflag;
-	
 
 	//textures for UI
 	Texture troopScroll;
@@ -111,7 +107,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	int helpPage = 0;
 
 	Texture startScreen;
-	Texture levelSelectScreen;
 	Texture infoScreen1;
 	Texture infoScreen2;
 	Texture infoScreen3;
@@ -122,19 +117,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	Texture endBlueScreen;
 	Texture endAIScreen;
 	Rectangle startButton;
-	Rectangle opponentSelectOutline;
-	Rectangle selectVsPlayerButton;
-	Rectangle selectVsAiButton;
-	Rectangle mapSelectOutline;
-	Rectangle map1Button;
-	Rectangle map2Button;
-	Rectangle map3Button;
-	Rectangle map4Button;
-	Rectangle map5Button;
-	Rectangle map6Button;
-	Rectangle map7Button;
-	Rectangle playGameButton;
-	Rectangle levelSelectBackButton;
 	Rectangle infoButton;
 	Rectangle infoBackButton;
 	Rectangle pauseButton;
@@ -210,7 +192,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		screenw = 640f; //screen resolution
         screenh = 640f;  //screen resolution
 		zoomLevel = 1; // 1 = 100%, 2 = 200%, 3 = 400% zoom
-		currentMapNum = 0;
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -251,6 +232,16 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//for testing game stuff, change to GAMERUNNING so its faster to get to the game
 		gameState = GAMEGS.START;
 		
+
+		camera = new OrthographicCamera();
+        camera.setToOrtho(false,screenw,screenh);
+        
+        camera.update();
+
+		panCameraCheck = false;
+		panCameraTick = 0.15f;
+		panCameraCount = 0.0f;
+		panCameraDirection = 0; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
 		
 		//mapLoader(1);
 		/*
@@ -306,15 +297,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		//sword.play();
 		//sword.loop();
   
-		camera = new OrthographicCamera();
-        camera.setToOrtho(false,screenw,screenh);
-        
-        camera.update();
-
-		panCameraCheck = false;
-		panCameraTick = 0.15f;
-		panCameraCount = 0.0f;
-		panCameraDirection = 0; // 1 = N, 2 = E, 3 = S, 4 = W, 0 = NULL
+		
 		
 		troopScrollShow = false;
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
@@ -330,20 +313,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		startScreen = new Texture(Gdx.files.internal("game_menus/start.png"));
 		startButton = new Rectangle(140, 136, 120, 120);
-		levelSelectScreen = new Texture(Gdx.files.internal("game_menus/levelselect.png"));
-		opponentSelectOutline = new Rectangle(-500,-500,200,56);
-		selectVsPlayerButton = new Rectangle(18,544,200,56);
-		selectVsAiButton = new Rectangle(422,544,200,56);
-		mapSelectOutline = new Rectangle(-500,-500,200,102);
-		map1Button = new Rectangle(18,352,200,102);
-		map2Button = new Rectangle(220,352,200,102);
-		map3Button = new Rectangle(422,352,200,102);
-		map4Button = new Rectangle(18,248,200,102);
-		map5Button = new Rectangle(220,248,200,102);
-		map6Button = new Rectangle(422,248,200,102);
-		map7Button = new Rectangle(220,144,200,102);
-		playGameButton = new Rectangle(220,45,200,30);
-		levelSelectBackButton = new Rectangle(18, 18, 69, 66);
 		infoScreen1 = new Texture(Gdx.files.internal("game_menus/DandInfo1.png"));
 		infoScreen2 = new Texture(Gdx.files.internal("game_menus/DandInfo2.png"));
 		infoScreen3 = new Texture(Gdx.files.internal("game_menus/DandInfo3.png"));
@@ -417,7 +386,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	//EnemyTroop enemy = new EnemyTroop("knight", "blue", 8, 9, troopOn, troopTeam);
 	//RedTroops.add((Troop)troop);
 	//EnemyTroops.add((EnemyTroop)enemy);
-		
+  
 	}
 
 	@Override
@@ -534,7 +503,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for(int j = 0; j < landscape.getHeight(); j++) {
 								//if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
 								//if(drawTiles[i][j] == true) batch.draw(movementTile, i*16, j*16);
-								if(drawTiles[i][j] == true) batch.draw(movementTile, i*32, j*32, 32, 32);
+                if(drawTiles[i][j] == true) batch.draw(movementTile, i*32, j*32, 32, 32);
 							}
 						}
 
@@ -545,7 +514,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							for(int j = 0; j < landscape.getHeight(); j++) {
 								//if(drawTiles[i][j] == true) tileDraw.rect(i*16, j*16, 16, 16);
 								//if(drawTiles[i][j] == true) batch.draw(attackTile, i*16, j*16);
-								if(drawTiles[i][j] == true) batch.draw(attackTile, i*32, j*32, 32, 32);
+                if(drawTiles[i][j] == true) batch.draw(attackTile, i*32, j*32, 32, 32);
 							}
 						}
 
@@ -677,6 +646,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				batch.end();
 				
 			break;
+
 			case LEVELSELECT:
 				batch.begin();
 				batch.draw(levelSelectScreen, 0+panOffsetX, 0+panOffsetY);
@@ -732,22 +702,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				batch.end();
 			break;
 		}
-		//DEBUG FOR LEVEL SELECT
-
-		//sr.begin(ShapeType.Filled);
-		//sr.setColor(255, 0, 0, 0.1f);
-		//sr.rect(map1Button.x-panOffsetX, map1Button.y-panOffsetY, map1Button.width, map1Button.height);
-		//sr.rect(map2Button.x-panOffsetX, map2Button.y-panOffsetY, map2Button.width, map2Button.height);
-		//sr.rect(map3Button.x-panOffsetX, map3Button.y-panOffsetY, map3Button.width, map3Button.height);
-		//sr.rect(map4Button.x-panOffsetX, map4Button.y-panOffsetY, map4Button.width, map4Button.height);
-		//sr.rect(map5Button.x-panOffsetX, map5Button.y-panOffsetY, map5Button.width, map5Button.height);
-		//sr.rect(map6Button.x-panOffsetX, map6Button.y-panOffsetY, map6Button.width, map6Button.height);
-		//sr.rect(map7Button.x-panOffsetX, map7Button.y-panOffsetY, map7Button.width, map7Button.height);
-		//sr.rect(playGameButton.x-panOffsetX, playGameButton.y-panOffsetY, playGameButton.width, playGameButton.height);
-		//sr.rect(selectVsPlayerButton.x-panOffsetX, selectVsPlayerButton.y-panOffsetY, selectVsPlayerButton.width, selectVsPlayerButton.height);
-		//sr.rect(selectVsAiButton.x-panOffsetX, selectVsAiButton.y-panOffsetY, selectVsAiButton.width, selectVsAiButton.height);
-		//sr.end();
-
+		
 		
 	}
 	
@@ -873,9 +828,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 
 		batch.begin();
 
-		
-		
-		
 		if (currTroop != null) {
 			if(!currTroop.attacked)
 				batch.draw(buttonOnPlaque, attackButton.x+panOffsetX, attackButton.y+panOffsetY, attackButton.width, attackButton.height);
@@ -955,7 +907,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	    	sr.rect( ((((int)t2.getPos().x)/32)*3)+offsetX, ((((int)t2.getPos().y)/32)*3)+offsetY, 3, 3);
 		}
 		
-		
+		sr.setColor(Color.BLACK);
+		for (EnemyTroop e : EnemyTroops) {
+	    	sr.rect( ((((int)e.getPos().x)/32)*3)+offsetX, ((((int)e.getPos().y)/32)*3)+offsetY, 3, 3);
+		}
 	    sr.end();
 		sr.begin(ShapeType.Line);
 		sr.setColor(Color.WHITE);
@@ -1114,48 +1069,419 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		RedTroops.add((Troop)troop);
 		
 		//Load Enemy Troops
-		if(AIflag == true){
-			troopAI = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			EnemyTroops.add((EnemyTroop)troopAI);
-			troopAI = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			EnemyTroops.add((EnemyTroop)troopAI);
-			troopAI = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			EnemyTroops.add((EnemyTroop)troopAI);
-			troopAI = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			EnemyTroops.add((EnemyTroop)troopAI);
-			troopAI = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
-			EnemyTroops.add((EnemyTroop)troopAI);
-		}else{
-			troop2 = new Troop("knight", "blue", 20, 26, troopOn, troopTeam);
-			BlueTroops.add((Troop)troop2);
-			troop2 = new Troop("knight", "blue", 20, 25, troopOn, troopTeam);
-			BlueTroops.add((Troop)troop2);
-			troop2 = new Troop("knight", "blue", 21, 25, troopOn, troopTeam);
-			BlueTroops.add((Troop)troop2);
-			troop2 = new Troop("knight", "blue", 21, 24, troopOn, troopTeam);
-			BlueTroops.add((Troop)troop2);
-			troop2 = new Troop("knight", "blue", 22, 24, troopOn, troopTeam);
-			BlueTroops.add((Troop)troop2);			
-		}
+		troop2 = new EnemyTroop("knight", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 21, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 21, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 22, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		camera.translate(288, 384);
+		camera.update();
+		panOffsetX+=288;
+		panOffsetY+=384;
 		
 	}
 	public void loadMap2(){
+		Troop troop;
+		EnemyTroop troop2;
 		
+		//Load Player Troops
+		troop = new Troop("knight", "red", 20, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);            
+		troop = new Troop("knight", "red", 22, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 19, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 20, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 21, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 22, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 23, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 22, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 19, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 21, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 22, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 23, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		camera.translate(384, 384);
+		camera.update();
+		panOffsetX+=384;
+		panOffsetY+=384;
 	}
 	public void loadMap3(){
+		Troop troop;
+		EnemyTroop troop2;
 		
+		//Load Player Troops
+		troop = new Troop("knight", "red", 20, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);            
+		troop = new Troop("knight", "red", 22, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 20, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("archer", "red", 21, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);    		
+		troop = new Troop("archer", "red", 22, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("wizard", "red", 19, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("wizard", "red", 21, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("wizard", "red", 23, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("knight", "ai", 20, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);      
+		troop2 = new EnemyTroop("knight", "ai", 22, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);    
+		troop2 = new EnemyTroop("archer", "ai", 20, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);    
+		troop2 = new EnemyTroop("archer", "ai", 21, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);    
+		troop2 = new EnemyTroop("archer", "ai", 22, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);    
+		troop2 = new EnemyTroop("wizard", "ai", 19, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);    
+		troop2 = new EnemyTroop("wizard", "ai", 21, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);    
+		troop2 = new EnemyTroop("wizard", "ai", 23, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		camera.translate(384, 384);
+		camera.update();
+		panOffsetX+=384;
+		panOffsetY+=384;
 	}
 	public void loadMap4(){
+		Troop troop;
+		EnemyTroop troop2;
 		
+		//Load Player Troops          
+		troop = new Troop("knight", "red", 13, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("knight", "red", 13, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);            
+		troop = new Troop("knight", "red", 13, 15, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 10, 18, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 10, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 10, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 10, 15, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 10, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 9, 19, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 9, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 9, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("barbarian", "ai", 27, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 28, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 27, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 28, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 29, 21, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 27, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 28, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 29, 20, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 27, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 28, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 29, 19, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		camera.translate(224, 320);
+		camera.update();
+		panOffsetX+=224;
+		panOffsetY+=320;
 	}
 	public void loadMap5(){
+		Troop troop;
+		EnemyTroop troop2;
 		
+		//Load Player Troops
+		troop = new Troop("barbarian", "red", 19, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);            
+		troop = new Troop("knight", "red", 20, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);     
+		troop = new Troop("knight", "red", 22, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);      		
+		troop = new Troop("barbarian", "red", 23, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);      
+		troop = new Troop("wizard", "red", 19, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("archer", "red", 20, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);         
+		troop = new Troop("archer", "red", 21, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);       
+		troop = new Troop("wizard", "red", 23, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("mystic", "ai", 11, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("mystic", "ai", 13, 27, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("mystic", "ai", 10, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("mystic", "ai", 12, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("mystic", "ai", 15, 26, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 32, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 31, 24, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 32, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 31, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 32, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 31, 22, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 32, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 31, 25, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		camera.translate(384, 384);
+		camera.update();
+		panOffsetX+=384;
+		panOffsetY+=384;
 	}
 	public void loadMap6(){
+		Troop troop;
+		EnemyTroop troop2;
 		
+		//Load Player Troops         
+		troop = new Troop("knight", "red", 29, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		        
+		troop = new Troop("knight", "red", 31, 16, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 
+		 		
+		troop = new Troop("barbarian", "red", 29, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);      
+		troop = new Troop("barbarian", "red", 31, 17, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+				
+		troop = new Troop("archer", "red", 28, 15, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);         
+		troop = new Troop("archer", "red", 32, 15, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 		
+		
+		troop = new Troop("wizard", "red", 29, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("wizard", "red", 30, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 31, 14, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+	
+		troop = new Troop("rogue", "red", 28, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 30, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 32, 13, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("dragon", "ai", 17, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("dragon", "ai", 17, 23, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		camera.translate(384, 384);
+		camera.update();
+		panOffsetX+=384;
+		panOffsetY+=384;
 	}
+	
 	public void loadMap7(){
+		Troop troop;
+		EnemyTroop troop2;
 		
+		//Load Player Troops         
+		troop = new Troop("knight", "red", 13, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("knight", "red", 14, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 
+		troop = new Troop("knight", "red", 15, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("knight", "red", 16, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 
+		troop = new Troop("knight", "red", 17, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("knight", "red", 18, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 
+		troop = new Troop("knight", "red", 19, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("knight", "red", 20, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 
+		troop = new Troop("knight", "red", 21, 5, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);   
+		 		
+		troop = new Troop("barbarian", "red", 13, 6, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);      
+		troop = new Troop("barbarian", "red", 14, 6, troopOn, troopTeam);
+		RedTroops.add((Troop)troop); 
+		troop = new Troop("barbarian", "red", 17, 6, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);      
+		troop = new Troop("barbarian", "red", 20, 6, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("barbarian", "red", 21, 6, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);	
+				
+		troop = new Troop("archer", "red", 14, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);         
+		troop = new Troop("archer", "red", 15, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("archer", "red", 16, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);         
+		troop = new Troop("archer", "red", 17, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("archer", "red", 18, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);         
+		troop = new Troop("archer", "red", 19, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("archer", "red", 20, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);          		
+		
+		troop = new Troop("wizard", "red", 12, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);  
+		troop = new Troop("wizard", "red", 13, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 21, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("wizard", "red", 22, 4, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+	
+		troop = new Troop("rogue", "red", 13, 7, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 15, 7, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 17, 7, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 19, 7, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		troop = new Troop("rogue", "red", 21, 7, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		troop = new Troop("dragon", "red", 17, 2, troopOn, troopTeam);
+		RedTroops.add((Troop)troop);
+		
+		
+		//Load Enemy Troops
+		troop2 = new EnemyTroop("knight", "ai", 18, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 19, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 20, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 21, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 22, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 23, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 24, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 25, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("knight", "ai", 26, 30, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		troop2 = new EnemyTroop("barbarian", "ai", 18, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 19, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 22, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 25, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("barbarian", "ai", 26, 29, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		troop2 = new EnemyTroop("archer", "ai", 19, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 20, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 21, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 22, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 23, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 24, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("archer", "ai", 25, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		troop2 = new EnemyTroop("wizard", "ai", 17, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("wizard", "ai", 18, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("wizard", "ai", 26, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("wizard", "ai", 27, 31, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		troop2 = new EnemyTroop("rogue", "ai", 18, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 20, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 22, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 24, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		troop2 = new EnemyTroop("rogue", "ai", 26, 28, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		
+		troop2 = new EnemyTroop("dragon", "ai", 22, 33, troopOn, troopTeam, landscape.getWidth(), landscape.getHeight());
+		EnemyTroops.add((EnemyTroop)troop2);
+		camera.translate(384, 384);
+		camera.update();
+		panOffsetX+=384;
+		panOffsetY+=384;
 	}
 	
 	@Override
@@ -1165,6 +1491,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				currTroop.state = Troop.ACTION.IDLE;
 				currTroop = null;
 			break;
+
 			case Input.Keys.ENTER:
 				if (gameState == GAMEGS.GAMERUNNING) {
 					if(AIflag == false){
@@ -1177,9 +1504,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							turnState = TURNGS.AIUPKEEPANDTURN;
 					}
 				}
-			break;
-			case Input.Keys.NUM_0:
-				gameState = GAMEGS.START;
 			break;
 			case Input.Keys.P:
 				if(gameState == GAMEGS.GAMERUNNING){
@@ -1208,7 +1532,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				music.setVolume(musicVol);
 			break;
 			
-			case Input.Keys.NUM_1:
+			case Input.Keys.M:
 			if(currTroop != null){
 				if (!currTroop.moved){
 					currTroop.state = Troop.ACTION.MOVE;
@@ -1221,7 +1545,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			break;
-			case Input.Keys.NUM_2:
+			case Input.Keys.A:
 			if(currTroop != null) {
 				if (!currTroop.attacked){
 					currTroop.state = Troop.ACTION.ATTACK;
@@ -1234,7 +1558,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			}
 			break;
-			case Input.Keys.M:
+			case Input.Keys.D:
 			if(troopScrollShow == false){
 				troopScrollShow = true;
 			}else{
@@ -1242,7 +1566,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 			break;
 			case Input.Keys.UP:
-			case Input.Keys.W:
 				if (panOffsetY+32 < 672) {
 					camera.translate(0, 32);
 					camera.update();
@@ -1251,7 +1574,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			break;
 			case Input.Keys.DOWN:
-			case Input.Keys.S:
 				if (panOffsetY-32 > -32) {
 					camera.translate(0, -32);
 					camera.update();
@@ -1260,7 +1582,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			break;
 			case Input.Keys.LEFT:
-			case Input.Keys.A:
 				if (panOffsetX-32 > -32) {
 					camera.translate(-32, 0);
 					camera.update();
@@ -1269,7 +1590,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				}
 			break;
 			case Input.Keys.RIGHT:
-			case Input.Keys.D:
 				if (panOffsetX+32 < 672) {
 					camera.translate(32, 0);
 					camera.update();
@@ -1292,10 +1612,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			case Input.Keys.DOWN:
 			case Input.Keys.RIGHT:
 			case Input.Keys.LEFT:
-			case Input.Keys.W:
-			case Input.Keys.A:
-			case Input.Keys.S:
-			case Input.Keys.D:
 				panCameraDirection = 0;
 			break;
 		}
@@ -1337,15 +1653,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					//check if end turn is pressed
 					else if (nextTurnButton.contains(screenX, screenY)) { 
 						if (gameState == GAMEGS.GAMERUNNING) {
-							if(AIflag == false){
-								if (turnState == TURNGS.PLAYER1TURN)
-									turnState = TURNGS.PLAYER2UPKEEP;
-								else if(turnState == TURNGS.PLAYER2TURN)
-									turnState = TURNGS.PLAYER1UPKEEP;
-							}else if(AIflag == true){
-								if(turnState == TURNGS.PLAYER1TURN)
-									turnState = TURNGS.AIUPKEEPANDTURN;
-							}
+							if (turnState == TURNGS.PLAYER1TURN)
+								turnState = TURNGS.PLAYER2UPKEEP;
+							else if (turnState == TURNGS.PLAYER2TURN)
+								turnState = TURNGS.AIUPKEEPANDTURN;
 						}
 					} 
 					//checks if attack button was pressed
@@ -1578,9 +1889,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			break;
 			case START: 
 				if (startButton.contains(screenX, screenY)) { 
-					if(gameState != GAMEGS.LEVELSELECT) {
+					if(gameState != GAMEGS.GAMERUNNING) {
 						//Gdx.app.log("?", "game START");
-						gameState = GAMEGS.LEVELSELECT;
+						gameState = GAMEGS.GAMERUNNING;
 					}
 				}
 				if (infoButton.contains(screenX, screenY)) { 
@@ -1589,65 +1900,6 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 						gameState = GAMEGS.INFO;
 					}
 				}
-			break;
-			case LEVELSELECT:
-				if(levelSelectBackButton.contains(screenX, screenY)){
-					if(gameState != GAMEGS.START){
-						gameState = GAMEGS.START;
-					}
-				}
-				if(map1Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map1Button.x;
-					mapSelectOutline.y = map1Button.y;
-					currentMapNum = 1;
-				}	
-				if(map2Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map2Button.x;
-					mapSelectOutline.y = map2Button.y;
-					currentMapNum = 2;					
-				}                                       
-				if(map3Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map3Button.x;
-					mapSelectOutline.y = map3Button.y;
-					currentMapNum = 3;					
-				}                                       
-				if(map4Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map4Button.x;
-					mapSelectOutline.y = map4Button.y;    
-					currentMapNum = 4;					
-				}                                       
-				if(map5Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map5Button.x;
-					mapSelectOutline.y = map5Button.y;         
-					currentMapNum = 5;					
-				}                                       
-				if(map6Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map6Button.x;
-					mapSelectOutline.y = map6Button.y;             
-					currentMapNum = 6;					
-				}                                       
-				if(map7Button.contains(screenX, screenY)){
-					mapSelectOutline.x = map7Button.x;
-					mapSelectOutline.y = map7Button.y;
-					currentMapNum = 7;
-				}
-				if(selectVsAiButton.contains(screenX, screenY) || AIflag == true){
-					opponentSelectOutline.x = selectVsAiButton.x;
-					opponentSelectOutline.y = selectVsAiButton.y;
-					AIflag = true;
-				}
-				if(selectVsPlayerButton.contains(screenX, screenY) || AIflag == false){
-					opponentSelectOutline.x = selectVsPlayerButton.x;
-					opponentSelectOutline.y = selectVsPlayerButton.y;
-					AIflag = false;
-				}
-				if(playGameButton.contains(screenX, screenY)){
-					if(currentMapNum != 0 && (AIflag == true || AIflag == false)){
-						mapLoader(currentMapNum);
-						gameState = GAMEGS.GAMERUNNING;
-					}
-				}
-				
 			break;
 			case INFO:
 				if (infoBackButton.contains(screenX, screenY)) { 
