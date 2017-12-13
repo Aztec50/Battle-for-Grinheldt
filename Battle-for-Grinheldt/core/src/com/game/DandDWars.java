@@ -91,6 +91,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	
 	//textures for UI
 	Texture troopScroll;
+	Texture troopScrollScrolled;
 	Texture plainsTroopScroll;
 	Texture forestTroopScroll;
 	Texture mountainTroopScroll;
@@ -319,6 +320,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 		troopScrollShow = false;
 		troopScroll = new Texture(Gdx.files.internal("land_tiles/scroll.png"));
+		troopScrollScrolled = new Texture(Gdx.files.internal("land_tiles/scrollScrolled.png"));
 		plainsTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_grass.png"));
 		forestTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_forest.png"));
 		mountainTroopScroll = new Texture(Gdx.files.internal("land_tiles/tile_mountain.png"));
@@ -623,8 +625,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				if(troopScrollShow == true){
 					drawMinimap();
 				}else{
-					//Add rolled up scroll here
+					batch.draw(troopScrollScrolled, 2+panOffsetX, (int)screenh-56+panOffsetY, 256, 56, 0, 0, 32, 7, true, false);
 				}
+				font.draw(batch, "Minimap", 100+panOffsetX, 620+panOffsetY);
 				if(panCameraDirection != 0){
 					panCameraCount += Gdx.graphics.getDeltaTime();
 					if(panCameraCount > panCameraTick){
