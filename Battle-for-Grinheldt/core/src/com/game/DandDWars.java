@@ -1875,10 +1875,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 					//check if end turn is pressed
 					else if (nextTurnButton.contains(screenX, screenY)) { 
 						if (gameState == GAMEGS.GAMERUNNING) {
-							if (turnState == TURNGS.PLAYER1TURN)
-								turnState = TURNGS.PLAYER2UPKEEP;
-							else if (turnState == TURNGS.PLAYER2TURN)
-								turnState = TURNGS.AIUPKEEPANDTURN;
+							if(AIflag == false){
+								if (turnState == TURNGS.PLAYER1TURN)
+									turnState = TURNGS.PLAYER2UPKEEP;
+								else if(turnState == TURNGS.PLAYER2TURN)
+									turnState = TURNGS.PLAYER1UPKEEP;
+							}else if(AIflag == true){
+								if(turnState == TURNGS.PLAYER1TURN)
+									turnState = TURNGS.AIUPKEEPANDTURN;
+							}
+							
+							
+							
+							//if (turnState == TURNGS.PLAYER1TURN)
+							//	turnState = TURNGS.PLAYER2UPKEEP;
+							//else if (turnState == TURNGS.PLAYER2TURN)
+							//	turnState = TURNGS.AIUPKEEPANDTURN;
 						}
 					} 
 					//checks if attack button was pressed
