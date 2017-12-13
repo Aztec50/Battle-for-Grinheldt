@@ -1568,7 +1568,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				music.setVolume(musicVol);
 			break;
 			
-			case Input.Keys.M:
+			case Input.Keys.NUM_1:
 			if(currTroop != null){
 				if (!currTroop.moved){
 					currTroop.state = Troop.ACTION.MOVE;
@@ -1581,7 +1581,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			}
 			break;
-			case Input.Keys.A:
+			case Input.Keys.NUM_2:
 			if(currTroop != null) {
 				if (!currTroop.attacked){
 					currTroop.state = Troop.ACTION.ATTACK;
@@ -1594,7 +1594,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			}
 			break;
-			case Input.Keys.D:
+			case Input.Keys.M:
 			if(troopScrollShow == false){
 				troopScrollShow = true;
 			}else{
@@ -1602,6 +1602,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 			}
 			break;
 			case Input.Keys.UP:
+			case Input.Keys.W:
 				if (panOffsetY+32 < 672) {
 					camera.translate(0, 32);
 					camera.update();
@@ -1610,6 +1611,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			break;
 			case Input.Keys.DOWN:
+			case Input.Keys.S:
 				if (panOffsetY-32 > -32) {
 					camera.translate(0, -32);
 					camera.update();
@@ -1618,6 +1620,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			break;
 			case Input.Keys.LEFT:
+			case Input.Keys.A:
 				if (panOffsetX-32 > -32) {
 					camera.translate(-32, 0);
 					camera.update();
@@ -1626,6 +1629,7 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 				}
 			break;
 			case Input.Keys.RIGHT:
+			case Input.Keys.D:
 				if (panOffsetX+32 < 672) {
 					camera.translate(32, 0);
 					camera.update();
@@ -1648,6 +1652,10 @@ endAIScreen = new Texture(Gdx.files.internal("game_menus/endAI.png"));
 			case Input.Keys.DOWN:
 			case Input.Keys.RIGHT:
 			case Input.Keys.LEFT:
+			case Input.Keys.W:
+			case Input.Keys.A:
+			case Input.Keys.S:
+			case Input.Keys.D:
 				panCameraDirection = 0;
 			break;
 		}
