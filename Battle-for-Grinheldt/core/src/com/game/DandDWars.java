@@ -252,7 +252,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		gameState = GAMEGS.START;
 		
 		
-		mapLoader(1);
+		//mapLoader(1);
 		/*
 		//currentMap = "maps/TestingMap.tmx";
 		currentMap = "maps/Map1.tmx";
@@ -281,6 +281,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		*/
+		
 		movementTile = new Texture(Gdx.files.internal("land_tiles/tile_movement.png"));
 		attackTile = new Texture(Gdx.files.internal("land_tiles/tile_attack.png"));
 		highlightTile = new Texture(Gdx.files.internal("land_tiles/tile_highlight.png"));
@@ -433,12 +434,13 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		batch.setProjectionMatrix(camera.combined);
 		camera.update();
 		
-		tiledMapRenderer.setView(camera);
+		//tiledMapRenderer.setView(camera);
 		
 		//various things for game state. i put the running one first as it is the
 		//most important
 		switch(gameState) {
 			case GAMERUNNING:
+				tiledMapRenderer.setView(camera);
 				switch(turnState) {
 					case PLAYER1UPKEEP: 
 						//stuuuuuuff
@@ -681,12 +683,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				batch.end();
 				sr.begin(ShapeType.Line);
 				sr.setColor(0, 255, 0, 0.1f);
-				sr.rect(mapSelectOutline.x-panOffsetX, mapSelectOutline.y-panOffsetY, mapSelectOutline.width+1, mapSelectOutline.height+1);
-				sr.rect(mapSelectOutline.x-panOffsetX+1, mapSelectOutline.y-panOffsetY+1, mapSelectOutline.width-1, mapSelectOutline.height-1);
+				sr.rect(mapSelectOutline.x, mapSelectOutline.y, mapSelectOutline.width+1, mapSelectOutline.height+1);
+				sr.rect(mapSelectOutline.x+1, mapSelectOutline.y+1, mapSelectOutline.width-1, mapSelectOutline.height-1);
 				
-				sr.rect(opponentSelectOutline.x-panOffsetX, opponentSelectOutline.y-panOffsetY, opponentSelectOutline.width+1, opponentSelectOutline.height+1);
-				sr.rect(opponentSelectOutline.x-panOffsetX+1, opponentSelectOutline.y-panOffsetY+1, opponentSelectOutline.width-1, opponentSelectOutline.height-1);
-				//sr.rect(opponentSelectOutline.x-panOffsetX+2, opponentSelectOutline.y-panOffsetY+2, opponentSelectOutline.width-4, opponentSelectOutline.height-4);
+				sr.rect(opponentSelectOutline.x, opponentSelectOutline.y, opponentSelectOutline.width+1, opponentSelectOutline.height+1);
+				sr.rect(opponentSelectOutline.x+1, opponentSelectOutline.y+1, opponentSelectOutline.width-1, opponentSelectOutline.height-1);
 				sr.end();
 			break;
 			case INFO:
@@ -1042,6 +1043,10 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 	public void mapLoader(int mapNum){
 		currentMap = String.format("maps/Map%d.tmx", mapNum);
 		
+		Node.Indexer.index = 0;
+		
+		GG = new GraphGenerator();
+		
 		tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
@@ -1066,6 +1071,8 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				drawTiles[i][j] = false;
 			}
 		}
+		
+		
 		switch(mapNum){
 			case 1: loadMap1();	
 			break;
@@ -1088,8 +1095,11 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		Troop troop;
 		Troop troop2;
 		EnemyTroop troopAI;
-		AIflag = false; //For testing
+		//AIflag = true; //For testing
 		
+		RedTroops = new Array<Troop>();
+		BlueTroops = new Array<Troop>();
+		EnemyTroops = new Array<EnemyTroop>();
 		
 		//Load Player Troops
 		troop = new Troop("knight", "red", 14, 17, troopOn, troopTeam);
@@ -1167,6 +1177,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 							turnState = TURNGS.AIUPKEEPANDTURN;
 					}
 				}
+			break;
+			case Input.Keys.NUM_0:
+				gameState = GAMEGS.START;
 			break;
 			case Input.Keys.P:
 				if(gameState == GAMEGS.GAMERUNNING){

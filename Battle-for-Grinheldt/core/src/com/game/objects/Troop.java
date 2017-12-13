@@ -407,11 +407,11 @@ public class Troop{
 		sr.rect(position.x+2-panOffsetX, position.y+2-panOffsetY, healthBarGreen,4);
 		sr.setColor(Color.RED);
 		sr.rect(position.x+2+healthBarGreen-panOffsetX, position.y+2-panOffsetY, healthBarRed, 4);
-		sr.setColor(Color.RED);
+		//sr.setColor(Color.RED);
 		if(!attacked){
 			sr.circle(position.x+5-panOffsetX, position.y+10-panOffsetY, 3);
 		}
-		sr.setColor(Color.BLUE);
+		sr.setColor(Color.PURPLE);
 		if(!moved){
 			sr.circle(position.x+12-panOffsetX, position.y+10-panOffsetY, 3);
 		}
