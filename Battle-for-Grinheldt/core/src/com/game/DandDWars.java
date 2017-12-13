@@ -235,7 +235,7 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		gameState = GAMEGS.START;
 		
 		
-		mapLoader();
+		mapLoader(1);
 		/*
 		//currentMap = "maps/TestingMap.tmx";
 		currentMap = "maps/Map1.tmx";
@@ -976,8 +976,9 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		} // draw here
 	}
 	
-	public void mapLoader(){
-		currentMap = "maps/Map1.tmx";
+	public void mapLoader(int mapNum){
+		currentMap = String.format("maps/Map%d.tmx", mapNum);
+		
 		tiledMap = new TmxMapLoader().load(currentMap);
 		landscape = (TiledMapTileLayer)tiledMap.getLayers().get(0);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 2f);
@@ -1002,7 +1003,22 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 				drawTiles[i][j] = false;
 			}
 		}
-		loadMap1();	
+		switch(mapNum){
+			case 1: loadMap1();	
+			break;
+			case 2: loadMap2();	
+			break;
+			case 3: loadMap3();	
+			break;
+			case 4: loadMap4();	
+			break;
+			case 5: loadMap5();	
+			break;
+			case 6: loadMap6();	
+			break;
+			case 7: loadMap7();	
+			break;
+		}
 	}
 	
 	public void loadMap1(){
@@ -1060,6 +1076,12 @@ public class DandDWars extends ApplicationAdapter implements InputProcessor {
 		
 	}
 	public void loadMap5(){
+		
+	}
+	public void loadMap6(){
+		
+	}
+	public void loadMap7(){
 		
 	}
 	
